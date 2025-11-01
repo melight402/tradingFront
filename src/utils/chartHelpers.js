@@ -1,0 +1,123 @@
+export const setHorizontalScale = (chart, candleCount, candlestickData, paddingPx = 100) => {
+  if (!chart) return;
+  
+  try {
+    const timeScale = chart.timeScale();
+    if (!timeScale || !candlestickData || candlestickData.length === 0) return;
+    
+    const lastCandleTime = candlestickData[candlestickData.length - 1].time;
+    const firstCandleTime = candlestickData[Math.max(0, candlestickData.length - candleCount)].time;
+    
+    const range = {
+      from: firstCandleTime,
+      to: lastCandleTime
+    };
+    
+    timeScale.setVisibleRange(range);
+    
+    if (paddingPx > 0) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          try {
+            const logicalRange = timeScale.getVisibleLogicalRange();
+            if (!logicalRange || logicalRange.from == null || logicalRange.to == null) {
+              return;
+            }
+            
+            const chartWidth = timeScale.width();
+            if (!chartWidth || chartWidth <= paddingPx) {
+              return;
+            }
+            
+            const targetCoord = chartWidth - paddingPx;
+            const leftCoord = timeScale.logicalToCoordinate(logicalRange.from);
+            const rightCoord = timeScale.logicalToCoordinate(logicalRange.to);
+            
+            if (leftCoord === null || leftCoord === undefined || 
+                rightCoord === null || rightCoord === undefined) {
+              return;
+            }
+            
+            if (rightCoord <= targetCoord) {
+              return;
+            }
+            
+            const rangeWidth = logicalRange.to - logicalRange.from;
+            const coordWidth = rightCoord - leftCoord;
+            
+            if (coordWidth === 0) {
+              return;
+            }
+            
+            const pixelsPerLogical = coordWidth / rangeWidth;
+            const pixelShift = rightCoord - targetCoord;
+            const logicalShift = pixelShift / pixelsPerLogical;
+            
+            timeScale.setVisibleLogicalRange({
+              from: logicalRange.from,
+              to: logicalRange.to + logicalShift
+            });
+          } catch {
+            void 0;
+          }
+        });
+      });
+    }
+  } catch {
+    void 0;
+  }
+};
+
+export const addRightPadding = (chart, candlestickSeries, paddingPx = 100) => {
+  if (!chart || !candlestickSeries) return;
+  
+  try {
+    const timeScale = chart.timeScale();
+    if (!timeScale) return;
+    
+    const logicalRange = timeScale.getVisibleLogicalRange();
+    if (!logicalRange || logicalRange.from == null || logicalRange.to == null) {
+      return;
+    }
+    
+    const chartWidth = timeScale.width();
+    if (!chartWidth || chartWidth <= paddingPx) {
+      return;
+    }
+    
+    const targetCoord = chartWidth - paddingPx;
+    
+    const leftCoord = timeScale.logicalToCoordinate(logicalRange.from);
+    const rightCoord = timeScale.logicalToCoordinate(logicalRange.to);
+    
+    if (leftCoord === null || leftCoord === undefined || 
+        rightCoord === null || rightCoord === undefined) {
+      return;
+    }
+    
+    if (rightCoord <= targetCoord) {
+      return;
+    }
+    
+    const rangeWidth = logicalRange.to - logicalRange.from;
+    const coordWidth = rightCoord - leftCoord;
+    
+    if (coordWidth === 0) {
+      return;
+    }
+    
+    const pixelsPerLogical = coordWidth / rangeWidth;
+    
+    const pixelShift = rightCoord - targetCoord;
+    
+    const logicalShift = pixelShift / pixelsPerLogical;
+    
+    timeScale.setVisibleLogicalRange({
+      from: logicalRange.from,
+      to: logicalRange.to + logicalShift
+    });
+  } catch {
+    void 0;
+  }
+};
+

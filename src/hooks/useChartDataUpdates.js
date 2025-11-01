@@ -1,0 +1,162 @@
+import { useRef, useCallback } from "react";
+import { useLastCandleUpdate } from "./useLastCandleUpdate";
+import { useChartDataProcessor } from "./useChartDataProcessor";
+import { useChartScaleSetup } from "./useChartScaleSetup";
+
+export const useChartDataUpdates = (
+  chart,
+  candlestickSeries,
+  volumeSeries,
+  volumeDataRef,
+  isInitialRender,
+  lastCandleTimeRef,
+  currentSymbolRef,
+  currentIntervalRef,
+  isUpdatingDataRef,
+  volumeAreaHeight,
+  isRestoringStateRef,
+  chartKey
+) => {
+  const dataUpdateTimeoutRef = useRef(null);
+  const { updateLastCandle } = useLastCandleUpdate(chart, candlestickSeries, volumeSeries, lastCandleTimeRef);
+  const { processChartData } = useChartDataProcessor();
+  const { setupInitialScale, setupPriceScales } = useChartScaleSetup(chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey);
+
+  const updateChartData = useCallback(async (data) => {
+    if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
+      isUpdatingDataRef.current = false;
+      return;
+    }
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      isUpdatingDataRef.current = false;
+      return;
+    }
+
+    const currentSymbol = currentSymbolRef.current;
+    const currentInterval = currentIntervalRef.current;
+
+    if (isUpdatingDataRef.current) {
+      return;
+    }
+
+    isUpdatingDataRef.current = true;
+
+    try {
+      const processed = await processChartData(data, currentSymbol);
+      if (!processed) {
+        isUpdatingDataRef.current = false;
+        return;
+      }
+
+      const { candlestickData, volumeData, priceFormat } = processed;
+
+      volumeDataRef.current = volumeData;
+
+      requestAnimationFrame(() => {
+        if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
+          isUpdatingDataRef.current = false;
+          return;
+        }
+
+        if (currentSymbolRef.current !== currentSymbol || currentIntervalRef.current !== currentInterval) {
+          isUpdatingDataRef.current = false;
+          return;
+        }
+
+        try {
+            volumeSeries.current.applyOptions({
+              scaleMargins: {
+                top: 1 - volumeAreaHeight,
+                bottom: 0,
+              },
+            });
+          
+          if (isInitialRender.current && !isRestoringStateRef.current) {
+            setupPriceScales();
+          }
+
+          if (priceFormat && typeof priceFormat.precision === 'number' && typeof priceFormat.minMove === 'number') {
+            candlestickSeries.current.applyOptions({
+              priceFormat: {
+                type: "price",
+                precision: Math.max(0, Math.min(8, priceFormat.precision)),
+                minMove: Math.max(0.0000001, Math.min(1, priceFormat.minMove)),
+              },
+            });
+          }
+
+          if (candlestickData.length > 0 && candlestickData.every(d => 
+            d && typeof d.time === 'number' && isFinite(d.time) &&
+            typeof d.open === 'number' && isFinite(d.open) &&
+            typeof d.high === 'number' && isFinite(d.high) &&
+            typeof d.low === 'number' && isFinite(d.low) &&
+            typeof d.close === 'number' && isFinite(d.close)
+          )) {
+            candlestickSeries.current.setData(candlestickData);
+          } else {
+            isUpdatingDataRef.current = false;
+            return;
+          }
+
+          if (volumeData.length > 0 && volumeData.every(d => 
+            d && typeof d.time === 'number' && isFinite(d.time) &&
+            typeof d.value === 'number' && isFinite(d.value)
+          )) {
+            volumeSeries.current.setData(volumeData);
+          } else {
+            isUpdatingDataRef.current = false;
+            return;
+          }
+
+          if (candlestickData.length > 0) {
+            lastCandleTimeRef.current = candlestickData[candlestickData.length - 1].time;
+          }
+
+          if (isInitialRender.current) {
+            const timeScale = chart.current?.timeScale();
+            if (timeScale) {
+              requestAnimationFrame(() => {
+                if (!chart.current || !timeScale) {
+                  isUpdatingDataRef.current = false;
+                  isInitialRender.current = false;
+                  return;
+                }
+
+                if (currentSymbolRef.current !== currentSymbol || currentIntervalRef.current !== currentInterval) {
+                  isUpdatingDataRef.current = false;
+                  isInitialRender.current = false;
+                  return;
+                }
+
+                setupInitialScale(candlestickData, currentInterval);
+
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    if (currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
+                      isUpdatingDataRef.current = false;
+                      isInitialRender.current = false;
+                    }
+                  });
+                });
+              });
+            } else {
+              isUpdatingDataRef.current = false;
+              isInitialRender.current = false;
+            }
+          } else {
+            isUpdatingDataRef.current = false;
+          }
+        } catch (error) {
+          console.error("Error setting chart data:", error);
+          isUpdatingDataRef.current = false;
+        }
+      });
+    } catch (error) {
+      console.error("Error updating chart data:", error);
+      isUpdatingDataRef.current = false;
+    }
+  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, isRestoringStateRef, chartKey, processChartData, setupPriceScales, setupInitialScale]);
+
+  return { updateLastCandle, updateChartData, dataUpdateTimeoutRef };
+};

@@ -1,0 +1,157 @@
+import { getIntervalMs } from './timeAndSalesHelpers';
+import { 
+  subscribers, 
+  intervalSums, 
+  switchWebSocketToSymbol,
+  getCurrentActiveSymbol,
+  setCurrentActiveSymbol,
+  getGlobalWebSocket,
+  setGlobalWebSocket,
+  closeGlobalWebSocket
+} from './timeAndSalesWebSocket';
+
+const fetchTimeAndSalesFromKline = async (symbol, interval) => {
+  try {
+    const url = `https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=1`;
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      return { buySum: 0, sellSum: 0 };
+    }
+
+    const klineData = await response.json();
+
+    if (!Array.isArray(klineData) || klineData.length === 0) {
+      return { buySum: 0, sellSum: 0 };
+    }
+
+    const kline = klineData[0];
+    
+    if (!Array.isArray(kline) || kline.length < 11) {
+      return { buySum: 0, sellSum: 0 };
+    }
+
+    const quoteVolume = parseFloat(kline[7]) || 0;
+    const takerBuyQuoteVolume = parseFloat(kline[10]) || 0;
+    
+    const buySum = takerBuyQuoteVolume;
+    const sellSum = quoteVolume - takerBuyQuoteVolume;
+
+    return { buySum, sellSum };
+  } catch (err) {
+    return { buySum: 0, sellSum: 0 };
+  }
+};
+
+
+export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) => {
+  if (!subscribers.has(symbol)) {
+    subscribers.set(symbol, new Set());
+  }
+
+  const subscriberId = `${symbol}-${interval}-${Date.now()}-${Math.random()}`;
+  const subscriber = { interval, lastCandle, callback, id: subscriberId };
+
+  const symbolSubscribers = subscribers.get(symbol);
+  symbolSubscribers.add(subscriber);
+
+  const key = `${symbol}-${interval}`;
+
+  const loadHistoricalData = async () => {
+    const historical = await fetchTimeAndSalesFromKline(symbol, interval);
+    
+    if (historical) {
+      intervalSums.set(key, historical);
+      
+      if (subscriber.callback && getCurrentActiveSymbol() === symbol) {
+        subscriber.callback(historical);
+      }
+    }
+  };
+
+  const needToSwitch = getCurrentActiveSymbol() !== symbol || !getGlobalWebSocket() || getGlobalWebSocket().readyState !== WebSocket.OPEN;
+
+  if (needToSwitch) {
+    const previousSymbol = getCurrentActiveSymbol();
+    if (previousSymbol && previousSymbol !== symbol) {
+      const previousSymbolSubscribers = subscribers.get(previousSymbol);
+      if (previousSymbolSubscribers) {
+        previousSymbolSubscribers.forEach((prevSub) => {
+          const prevKey = `${previousSymbol}-${prevSub.interval}`;
+          intervalSums.delete(prevKey);
+        });
+      }
+    }
+    switchWebSocketToSymbol(symbol);
+    loadHistoricalData();
+  } else {
+    intervalSums.delete(key);
+    loadHistoricalData();
+  }
+
+  return () => {
+    const subs = subscribers.get(symbol);
+    if (subs) {
+      for (const sub of subs) {
+        if (sub.id === subscriberId) {
+          subs.delete(sub);
+          break;
+        }
+      }
+
+      intervalSums.delete(key);
+
+      if (subs.size === 0) {
+        subscribers.delete(symbol);
+
+        const hasAnySubscribers = Array.from(subscribers.values()).some(set => set.size > 0);
+
+        if (!hasAnySubscribers) {
+          closeGlobalWebSocket();
+          setCurrentActiveSymbol(null);
+        } else if (getCurrentActiveSymbol() === symbol) {
+          const firstSymbolWithSubscribers = Array.from(subscribers.entries()).find(([, set]) => set.size > 0);
+          if (firstSymbolWithSubscribers) {
+            switchWebSocketToSymbol(firstSymbolWithSubscribers[0]);
+          }
+        }
+      }
+    }
+  };
+};
+
+export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
+  const symbolSubscribers = subscribers.get(symbol);
+  if (!symbolSubscribers) {
+    return;
+  }
+
+  symbolSubscribers.forEach((subscriber) => {
+    if (subscriber.interval === interval) {
+      const oldCandle = subscriber.lastCandle;
+      subscriber.lastCandle = lastCandle;
+      
+      const key = `${symbol}-${interval}`;
+      
+      const oldCandleTime = oldCandle?.date?.getTime();
+      const newCandleTime = lastCandle?.date?.getTime();
+      
+      if (oldCandleTime && newCandleTime && newCandleTime !== oldCandleTime) {
+        intervalSums.delete(key);
+      }
+      
+      fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
+        intervalSums.set(key, sums);
+        
+        if (subscriber.callback) {
+          subscriber.callback(sums);
+        }
+      });
+    }
+  });
+};
+
