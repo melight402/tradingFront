@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 
 export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) => {
   const [popupState, setPopupState] = useState({
-    visible: false,
     open: 0,
     high: 0,
     low: 0,
@@ -10,37 +9,52 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
   });
   
   const crosshairHandlerRef = useRef(null);
+  const lastStateRef = useRef({ open: 0, high: 0, low: 0, close: 0 });
+
+  const updateStateIfChanged = (newState) => {
+    if (
+      lastStateRef.current.open !== newState.open ||
+      lastStateRef.current.high !== newState.high ||
+      lastStateRef.current.low !== newState.low ||
+      lastStateRef.current.close !== newState.close
+    ) {
+      lastStateRef.current = newState;
+      setPopupState(newState);
+    }
+  };
 
   useEffect(() => {
     if (!chart.current || !candlestickSeries.current) return;
 
     const handleCrosshairMove = (param) => {
       try {
+        const emptyState = { open: 0, high: 0, low: 0, close: 0 };
+
         if (drawingToolRef?.current) {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
 
         if (!chart.current || !candlestickSeries.current) {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
 
         if (!param || !param.seriesPrices || !(param.seriesPrices instanceof Map)) {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
 
         const currentSeries = candlestickSeries.current;
         if (!currentSeries) {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
 
         const candlestickData = param.seriesPrices.get(currentSeries);
         
         if (!candlestickData || typeof candlestickData !== 'object') {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
 
@@ -48,7 +62,7 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
                                 'low' in candlestickData || 'close' in candlestickData;
         
         if (!hasCandleFields) {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
 
@@ -58,19 +72,20 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
         const close = typeof candlestickData.close === 'number' ? candlestickData.close : null;
 
         if (open === null && high === null && low === null && close === null) {
-          setPopupState(prev => ({ ...prev, visible: false }));
+          updateStateIfChanged(emptyState);
           return;
         }
         
-        setPopupState({
-          visible: true,
+        const newState = {
           open: open || 0,
           high: high || 0,
           low: low || 0,
           close: close || 0,
-        });
+        };
+        
+        updateStateIfChanged(newState);
       } catch {
-        setPopupState(prev => ({ ...prev, visible: false }));
+        updateStateIfChanged({ open: 0, high: 0, low: 0, close: 0 });
       }
     };
 

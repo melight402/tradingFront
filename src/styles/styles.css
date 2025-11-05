@@ -363,56 +363,61 @@ html, body {
 }
 
 
-.candle-popup {
+.candle-info-panel {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 8px;
+  left: 8px;
   background-color: #2a2e39;
   border: 1px solid #383E55;
   border-radius: 4px;
-  padding: 0;
+  padding: 6px 10px;
   color: #9EAAC7;
-  font-size: 16px;
+  font-size: 13px;
   font-family: monospace;
   pointer-events: none;
   z-index: 10000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
 }
 
-.candle-popup > div {
-  padding: 4px 12px;
+.candle-info-panel.candle-info-panel-visible {
+  opacity: 1;
 }
 
-.candle-popup > div:last-child {
-  padding-bottom: 8px;
+.candle-info-panel > span {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
 }
 
-.candle-popup-high {
-  margin-bottom: 4px;
+.candle-info-panel-high {
   font-weight: bold;
   color: #1a8d48;
 }
 
-.candle-popup-open {
-  margin-bottom: 4px;
+.candle-info-panel-open {
   font-weight: bold;
   color: #FFFFFF;
 }
 
-.candle-popup-close {
+.candle-info-panel-close {
   font-weight: bold;
   color: #f89038;
 }
 
-.candle-popup-low {
-  margin-bottom: 4px;
+.candle-info-panel-low {
   font-weight: bold;
   color: #ef5350;
 }
 
-.candle-popup-value {
+.candle-info-panel-value {
   color: #9EAAC7;
+  margin-left: 4px;
 }
 
 

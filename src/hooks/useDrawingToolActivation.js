@@ -28,7 +28,17 @@ export const useDrawingToolActivation = (chart, candlestickSeries, drawingTool, 
     if (!chart.current || !candlestickSeries.current) return;
 
     if (drawingTool) {
-      setPopupState(prev => ({ ...prev, visible: false }));
+      setPopupState(prev => {
+        if (prev.open === 0 && prev.high === 0 && prev.low === 0 && prev.close === 0) {
+          return prev;
+        }
+        return {
+          open: 0,
+          high: 0,
+          low: 0,
+          close: 0,
+        };
+      });
       try {
         const options = getToolOptions(drawingTool, symbol);
         chart.current.setActiveLineTool(drawingTool, options);
