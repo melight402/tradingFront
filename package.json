@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "React приложение для торговли криптовалютой с графиками в реальном времени и управлением позициями",
   "author": "melight402",
+  "license": "ISC",
   "private": true,
   "type": "module",
   "scripts": {
