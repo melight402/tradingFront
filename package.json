@@ -1,7 +1,9 @@
 {
-  "name": "vite-project",
+  "name": "trading-front",
+  "version": "1.0.0",
+  "description": "React приложение для торговли криптовалютой с графиками в реальном времени и управлением позициями",
+  "author": "melight402",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
