@@ -1,5 +1,6 @@
 import React from "react";
 import ChartSection from "../chart/ChartSection";
+import { useBottomChartsCollapse } from "../../hooks/useBottomChartsCollapse";
 
 export const ChartLayout = ({
   symbol,
@@ -12,6 +13,8 @@ export const ChartLayout = ({
   topChartSecondRowCenter,
   topChartSecondRowRight,
 }) => {
+  const { isCollapsed, toggleCollapse } = useBottomChartsCollapse();
+
   return (
     <div className="app-main-content">
       <div className="app-top-section">
@@ -27,10 +30,11 @@ export const ChartLayout = ({
           secondRowCenter={topChartSecondRowCenter}
           secondRowRight={topChartSecondRowRight}
           chartKey="chart5m"
+          collapseButtonProps={{ isCollapsed, toggleCollapse }}
         />
       </div>
 
-      <div className="app-bottom-section">
+      <div className={`app-bottom-section ${isCollapsed ? 'app-bottom-section-collapsed' : ''}`}>
         <div className="app-chart-wrapper">
           <ChartSection 
             symbol={symbol} 

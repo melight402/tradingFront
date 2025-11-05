@@ -4,12 +4,21 @@ import { createSelectStyle, createLabelStyle } from "../../utils";
 import TimeAndSalesSummary from "./TimeAndSalesSummary";
 import "../../styles/styles.css";
 
-const ChartControls = ({ interval, onIntervalChange, firstRowContent, secondRowCenter, secondRowRight, symbol, lastCandle }) => {
+const ChartControls = ({ interval, onIntervalChange, firstRowContent, secondRowCenter, secondRowRight, symbol, lastCandle, collapseButtonProps }) => {
   const selectStyle = createSelectStyle("150px");
   const labelStyle = createLabelStyle();
 
   return (
     <div className="chart-controls-container">
+      {collapseButtonProps && (
+        <button 
+          className="bottom-charts-collapse-button-header"
+          onClick={collapseButtonProps.toggleCollapse}
+          title={collapseButtonProps.isCollapsed ? "Развернуть графики" : "Схлопнуть графики"}
+        >
+          {collapseButtonProps.isCollapsed ? "▲" : "▼"}
+        </button>
+      )}
       {firstRowContent && (
         <div className="chart-controls-row chart-controls-row-first">
           {firstRowContent}

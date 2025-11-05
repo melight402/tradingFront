@@ -59,7 +59,18 @@ export const openPosition = async (positionData, screenshotBlob) => {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to open position');
+    const errorMessage = error.error || error.details || 'Failed to open position';
+    const binanceError = error.binanceError;
+    
+    if (binanceError && (binanceError.code === -2019 || binanceError.code === '-2019')) {
+      throw new Error('Недостаточно маржи на счете для открытия позиции. Пополните баланс или уменьшите размер позиции.');
+    }
+    
+    if (binanceError?.code) {
+      throw new Error(`Ошибка Binance (код ${binanceError.code}): ${binanceError.message || errorMessage}`);
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return await response.json();
@@ -72,8 +83,18 @@ export const closePosition = async (closeData, screenshotBlob) => {
   
   if (screenshotBlob) {
     formData.append('screenshot', screenshotBlob, 'screenshot.png');
+    console.log('✅ Screenshot blob added to FormData, size:', screenshotBlob.size, 'bytes, type:', screenshotBlob.type);
+    
+    for (const pair of formData.entries()) {
+      if (pair[0] === 'screenshot') {
+        console.log('FormData entry "screenshot":', pair[0], 'size:', pair[1].size || 'unknown');
+      }
+    }
+  } else {
+    console.error('❌ No screenshot blob provided to closePosition');
   }
 
+  console.log('Sending close position request to:', `${API_BASE_URL}/positions/trading/close`);
   const response = await fetch(`${API_BASE_URL}/positions/trading/close`, {
     method: 'POST',
     body: formData,
@@ -81,9 +102,17 @@ export const closePosition = async (closeData, screenshotBlob) => {
 
   if (!response.ok) {
     const error = await response.json();
+    console.error('❌ Close position request failed:', error);
     throw new Error(error.error || 'Failed to close position');
   }
 
-  return await response.json();
+  const result = await response.json();
+  console.log('✅ Position closed successfully. Response:', result);
+  if (result.data?.closeScreenshotPath) {
+    console.log('✅ Close screenshot path in response:', result.data.closeScreenshotPath);
+  } else {
+    console.error('❌ No close screenshot path in response!');
+  }
+  return result;
 };
 

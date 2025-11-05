@@ -40,7 +40,18 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => 
     setIsClosing(true);
 
     try {
-      const screenshotBlob = await takeScreenshot();
+      let screenshotBlob = null;
+      try {
+        screenshotBlob = await takeScreenshot();
+        console.log('Screenshot taken successfully, size:', screenshotBlob?.size);
+      } catch (screenshotError) {
+        console.error('Failed to take screenshot:', screenshotError);
+        const shouldContinue = confirm('Не удалось создать скриншот при закрытии. Продолжить закрытие позиции без скриншота?');
+        if (!shouldContinue) {
+          setIsClosing(false);
+          return false;
+        }
+      }
 
       const closeData = {
         symbol: positionData.symbol,
@@ -51,7 +62,17 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => 
         takeProfitPrice: toolData.takeProfitPrice,
       };
       
-      await closePosition(closeData, screenshotBlob);
+      console.log('Closing position with data:', closeData);
+      console.log('Screenshot blob:', screenshotBlob ? `Present, size: ${screenshotBlob.size}` : 'Missing');
+      
+      const result = await closePosition(closeData, screenshotBlob);
+      
+      console.log('Close position result:', result);
+      if (result.data?.closeScreenshotPath) {
+        console.log('Close screenshot path saved:', result.data.closeScreenshotPath);
+      } else {
+        console.warn('No close screenshot path in response');
+      }
 
       localStorage.removeItem(`lastOpenPosition_${symbol}`);
 

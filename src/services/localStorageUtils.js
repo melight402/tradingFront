@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   ORDER_TYPE: 'tradingFront_orderType',
   TVX_VALUE: 'tradingFront_tvxValue',
   TAKE_PROFIT: 'tradingFront_takeProfit',
+  BOTTOM_CHARTS_COLLAPSED: 'tradingFront_bottomChartsCollapsed',
 };
 
 
@@ -159,6 +160,27 @@ export const loadTakeProfit = (defaultValue = "3") => {
     return localStorage.getItem(STORAGE_KEYS.TAKE_PROFIT) || defaultValue;
   } catch (error) {
     console.warn('Failed to load takeProfit from localStorage:', error);
+    return defaultValue;
+  }
+};
+
+export const saveBottomChartsCollapsed = (collapsed) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.BOTTOM_CHARTS_COLLAPSED, JSON.stringify(collapsed));
+  } catch (error) {
+    console.warn('Failed to save bottom charts collapsed state to localStorage:', error);
+  }
+};
+
+export const loadBottomChartsCollapsed = (defaultValue = false) => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.BOTTOM_CHARTS_COLLAPSED);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return defaultValue;
+  } catch (error) {
+    console.warn('Failed to load bottom charts collapsed state from localStorage:', error);
     return defaultValue;
   }
 };

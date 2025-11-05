@@ -30,7 +30,7 @@ export const usePositionExportFlow = (
     purchasePrice,
     manualStopLoss
   );
-  const { openPositionWithData } = usePositionOpening();
+  const { openPositionWithData, confirmationModal } = usePositionOpening();
   const { validateQuantity } = useQuantityValidation();
 
   const handleExport = async () => {
@@ -81,6 +81,6 @@ export const usePositionExportFlow = (
     }
   };
 
-  return { handleExport, isExporting };
+  return { handleExport, isExporting, confirmationModal };
 };
 

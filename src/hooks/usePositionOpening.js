@@ -2,8 +2,13 @@ import { takeScreenshot } from "../utils/screenshot";
 import { openPosition } from "../utils/api";
 import { calculatePositionQuantity } from "../utils/positionCalculations";
 import { roundQuantityToStepSize } from "../utils/tickSizeCache";
+import { useUnfavorablePriceCheck } from "./useUnfavorablePriceCheck";
+import { useOrderConfirmationModal } from "./useOrderConfirmationModal";
 
 export const usePositionOpening = () => {
+  const { checkUnfavorablePrice } = useUnfavorablePriceCheck();
+  const { isOpen, confirmationData, showConfirmation, handleConfirm, handleCancel } = useOrderConfirmationModal();
+
   const openPositionWithData = async (
     finalEntryPrice,
     finalStopLoss,
@@ -43,10 +48,30 @@ export const usePositionOpening = () => {
 
     const finalTakeProfitPrice = finalTakeProfit;
 
-    const screenshotBlob = await takeScreenshot();
-
     const positionSide = finalDirection === "Long" ? "LONG" : "SHORT";
     const side = finalDirection === "Long" ? "BUY" : "SELL";
+
+    const priceCheck = checkUnfavorablePrice(
+      orderType || "MARKET",
+      side,
+      finalEntryPrice,
+      stopPrice,
+      symbol
+    );
+
+    if (priceCheck.isUnfavorable) {
+      const confirmed = await showConfirmation({
+        reason: priceCheck.reason,
+        orderPrice: priceCheck.orderPrice,
+        marketPrice: priceCheck.marketPrice
+      });
+
+      if (!confirmed) {
+        return false;
+      }
+    }
+
+    const screenshotBlob = await takeScreenshot();
 
     const positionUsdt = Math.round((finalEntryPrice * roundedQuantity) * 100) / 100;
 
@@ -67,13 +92,24 @@ export const usePositionOpening = () => {
       risk: riskValue,
     };
     
-    await openPosition(positionData, screenshotBlob);
-
-    localStorage.setItem(`lastOpenPosition_${symbol}`, JSON.stringify(positionData));
-
-    return true;
+    try {
+      await openPosition(positionData, screenshotBlob);
+      localStorage.setItem(`lastOpenPosition_${symbol}`, JSON.stringify(positionData));
+      return true;
+    } catch (error) {
+      alert(`Ошибка при открытии позиции: ${error.message}`);
+      return false;
+    }
   };
 
-  return { openPositionWithData };
+  return { 
+    openPositionWithData,
+    confirmationModal: {
+      isOpen,
+      confirmationData,
+      handleConfirm,
+      handleCancel
+    }
+  };
 };
 

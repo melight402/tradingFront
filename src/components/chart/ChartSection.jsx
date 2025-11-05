@@ -4,7 +4,7 @@ import { PriceChart } from "./PriceChart";
 import { useChartData } from "../../contexts/ChartDataContext";
 import "../../styles/styles.css";
 
-const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onChartReady = null, onDrawingToolDeactivate = null, firstRowContent = null, secondRowCenter = null, secondRowRight = null, volumeAreaHeight = 0.07, limit = 500, chartKey = "chart1h" }) => {
+const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onChartReady = null, onDrawingToolDeactivate = null, firstRowContent = null, secondRowCenter = null, secondRowRight = null, volumeAreaHeight = 0.07, limit = 500, chartKey = "chart1h", collapseButtonProps = null }) => {
   const [interval, setInterval] = useState(initialInterval);
   const containerRef = React.useRef(null);
   const controlsRef = React.useRef(null);
@@ -65,6 +65,7 @@ const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onCh
           secondRowRight={secondRowRight}
           symbol={symbol}
           lastCandle={lastCandle}
+          collapseButtonProps={collapseButtonProps}
         />
       </div>
       <div className="chart-section-chart-wrapper">

@@ -448,11 +448,56 @@ html, body {
   flex-direction: column;
 }
 
+.app-bottom-section-wrapper {
+  position: relative;
+  flex: 2;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .app-bottom-section {
   display: flex;
   gap: 0;
   flex: 2;
   min-height: 0;
+  transition: flex 0.3s ease;
+}
+
+.app-bottom-section-collapsed {
+  flex: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app-bottom-section-collapsed .app-chart-wrapper {
+  display: none;
+}
+
+.bottom-charts-collapse-button-header {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1000;
+  background-color: #2a2e39;
+  border: 1px solid #383E55;
+  border-radius: 4px;
+  color: #9EAAC7;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 1;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.bottom-charts-collapse-button-header:hover {
+  background-color: #383E55;
+  border-color: #4a5065;
+  color: #ffffff;
+}
+
+.bottom-charts-collapse-button-header:active {
+  background-color: #4a5065;
 }
 
 .app-chart-wrapper {
@@ -503,6 +548,7 @@ html, body {
   flex-direction: column;
   gap: 0;
   width: 100%;
+  position: relative;
 }
 
 .chart-controls-row {
@@ -900,4 +946,123 @@ html, body {
   flex-wrap: wrap;
   margin-left: auto;
   flex: 0 0 auto;
+}
+
+.order-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.order-confirmation-modal {
+  background-color: #2a2e39;
+  border: 1px solid #383E55;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.order-confirmation-title {
+  color: #ffa726;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.order-confirmation-warning {
+  color: #ef5350;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: rgba(239, 83, 80, 0.1);
+  border-left: 3px solid #ef5350;
+  border-radius: 4px;
+}
+
+.order-confirmation-details {
+  background-color: #1f2329;
+  border: 1px solid #383E55;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.order-confirmation-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #9EAAC7;
+  font-size: 14px;
+}
+
+.order-confirmation-price-row:last-child {
+  margin-bottom: 0;
+}
+
+.order-confirmation-price-value {
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: monospace;
+}
+
+.order-confirmation-price-unfavorable {
+  color: #ef5350;
+}
+
+.order-confirmation-message {
+  color: #9EAAC7;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.order-confirmation-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.order-confirmation-button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s;
+}
+
+.order-confirmation-button-cancel {
+  background-color: #383E55;
+  color: #FFFFFF;
+}
+
+.order-confirmation-button-cancel:hover {
+  background-color: #4a5065;
+}
+
+.order-confirmation-button-confirm {
+  background-color: #ef5350;
+  color: #FFFFFF;
+}
+
+.order-confirmation-button-confirm:hover {
+  background-color: #d32f2f;
 }
