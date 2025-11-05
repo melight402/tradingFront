@@ -48,6 +48,8 @@ export const usePositionOpening = () => {
     const positionSide = finalDirection === "Long" ? "LONG" : "SHORT";
     const side = finalDirection === "Long" ? "BUY" : "SELL";
 
+    const positionUsdt = Math.round((finalEntryPrice * roundedQuantity) * 100) / 100;
+
     const positionData = {
       dateTime: new Date().toISOString(),
       positionSide: positionSide,
@@ -57,6 +59,7 @@ export const usePositionOpening = () => {
       price: finalEntryPrice,
       stopPrice: stopPrice || null,
       quantity: roundedQuantity,
+      positionUsdt: positionUsdt,
       stopLossPrice: finalStopLoss,
       takeProfitPrice: finalTakeProfitPrice,
       symbol: symbol,
