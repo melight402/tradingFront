@@ -31,7 +31,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
   
   const { data, loaded, error, setOnLastCandleUpdate } = useChartData(chartKey, symbol, interval, limit);
 
-  const { popupState, closePopup, setPopupState } = useChartPopup(chart, candlestickSeries, loaded, drawingToolRef);
+  const { popupState, setPopupState } = useChartPopup(chart, candlestickSeries, loaded, drawingToolRef);
 
   const { updateLastCandle, updateChartData, dataUpdateTimeoutRef } = useChartDataUpdates(
     chart,
@@ -240,7 +240,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
           Error loading data: {error}
         </div>
       )}
-      <CandlePopup popupState={popupState} onClose={closePopup} />
+      <CandlePopup popupState={popupState} />
     </div>
   );
 };

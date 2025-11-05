@@ -365,6 +365,8 @@ html, body {
 
 .candle-popup {
   position: absolute;
+  top: 0;
+  left: 0;
   background-color: #2a2e39;
   border: 1px solid #383E55;
   border-radius: 4px;
@@ -372,48 +374,13 @@ html, body {
   color: #9EAAC7;
   font-size: 16px;
   font-family: monospace;
-  pointer-events: auto;
+  pointer-events: none;
   z-index: 10000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  transform: translateX(-50%);
   white-space: nowrap;
 }
 
-.candle-popup-header {
-  position: relative;
-  padding: 4px 8px;
-  border-bottom: 1px solid #383E55;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.candle-popup-close-button {
-  background: none;
-  border: none;
-  color: #9EAAC7;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s;
-}
-
-.candle-popup-close-button:hover {
-  color: #FFFFFF;
-}
-
-.candle-popup-close-button:focus {
-  outline: 1px solid #383E55;
-  outline-offset: 2px;
-}
-
-.candle-popup > div:not(.candle-popup-header) {
+.candle-popup > div {
   padding: 4px 12px;
 }
 
