@@ -102,6 +102,8 @@ export const useChartInitialization = (
           minMove: 0.01,
         },
         priceScaleId: "right",
+        priceLineVisible: false,
+        lastValueVisible: false,
       });
 
       const volumeTop = 1 - volumeAreaHeight;
