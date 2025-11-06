@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { loadChartState } from "../services/chartStateStorage";
+import { useChartState } from "../contexts/ChartStateContext";
 
 export const useVolumeScaleSync = (chart, volumeSeries, volumeDataRef, volumeAreaHeight, isRestoringStateRef, candlestickSeries, currentSymbolRef, currentIntervalRef, chartKey) => {
+  const { getChartState } = useChartState();
   const timeRangeChangeHandlerRef = useRef(null);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export const useVolumeScaleSync = (chart, volumeSeries, volumeDataRef, volumeAre
       if (rightPriceScale) {
         const currentOptions = rightPriceScale.options();
         const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
-          ? loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
+          ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
           : null;
         
         const savedScaleMargins = savedState?.priceScale?.scaleMargins;
@@ -88,6 +89,6 @@ export const useVolumeScaleSync = (chart, volumeSeries, volumeDataRef, volumeAre
         }
       }
     };
-  }, [chart, volumeSeries, volumeDataRef, volumeAreaHeight, isRestoringStateRef, candlestickSeries, currentSymbolRef, currentIntervalRef, chartKey]);
+  }, [chart, volumeSeries, volumeDataRef, volumeAreaHeight, isRestoringStateRef, candlestickSeries, currentSymbolRef, currentIntervalRef, chartKey, getChartState]);
 };
 
