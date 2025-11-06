@@ -9,6 +9,8 @@ const ATRSlider = ({ value, onChange }) => {
     return initialIndex >= 0 ? initialIndex : 0;
   });
 
+  const [isDragging, setIsDragging] = useState(false);
+
   useEffect(() => {
     const currentIndex = ATR_VALUES.findIndex(v => v === value);
     if (currentIndex >= 0 && currentIndex !== index) {
@@ -20,6 +22,18 @@ const ATRSlider = ({ value, onChange }) => {
     const newIndex = parseInt(e.target.value, 10);
     setIndex(newIndex);
     onChange(ATR_VALUES[newIndex]);
+  };
+
+  const handleMouseDown = () => {
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
   };
 
   const labelStyle = createLabelStyle();
@@ -34,20 +48,47 @@ const ATRSlider = ({ value, onChange }) => {
     backgroundColor: "#383E55",
   };
 
+  const tooltipStyle = {
+    position: "absolute",
+    bottom: "100%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    marginBottom: "8px",
+    backgroundColor: "#2a2e39",
+    color: "#FFFFFF",
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "12px",
+    whiteSpace: "nowrap",
+    pointerEvents: "none",
+    border: "1px solid #383E55",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+    zIndex: 1000,
+    opacity: isDragging ? 1 : 0,
+    transition: "opacity 0.2s",
+  };
+
   return (
-    <div style={containerStyle}>
+    <div style={{ ...containerStyle, position: "relative" }}>
       <label style={labelStyle}>ATR:</label>
-      <input
-        type="range"
-        min="0"
-        max={ATR_VALUES.length - 1}
-        value={index}
-        onChange={handleChange}
-        style={sliderStyle}
-      />
-      <span style={{ color: "#FFFFFF", fontSize: "14px", marginLeft: "0px", minWidth: "10px" }}>
-        {ATR_VALUES[index]}
-      </span>
+      <div style={{ position: "relative" }}>
+        <input
+          type="range"
+          min="0"
+          max={ATR_VALUES.length - 1}
+          value={index}
+          onChange={handleChange}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          style={sliderStyle}
+        />
+        {isDragging && (
+          <div style={tooltipStyle}>
+            {ATR_VALUES[index]}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
