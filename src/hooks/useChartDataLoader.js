@@ -4,7 +4,6 @@ import { convertKlineData } from "../utils/klineDataConverter";
 import { subscribeToPriceUpdates } from "../services/priceUpdateService";
 
 export const useChartDataLoader = (
-  chartData,
   setChartData,
   unsubscribeRefs,
   onLastCandleUpdateRefs,
@@ -13,15 +12,11 @@ export const useChartDataLoader = (
   instanceIdRefs
 ) => {
   const loadChartData = useCallback((key, symbol, interval, limit) => {
-    instanceIdRefs.current[key] = Symbol();
+    const instanceId = Symbol();
+    instanceIdRefs.current[key] = instanceId;
     
     const actualLimit = Math.min(limit, 1500);
     const url = `https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${actualLimit}`;
-
-    setChartData(prev => ({
-      ...prev,
-      [key]: { data: null, loaded: false, error: null }
-    }));
 
     currentSymbolRefs.current[key] = symbol;
     currentIntervalRefs.current[key] = interval;
@@ -32,12 +27,42 @@ export const useChartDataLoader = (
     }
     onLastCandleUpdateRefs.current[key] = null;
 
+    setChartData(prev => {
+      const currentData = prev[key];
+      if (currentData && currentData.data && currentData.loaded) {
+        return {
+          ...prev,
+          [key]: { ...currentData, loaded: false, error: null }
+        };
+      }
+      return {
+        ...prev,
+        [key]: { data: null, loaded: false, error: null }
+      };
+    });
+
     fetchWithRetry(url, 3, 1000)
       .then((klineData) => {
+        if (instanceIdRefs.current[key] !== instanceId) {
+          return;
+        }
+
+        if (currentSymbolRefs.current[key] !== symbol || currentIntervalRefs.current[key] !== interval) {
+          return;
+        }
+
         const convertedData = convertKlineData(klineData);
 
         if (convertedData.length === 0) {
           throw new Error('No valid data points after filtering');
+        }
+
+        if (instanceIdRefs.current[key] !== instanceId) {
+          return;
+        }
+
+        if (currentSymbolRefs.current[key] !== symbol || currentIntervalRefs.current[key] !== interval) {
+          return;
         }
 
         setChartData(prev => ({
@@ -46,6 +71,10 @@ export const useChartDataLoader = (
         }));
 
         const setupPriceSubscription = () => {
+          if (instanceIdRefs.current[key] !== instanceId) {
+            return;
+          }
+
           if (currentSymbolRefs.current[key] === symbol && currentIntervalRefs.current[key] === interval) {
             const unsubscribe = subscribeToPriceUpdates(
               symbol,
@@ -74,13 +103,29 @@ export const useChartDataLoader = (
         setTimeout(setupPriceSubscription, 100);
       })
       .catch((err) => {
-        if (err.name !== 'AbortError') {
-          void 0;
+        if (err.name === 'AbortError') {
+          return;
         }
-        setChartData(prev => ({
-          ...prev,
-          [key]: { data: null, loaded: true, error: err.message || 'Failed to load market data' }
-        }));
+
+        if (instanceIdRefs.current[key] !== instanceId) {
+          return;
+        }
+
+        if (currentSymbolRefs.current[key] !== symbol || currentIntervalRefs.current[key] !== interval) {
+          return;
+        }
+
+        setChartData(prev => {
+          const currentData = prev[key];
+          return {
+            ...prev,
+            [key]: { 
+              data: currentData?.data || null, 
+              loaded: true, 
+              error: err.message || 'Failed to load market data' 
+            }
+          };
+        });
       });
   }, [setChartData, unsubscribeRefs, onLastCandleUpdateRefs, currentSymbolRefs, currentIntervalRefs, instanceIdRefs]);
 

@@ -14,7 +14,6 @@ export const ChartDataProvider = ({ children }) => {
   const instanceIdRefs = useRef({});
 
   const { loadChartData } = useChartDataLoader(
-    chartData,
     setChartData,
     unsubscribeRefs,
     onLastCandleUpdateRefs,
@@ -57,13 +56,36 @@ export const useChartData = (key, symbol, interval, limit = 500) => {
   }
 
   const { loadChartData, getChartData, setOnLastCandleUpdate, cleanup } = context;
+  const dataKeyRef = useRef(null);
+  const prevSymbolRef = useRef(symbol);
+  const prevIntervalRef = useRef(interval);
+  const prevKeyRef = useRef(key);
+  const prevLimitRef = useRef(limit);
 
   useEffect(() => {
     const dataKey = `${key}-${symbol}-${interval}`;
-    loadChartData(dataKey, symbol, interval, limit);
+    const shouldReload = 
+      dataKeyRef.current !== dataKey ||
+      prevSymbolRef.current !== symbol ||
+      prevIntervalRef.current !== interval ||
+      prevKeyRef.current !== key ||
+      prevLimitRef.current !== limit;
+
+    if (shouldReload) {
+      dataKeyRef.current = dataKey;
+      prevSymbolRef.current = symbol;
+      prevIntervalRef.current = interval;
+      prevKeyRef.current = key;
+      prevLimitRef.current = limit;
+      
+      loadChartData(dataKey, symbol, interval, limit);
+    }
 
     return () => {
-      cleanup(dataKey);
+      if (dataKeyRef.current === dataKey) {
+        cleanup(dataKey);
+        dataKeyRef.current = null;
+      }
     };
   }, [key, symbol, interval, limit, loadChartData, cleanup]);
 

@@ -19,20 +19,29 @@ export const useChartDataSync = (
   const callbackSymbolRef = useRef(null);
   const callbackIntervalRef = useRef(null);
 
+  const dataRef = useRef(null);
+  const loadedRef = useRef(false);
+
   useEffect(() => {
-    if (!loaded) {
+    dataRef.current = data;
+    loadedRef.current = loaded;
+  }, [data, loaded]);
+
+  useEffect(() => {
+    if (!loadedRef.current) {
       return;
     }
 
-    if (!data || !data.length || !chart.current || !candlestickSeries.current || !volumeSeries.current) {
+    const currentData = dataRef.current;
+    if (!currentData || !Array.isArray(currentData) || currentData.length === 0) {
+      return;
+    }
+
+    if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
       return;
     }
 
     if (currentSymbolRef.current !== symbol || currentIntervalRef.current !== interval) {
-      return;
-    }
-
-    if (data.length < 1) {
       return;
     }
 
@@ -41,20 +50,32 @@ export const useChartDataSync = (
     }
 
     dataUpdateTimeoutRef.current = setTimeout(() => {
-      if (currentSymbolRef.current === symbol && currentIntervalRef.current === interval && 
-          chart.current && candlestickSeries.current && volumeSeries.current && 
-          data && Array.isArray(data) && data.length >= 1) {
-        updateChartData(data);
+      const latestData = dataRef.current;
+      if (!latestData || !Array.isArray(latestData) || latestData.length === 0) {
+        return;
+      }
+
+      if (currentSymbolRef.current !== symbol || currentIntervalRef.current !== interval) {
+        return;
+      }
+
+      if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
+        return;
+      }
+
+      if (loadedRef.current) {
+        updateChartData(latestData);
       }
       
-      if (currentSymbolRef.current === symbol && currentIntervalRef.current === interval) {
-        restoreLineTools(data, loaded, updateChartData);
+      if (currentSymbolRef.current === symbol && currentIntervalRef.current === interval && loadedRef.current) {
+        restoreLineTools(latestData, loadedRef.current, updateChartData);
       }
     }, 0);
 
     return () => {
       if (dataUpdateTimeoutRef.current) {
         clearTimeout(dataUpdateTimeoutRef.current);
+        dataUpdateTimeoutRef.current = null;
       }
     };
   }, [data, loaded, updateChartData, symbol, interval, restoreLineTools, chart, candlestickSeries, volumeSeries, currentSymbolRef, currentIntervalRef, dataUpdateTimeoutRef]);

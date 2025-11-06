@@ -145,7 +145,10 @@ export const useChartDataUpdates = (
             
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
-                if (!chart.current || !candlestickSeries.current) return;
+                if (!chart.current || !candlestickSeries.current) {
+                  isUpdatingDataRef.current = false;
+                  return;
+                }
                 
                 const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
                   ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
@@ -189,10 +192,14 @@ export const useChartDataUpdates = (
                             void 0;
                           }
                         }
+                        isUpdatingDataRef.current = false;
                       });
+                      return;
                     }
                   }
                 }
+                
+                isUpdatingDataRef.current = false;
               });
             });
           } else {
