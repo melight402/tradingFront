@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { createChart, ColorType, CrosshairMode } from "trading-charts-with-tools";
 import { useVolumeScaleSync } from "./useVolumeScaleSync";
-import { useChartState } from "../contexts/ChartStateContext";
 
 export const useChartInitialization = (
   chartContainerRef,
@@ -11,13 +10,8 @@ export const useChartInitialization = (
   volumeDataRef,
   height,
   volumeAreaHeight,
-  onChartReadyRef,
-  currentSymbolRef,
-  currentIntervalRef,
-  chartKey
+  onChartReadyRef
 ) => {
-  const { getChartState } = useChartState();
-  const hasAppliedStateRef = { current: false };
   
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -136,61 +130,6 @@ export const useChartInitialization = (
       if (onChartReadyRef.current) {
         onChartReadyRef.current(chart.current);
       }
-      
-      requestAnimationFrame(() => {
-        if (!chart.current || hasAppliedStateRef.current) return;
-        
-        const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
-          ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
-          : null;
-        
-        if (savedState) {
-          hasAppliedStateRef.current = true;
-          
-          const timeScale = chart.current.timeScale();
-          const priceScale = chart.current.priceScale('right');
-          
-          if (timeScale) {
-            if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
-              timeScale.setVisibleLogicalRange(savedState.logicalRange);
-            } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
-              timeScale.setVisibleRange(savedState.timeRange);
-            }
-          }
-          
-          if (priceScale && savedState.priceScale) {
-            const options = {};
-            if (savedState.priceScale.autoScale !== undefined) {
-              options.autoScale = savedState.priceScale.autoScale;
-            }
-            if (savedState.priceScale.scaleMargins) {
-              options.scaleMargins = savedState.priceScale.scaleMargins;
-            }
-            
-            if (Object.keys(options).length > 0) {
-              priceScale.applyOptions(options);
-            }
-            
-            if (!savedState.priceScale.autoScale && savedState.priceRange && 
-                savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
-              requestAnimationFrame(() => {
-                if (chart.current && priceScale) {
-                  try {
-                    priceScale.setVisibleRange({
-                      minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
-                      maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
-                    });
-                  } catch {
-                    void 0;
-                  }
-                }
-              });
-            }
-          }
-        } else {
-          hasAppliedStateRef.current = true;
-        }
-      });
     };
 
     if (containerWidth === 0) {

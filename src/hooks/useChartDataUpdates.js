@@ -1,6 +1,7 @@
 import { useRef, useCallback } from "react";
 import { useLastCandleUpdate } from "./useLastCandleUpdate";
 import { useChartDataProcessor } from "./useChartDataProcessor";
+import { useChartState } from "../contexts/ChartStateContext";
 import { getLastCandle } from "../services/priceDataStorage";
 
 export const useChartDataUpdates = (
@@ -13,8 +14,11 @@ export const useChartDataUpdates = (
   currentSymbolRef,
   currentIntervalRef,
   isUpdatingDataRef,
-  volumeAreaHeight
+  volumeAreaHeight,
+  chartKey
 ) => {
+  const { getChartState } = useChartState();
+  const hasAppliedStateRef = useRef(false);
   const dataUpdateTimeoutRef = useRef(null);
   const { updateLastCandle } = useLastCandleUpdate(chart, candlestickSeries, volumeSeries, lastCandleTimeRef);
   const { processChartData } = useChartDataProcessor();
@@ -135,9 +139,67 @@ export const useChartDataUpdates = (
             }
           }
 
-          isUpdatingDataRef.current = false;
-          if (isInitialRender.current) {
+          if (isInitialRender.current && !hasAppliedStateRef.current && candlestickData.length > 0) {
+            hasAppliedStateRef.current = true;
             isInitialRender.current = false;
+            
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (!chart.current || !candlestickSeries.current) return;
+                
+                const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
+                  ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
+                  : null;
+                
+                if (savedState) {
+                  const timeScale = chart.current.timeScale();
+                  const priceScale = chart.current.priceScale('right');
+                  
+                  if (timeScale) {
+                    if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
+                      timeScale.setVisibleLogicalRange(savedState.logicalRange);
+                    } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
+                      timeScale.setVisibleRange(savedState.timeRange);
+                    }
+                  }
+                  
+                  if (priceScale && savedState.priceScale) {
+                    const options = {};
+                    if (savedState.priceScale.autoScale !== undefined) {
+                      options.autoScale = savedState.priceScale.autoScale;
+                    }
+                    if (savedState.priceScale.scaleMargins) {
+                      options.scaleMargins = savedState.priceScale.scaleMargins;
+                    }
+                    
+                    if (Object.keys(options).length > 0) {
+                      priceScale.applyOptions(options);
+                    }
+                    
+                    if (!savedState.priceScale.autoScale && savedState.priceRange && 
+                        savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
+                      requestAnimationFrame(() => {
+                        if (chart.current && priceScale) {
+                          try {
+                            priceScale.setVisibleRange({
+                              minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
+                              maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
+                            });
+                          } catch {
+                            void 0;
+                          }
+                        }
+                      });
+                    }
+                  }
+                }
+              });
+            });
+          } else {
+            isUpdatingDataRef.current = false;
+            if (isInitialRender.current) {
+              isInitialRender.current = false;
+            }
           }
         } catch (error) {
           console.error("Error setting chart data:", error);
@@ -148,7 +210,7 @@ export const useChartDataUpdates = (
       console.error("Error updating chart data:", error);
       isUpdatingDataRef.current = false;
     }
-  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, processChartData]);
+  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, chartKey, processChartData, getChartState]);
 
   return { updateLastCandle, updateChartData, dataUpdateTimeoutRef };
 };

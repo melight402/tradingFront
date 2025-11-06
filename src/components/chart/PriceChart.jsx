@@ -43,7 +43,8 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     currentSymbolRef,
     currentIntervalRef,
     isUpdatingDataRef,
-    volumeAreaHeight
+    volumeAreaHeight,
+    chartKey
   );
 
   useEffect(() => {
@@ -130,10 +131,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     volumeDataRef,
     height,
     volumeAreaHeight,
-    onChartReadyRef,
-    currentSymbolRef,
-    currentIntervalRef,
-    chartKey
+    onChartReadyRef
   );
 
   React.useEffect(() => {
