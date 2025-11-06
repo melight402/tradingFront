@@ -15,7 +15,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
     if (timeScale && currentSymbolRef?.current && currentIntervalRef?.current && chartKey) {
       const savedState = loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current);
       
-      if (savedState) {
+      if (savedState && candlestickData && candlestickData.length > 0) {
         requestAnimationFrame(() => {
           if (!chart.current || !timeScale) {
             return;
@@ -100,11 +100,13 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
                   if (chart.current && candlestickSeries.current) {
                     addRightPadding(chart.current, candlestickSeries.current, 100);
                   }
-                  requestAnimationFrame(() => {
-                    if (chart.current) {
-                      isRestoringStateRef.current = false;
-                    }
-                  });
+                  setTimeout(() => {
+                    requestAnimationFrame(() => {
+                      if (chart.current) {
+                        isRestoringStateRef.current = false;
+                      }
+                    });
+                  }, 300);
                 });
               });
             }, 500);

@@ -69,7 +69,7 @@ export const useLineToolRestore = (
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             setTimeout(() => {
-              if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
+              if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current && !isRestoringStateRef.current) {
                 isRestoringStateRef.current = true;
                 const restored = restoreLineToolsToChart(chart.current, symbol, interval);
                 if (restored) {
@@ -78,9 +78,9 @@ export const useLineToolRestore = (
                 }
                 setTimeout(() => {
                   isRestoringStateRef.current = false;
-                }, 1000);
+                }, 500);
               }
-            }, 1500);
+            }, 2000);
           });
         });
       }
