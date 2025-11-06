@@ -4,9 +4,14 @@ import { useChartState } from "../contexts/ChartStateContext";
 
 export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey) => {
   const { getChartState } = useChartState();
+  const hasRestoredStateRef = useRef(false);
   
   const setupInitialScale = useCallback((candlestickData, interval) => {
     if (!chart.current || !candlestickSeries.current) {
+      return;
+    }
+
+    if (hasRestoredStateRef.current) {
       return;
     }
 
@@ -104,6 +109,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
                   requestAnimationFrame(() => {
                     if (chart.current) {
                       isRestoringStateRef.current = false;
+                      hasRestoredStateRef.current = true;
                     }
                   });
                 });
@@ -113,6 +119,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
             const candleCount = interval === '5m' ? 120 : 50;
             setHorizontalScale(chart.current, candleCount, candlestickData, 100);
             isRestoringStateRef.current = false;
+            hasRestoredStateRef.current = true;
           }
         });
         return;
@@ -137,11 +144,13 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
           });
         }
       });
+      hasRestoredStateRef.current = true;
       return;
     }
 
     const candleCount = interval === '5m' ? 120 : 50;
     setHorizontalScale(chart.current, candleCount, candlestickData, 100);
+    hasRestoredStateRef.current = true;
 
     requestAnimationFrame(() => {
       if (!chart.current || !candlestickSeries.current) {

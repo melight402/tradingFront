@@ -160,10 +160,13 @@ export const useChartDataUpdates = (
 
                 if (!isRestoringStateRef.current) {
                   setTimeout(() => {
-                    if (!isRestoringStateRef.current && currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
+                    if (!isRestoringStateRef.current && 
+                        currentSymbolRef.current === currentSymbol && 
+                        currentIntervalRef.current === currentInterval &&
+                        isInitialRender.current) {
                       setupInitialScale(candlestickData, currentInterval);
                     }
-                  }, 100);
+                  }, 200);
                 }
 
                 requestAnimationFrame(() => {
