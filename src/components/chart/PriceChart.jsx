@@ -131,7 +131,6 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     height,
     volumeAreaHeight,
     onChartReadyRef,
-    isRestoringStateRef,
     currentSymbolRef,
     currentIntervalRef,
     chartKey

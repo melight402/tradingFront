@@ -12,7 +12,6 @@ export const useChartInitialization = (
   height,
   volumeAreaHeight,
   onChartReadyRef,
-  isRestoringStateRef,
   currentSymbolRef,
   currentIntervalRef,
   chartKey
