@@ -15,8 +15,7 @@ if (typeof window !== 'undefined') {
   window.__BINANCE_STEP_SIZES = BINANCE_FUTURES_STEP_SIZES;
 }
 
-const App = () => {
-  const tradingState = useTradingState();
+const AppContent = ({ tradingState, chart5mRef, chart1hRef, chart1dRef, handleChart5mReady, handleChart1hReady, handleChart1dReady }) => {
   const {
     symbol,
     drawingTool,
@@ -33,22 +32,6 @@ const App = () => {
     profitLoss,
     setProfitLoss,
   } = tradingState;
-
-  const chart5mRef = useRef(null);
-  const chart1hRef = useRef(null);
-  const chart1dRef = useRef(null);
-
-  const handleChart5mReady = useCallback((chart) => {
-    chart5mRef.current = chart;
-  }, []);
-
-  const handleChart1hReady = useCallback((chart) => {
-    chart1hRef.current = chart;
-  }, []);
-
-  const handleChart1dReady = useCallback((chart) => {
-    chart1dRef.current = chart;
-  }, []);
 
   useLineToolsUpdate(chart5mRef, chart1hRef, chart1dRef, symbol, risk);
 
@@ -90,27 +73,59 @@ const App = () => {
   ), [risk, ratio, symbol, orderType, tradingState.setRisk, setRatio, chart5mRef, chart1hRef, chart1dRef]);
 
   return (
-    <ChartStateProvider>
-      <ChartDataProvider>
-        <div className="app-container">
-        <ChartLayout
-          symbol={symbol}
-          drawingTool={drawingTool}
-          setDrawingTool={setDrawingTool}
-          handleChart5mReady={handleChart5mReady}
-          handleChart1hReady={handleChart1hReady}
-          handleChart1dReady={handleChart1dReady}
-          topChartFirstRow={topChartFirstRow}
-          topChartSecondRowCenter={null}
-          topChartSecondRowRight={topChartSecondRowRight}
-        />
+    <ChartDataProvider>
+      <div className="app-container">
+      <ChartLayout
+        symbol={symbol}
+        drawingTool={drawingTool}
+        setDrawingTool={setDrawingTool}
+        handleChart5mReady={handleChart5mReady}
+        handleChart1hReady={handleChart1hReady}
+        handleChart1dReady={handleChart1dReady}
+        topChartFirstRow={topChartFirstRow}
+        topChartSecondRowCenter={null}
+        topChartSecondRowRight={topChartSecondRowRight}
+      />
 
-        <SymbolsSidebar 
-          selectedSymbol={symbol}
-          onSymbolSelect={tradingState.setSymbol}
-        />
-        </div>
-      </ChartDataProvider>
+      <SymbolsSidebar 
+        selectedSymbol={symbol}
+        onSymbolSelect={tradingState.setSymbol}
+      />
+      </div>
+    </ChartDataProvider>
+  );
+};
+
+const App = () => {
+  const tradingState = useTradingState();
+
+  const chart5mRef = useRef(null);
+  const chart1hRef = useRef(null);
+  const chart1dRef = useRef(null);
+
+  const handleChart5mReady = useCallback((chart) => {
+    chart5mRef.current = chart;
+  }, []);
+
+  const handleChart1hReady = useCallback((chart) => {
+    chart1hRef.current = chart;
+  }, []);
+
+  const handleChart1dReady = useCallback((chart) => {
+    chart1dRef.current = chart;
+  }, []);
+
+  return (
+    <ChartStateProvider>
+      <AppContent
+        tradingState={tradingState}
+        chart5mRef={chart5mRef}
+        chart1hRef={chart1hRef}
+        chart1dRef={chart1dRef}
+        handleChart5mReady={handleChart5mReady}
+        handleChart1hReady={handleChart1hReady}
+        handleChart1dReady={handleChart1dReady}
+      />
     </ChartStateProvider>
   );
 };
