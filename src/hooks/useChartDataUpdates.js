@@ -159,7 +159,11 @@ export const useChartDataUpdates = (
                 }
 
                 if (!isRestoringStateRef.current) {
-                  setupInitialScale(candlestickData, currentInterval);
+                  setTimeout(() => {
+                    if (!isRestoringStateRef.current && currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
+                      setupInitialScale(candlestickData, currentInterval);
+                    }
+                  }, 100);
                 }
 
                 requestAnimationFrame(() => {
