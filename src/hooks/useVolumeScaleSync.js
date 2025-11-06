@@ -45,14 +45,24 @@ export const useVolumeScaleSync = (chart, volumeSeries, volumeDataRef, volumeAre
         const savedScaleMargins = savedState?.priceScale?.scaleMargins;
         const savedAutoScale = savedState?.priceScale?.autoScale;
         
-        rightPriceScale.applyOptions({
-          visible: true,
-          scaleMargins: savedScaleMargins || {
-            top: 0.1,
-            bottom: volumeAreaHeight,
-          },
-          autoScale: savedAutoScale !== undefined ? savedAutoScale : (currentOptions?.autoScale ?? true),
-        });
+        const needsUpdate = 
+          !currentOptions ||
+          (savedScaleMargins && (
+            currentOptions.scaleMargins?.top !== savedScaleMargins.top ||
+            currentOptions.scaleMargins?.bottom !== savedScaleMargins.bottom
+          )) ||
+          (savedAutoScale !== undefined && currentOptions.autoScale !== savedAutoScale);
+        
+        if (needsUpdate) {
+          rightPriceScale.applyOptions({
+            visible: true,
+            scaleMargins: savedScaleMargins || {
+              top: 0.1,
+              bottom: volumeAreaHeight,
+            },
+            autoScale: savedAutoScale !== undefined ? savedAutoScale : (currentOptions?.autoScale ?? true),
+          });
+        }
       }
     };
 

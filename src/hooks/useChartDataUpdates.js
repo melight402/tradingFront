@@ -73,7 +73,7 @@ export const useChartDataUpdates = (
               },
             });
           
-          if (isInitialRender.current && !isRestoringStateRef.current) {
+          if (isInitialRender.current && !isRestoringStateRef.current && candlestickData.length > 0) {
             setupPriceScales();
           }
 
@@ -142,7 +142,7 @@ export const useChartDataUpdates = (
             }
           }
 
-          if (isInitialRender.current) {
+          if (isInitialRender.current && !isRestoringStateRef.current) {
             const timeScale = chart.current?.timeScale();
             if (timeScale) {
               requestAnimationFrame(() => {
@@ -158,7 +158,9 @@ export const useChartDataUpdates = (
                   return;
                 }
 
-                setupInitialScale(candlestickData, currentInterval);
+                if (!isRestoringStateRef.current) {
+                  setupInitialScale(candlestickData, currentInterval);
+                }
 
                 requestAnimationFrame(() => {
                   requestAnimationFrame(() => {
