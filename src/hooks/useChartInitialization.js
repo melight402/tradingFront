@@ -239,5 +239,5 @@ export const useChartInitialization = (
     };
   }, [volumeAreaHeight, height, chartContainerRef, chart, candlestickSeries, volumeSeries, onChartReadyRef]);
 
-  useVolumeScaleSync(chart, volumeSeries, volumeDataRef, volumeAreaHeight, isRestoringStateRef, candlestickSeries, currentSymbolRef, currentIntervalRef, chartKey, chartContainerRef);
+  useVolumeScaleSync(chart, volumeSeries, volumeDataRef, volumeAreaHeight);
 };
