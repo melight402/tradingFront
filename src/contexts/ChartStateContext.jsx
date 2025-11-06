@@ -7,6 +7,7 @@ const ChartStateContext = createContext(null);
 export const ChartStateProvider = ({ children }) => {
   const [chartStates, setChartStates] = useState({});
   const [lineToolsStates, setLineToolsStates] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
   const isInitializedRef = useRef(false);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export const ChartStateProvider = ({ children }) => {
     setChartStates(loadedChartStates);
     setLineToolsStates(loadedLineToolsStates);
     isInitializedRef.current = true;
+    setIsLoaded(true);
   }, []);
 
   const getChartState = (chartKey, symbol, interval) => {
@@ -107,7 +109,7 @@ export const ChartStateProvider = ({ children }) => {
     setChartState,
     getLineTools,
     setLineTools,
-    isInitialized: isInitializedRef.current,
+    isLoaded,
   };
 
   return <ChartStateContext.Provider value={value}>{children}</ChartStateContext.Provider>;

@@ -29,7 +29,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
   const isUpdatingDataRef = useRef(false);
   
   const { data, loaded, error, setOnLastCandleUpdate } = useChartData(chartKey, symbol, interval, limit);
-  const { setChartState, setLineTools } = useChartState();
+  const { setChartState, setLineTools, isLoaded: stateLoaded } = useChartState();
 
   const { popupState, setPopupState } = useChartPopup(chart, candlestickSeries, loaded, drawingToolRef);
 
@@ -230,6 +230,22 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
       }
     }
   };
+
+  if (!stateLoaded) {
+    return (
+      <div
+        className="chart-container"
+        style={{
+          height: height,
+          minHeight: height,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#9EAAC7' }}>
+          Загрузка состояния...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
