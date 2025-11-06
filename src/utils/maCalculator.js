@@ -11,8 +11,22 @@ export const calculateMA = (data, period) => {
       sum += data[j].close;
     }
     const ma = sum / period;
+    
+    let time;
+    if (data[i].time) {
+      time = data[i].time;
+    } else if (data[i].date && data[i].date instanceof Date) {
+      time = data[i].date.getTime() / 1000;
+    } else {
+      continue;
+    }
+    
+    if (!isFinite(time) || isNaN(time) || time <= 0) {
+      continue;
+    }
+    
     maData.push({
-      time: data[i].time,
+      time: time,
       value: ma
     });
   }
