@@ -38,10 +38,10 @@ export const useSymbolChangeHandler = (
       
       if (chart.current && candlestickSeries.current) {
         try {
-          if (oldSymbol) {
+          if (oldSymbol && oldInterval) {
             const exported = chart.current.exportLineTools();
             if (exported && exported.trim() !== '' && exported !== '[]') {
-              persistLineToolsFromChart(chart.current, oldSymbol);
+              persistLineToolsFromChart(chart.current, oldSymbol, oldInterval);
             }
           }
         } catch {

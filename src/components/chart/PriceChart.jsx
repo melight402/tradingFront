@@ -176,7 +176,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
   const handleContainerContextMenu = (e) => {
       e.preventDefault();
     if (chart.current && currentSymbolRef.current && currentIntervalRef.current) {
-      persistLineToolsFromChart(chart.current, currentSymbolRef.current);
+      persistLineToolsFromChart(chart.current, currentSymbolRef.current, currentIntervalRef.current);
       
       try {
         const timeScale = chart.current.timeScale();

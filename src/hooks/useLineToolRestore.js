@@ -16,7 +16,8 @@ export const useLineToolRestore = (
   pendingSymbolRef,
   pendingIntervalRef,
   lineToolsRestoredRef,
-  lineToolsModifiedRef
+  lineToolsModifiedRef,
+  isRestoringStateRef
 ) => {
   const restoreLineTools = useCallback((data, loaded, updateChartData) => {
     if (!loaded || !data || !data.length || !chart.current || !candlestickSeries.current || !volumeSeries.current) {
@@ -47,11 +48,15 @@ export const useLineToolRestore = (
             requestAnimationFrame(() => {
               setTimeout(() => {
                 if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
-                  const restored = restoreLineToolsToChart(chart.current, targetSymbol);
+                  isRestoringStateRef.current = true;
+                  const restored = restoreLineToolsToChart(chart.current, targetSymbol, targetInterval);
                   if (restored) {
                     lineToolsRestoredRef.current = true;
                     lineToolsModifiedRef.current = true;
                   }
+                  setTimeout(() => {
+                    isRestoringStateRef.current = false;
+                  }, 500);
                 }
                 shouldLoadLineToolsAfterDataUpdate.current = false;
                 pendingSymbolRef.current = null;
@@ -65,18 +70,22 @@ export const useLineToolRestore = (
           requestAnimationFrame(() => {
             setTimeout(() => {
               if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
-                const restored = restoreLineToolsToChart(chart.current, symbol);
+                isRestoringStateRef.current = true;
+                const restored = restoreLineToolsToChart(chart.current, symbol, interval);
                 if (restored) {
                   lineToolsRestoredRef.current = true;
                   lineToolsModifiedRef.current = true;
                 }
+                setTimeout(() => {
+                  isRestoringStateRef.current = false;
+                }, 1000);
               }
-            }, 1200);
+            }, 1500);
           });
         });
       }
     }, 0);
-  }, [chart, candlestickSeries, volumeSeries, symbol, interval, currentSymbolRef, currentIntervalRef, prevSymbolRef, prevIntervalRef, isInitialRender, shouldLoadLineToolsAfterDataUpdate, pendingSymbolRef, pendingIntervalRef, lineToolsRestoredRef, lineToolsModifiedRef]);
+  }, [chart, candlestickSeries, volumeSeries, symbol, interval, currentSymbolRef, currentIntervalRef, prevSymbolRef, prevIntervalRef, isInitialRender, shouldLoadLineToolsAfterDataUpdate, pendingSymbolRef, pendingIntervalRef, lineToolsRestoredRef, lineToolsModifiedRef, isRestoringStateRef]);
 
   return { restoreLineTools };
 };

@@ -1,26 +1,28 @@
 const LINE_TOOLS_STORAGE_PREFIX = 'tradingFront_lineTools_';
 
 
-const getLineToolsStorageKey = (symbol) => {
-  return `${LINE_TOOLS_STORAGE_PREFIX}${symbol}`;
+const getLineToolsStorageKey = (symbol, interval) => {
+  return `${LINE_TOOLS_STORAGE_PREFIX}${symbol}_${interval}`;
 };
 
 
-export const saveLineToolsToStorage = (symbol, lineToolsJson) => {
+export const saveLineToolsToStorage = (symbol, interval, lineToolsJson) => {
   try {
-    const key = getLineToolsStorageKey(symbol);
+    const key = getLineToolsStorageKey(symbol, interval);
     if (lineToolsJson && lineToolsJson.trim() !== '' && lineToolsJson !== '[]') {
       localStorage.setItem(key, lineToolsJson);
+    } else {
+      localStorage.removeItem(key);
     }
   } catch (error) {
-    console.warn('Failed to save line tools to localStorage:', error);
+    void 0;
   }
 };
 
 
-export const loadLineToolsFromStorage = (symbol) => {
+export const loadLineToolsFromStorage = (symbol, interval) => {
   try {
-    const key = getLineToolsStorageKey(symbol);
+    const key = getLineToolsStorageKey(symbol, interval);
     const saved = localStorage.getItem(key);
     if (saved && saved.trim() !== '' && saved !== '[]') {
       JSON.parse(saved);
@@ -28,18 +30,18 @@ export const loadLineToolsFromStorage = (symbol) => {
     }
     return null;
   } catch (error) {
-    console.warn('Failed to load line tools from localStorage:', error);
+    void 0;
     return null;
   }
 };
 
 
-export const removeLineToolsFromStorage = (symbol) => {
+export const removeLineToolsFromStorage = (symbol, interval) => {
   try {
-    const key = getLineToolsStorageKey(symbol);
+    const key = getLineToolsStorageKey(symbol, interval);
     localStorage.removeItem(key);
   } catch (error) {
-    console.warn('Failed to remove line tools from localStorage:', error);
+    void 0;
   }
 };
 
@@ -88,28 +90,31 @@ export const importLineToolsToChart = (chart, lineToolsJson) => {
   
   try {
     JSON.parse(lineToolsJson);
-    chart.removeAllLineTools();
+    const existingTools = chart.exportLineTools();
+    if (existingTools && existingTools.trim() !== '' && existingTools !== '[]') {
+      chart.removeAllLineTools();
+    }
     chart.importLineTools(lineToolsJson);
     return true;
   } catch (error) {
-    console.warn('Failed to import line tools to chart:', error);
+    void 0;
     return false;
   }
 };
 
 
-export const persistLineToolsFromChart = (chart, symbol) => {
-  if (!chart || !symbol) return;
+export const persistLineToolsFromChart = (chart, symbol, interval) => {
+  if (!chart || !symbol || !interval) return;
   
   const exported = exportLineToolsFromChart(chart);
-  saveLineToolsToStorage(symbol, exported);
+  saveLineToolsToStorage(symbol, interval, exported);
 };
 
 
-export const restoreLineToolsToChart = (chart, symbol) => {
-  if (!chart || !symbol) return false;
+export const restoreLineToolsToChart = (chart, symbol, interval) => {
+  if (!chart || !symbol || !interval) return false;
   
-  const saved = loadLineToolsFromStorage(symbol);
+  const saved = loadLineToolsFromStorage(symbol, interval);
   if (saved) {
     return importLineToolsToChart(chart, saved);
   }
