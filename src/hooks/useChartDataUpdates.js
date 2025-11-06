@@ -81,13 +81,6 @@ export const useChartDataUpdates = (
                 precision: Math.max(0, Math.min(8, priceFormat.precision)),
                 minMove: Math.max(0.0000001, Math.min(1, priceFormat.minMove)),
               },
-              priceLineVisible: false,
-              lastValueVisible: false,
-            });
-          } else {
-            candlestickSeries.current.applyOptions({
-              priceLineVisible: false,
-              lastValueVisible: false,
             });
           }
 
