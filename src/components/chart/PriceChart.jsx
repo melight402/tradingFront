@@ -8,7 +8,6 @@ import { useChartDataUpdates } from "../../hooks/useChartDataUpdates";
 import { useChartLineTools } from "../../hooks/useChartLineTools";
 import { useChartDataSync } from "../../hooks/useChartDataSync";
 import { useChartStateAutoSave } from "../../hooks/useChartStateAutoSave";
-import { addRightPadding } from "../../utils/chartHelpers";
 import CandlePopup from "./CandlePopup";
 import "../../styles/styles.css";
 
@@ -114,86 +113,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     updateLastCandle
   );
 
-  useChartStateAutoSave(
-    chart,
-    candlestickSeries,
-    currentSymbolRef,
-    currentIntervalRef,
-    isRestoringStateRef,
-    chartKey
-  );
-
-  useEffect(() => {
-    if (!chart.current || !candlestickSeries.current || !loaded) return;
-    if (isRestoringStateRef.current) return;
-    if (isInitialRender.current) return;
-    
-    const chartInstance = chart.current;
-    const timeScale = chartInstance.timeScale();
-    if (!timeScale) return;
-    
-    let paddingTimeout;
-    let isUserInteraction = false;
-    let lastInteractionTime = 0;
-    
-    const handler = () => {
-      if (isRestoringStateRef.current) return;
-      if (isInitialRender.current) return;
-      if (isUpdatingDataRef.current) return;
-      
-      const now = Date.now();
-      if (now - lastInteractionTime < 500) {
-        isUserInteraction = true;
-      } else {
-        isUserInteraction = false;
-      }
-      
-      if (!isUserInteraction) {
-        return;
-      }
-      
-      if (paddingTimeout) {
-        clearTimeout(paddingTimeout);
-      }
-      
-      paddingTimeout = setTimeout(() => {
-        if (chart.current && candlestickSeries.current && !isRestoringStateRef.current && !isInitialRender.current && !isUpdatingDataRef.current) {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              if (chart.current && candlestickSeries.current && !isRestoringStateRef.current && !isInitialRender.current && !isUpdatingDataRef.current) {
-                addRightPadding(chart.current, candlestickSeries.current, 100);
-              }
-            });
-          });
-        }
-      }, 300);
-    };
-    
-    const handleUserInteraction = () => {
-      lastInteractionTime = Date.now();
-      isUserInteraction = true;
-    };
-    
-    timeScale.subscribeVisibleTimeRangeChange(handler);
-    
-    if (chartContainerRef.current) {
-      chartContainerRef.current.addEventListener('mousedown', handleUserInteraction);
-      chartContainerRef.current.addEventListener('wheel', handleUserInteraction);
-    }
-    
-    return () => {
-      if (paddingTimeout) {
-        clearTimeout(paddingTimeout);
-      }
-      if (chartInstance && timeScale) {
-        timeScale.unsubscribeVisibleTimeRangeChange(handler);
-      }
-      if (chartContainerRef.current) {
-        chartContainerRef.current.removeEventListener('mousedown', handleUserInteraction);
-        chartContainerRef.current.removeEventListener('wheel', handleUserInteraction);
-      }
-    };
-  }, [chart, candlestickSeries, loaded, isRestoringStateRef, isInitialRender, isUpdatingDataRef]);
+  useChartStateAutoSave();
 
   const handleContainerContextMenu = (e) => {
       e.preventDefault();

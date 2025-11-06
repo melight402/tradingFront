@@ -1,33 +1,8 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { setHorizontalScale, addRightPadding } from "../utils/chartHelpers";
 import { loadChartState } from "../services/chartStateStorage";
 
 export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey) => {
-  const paddingAppliedRef = useRef(false);
-  const paddingTimeoutRef = useRef(null);
-  
-  const ensurePadding = useCallback(() => {
-    if (!chart.current || !candlestickSeries.current || isRestoringStateRef?.current) {
-      return;
-    }
-    
-    if (paddingTimeoutRef.current) {
-      clearTimeout(paddingTimeoutRef.current);
-    }
-    
-    paddingTimeoutRef.current = setTimeout(() => {
-      if (chart.current && candlestickSeries.current && !isRestoringStateRef?.current) {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            if (chart.current && candlestickSeries.current && !isRestoringStateRef?.current) {
-              addRightPadding(chart.current, candlestickSeries.current, 100);
-              paddingAppliedRef.current = true;
-            }
-          });
-        });
-      }
-    }, 100);
-  }, [chart, candlestickSeries, isRestoringStateRef]);
   
   const setupInitialScale = useCallback((candlestickData, interval) => {
     if (!chart.current || !candlestickSeries.current) {
@@ -145,7 +120,6 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
 
     const candleCount = interval === '5m' ? 120 : 50;
     setHorizontalScale(chart.current, candleCount, candlestickData, 100);
-    paddingAppliedRef.current = false;
 
     requestAnimationFrame(() => {
       if (!chart.current || !candlestickSeries.current) {
@@ -174,10 +148,8 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
           });
         }
       }
-      
-      ensurePadding();
     });
-  }, [chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey, ensurePadding]);
+  }, [chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey]);
 
   const setupPriceScales = useCallback(() => {
     if (!chart.current) {
@@ -222,27 +194,6 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
     }
   }, [chart, volumeAreaHeight, currentSymbolRef, currentIntervalRef, chartKey]);
 
-  const setupTimeScalePadding = useCallback(() => {
-    if (!chart.current) return;
-    
-    const timeScale = chart.current.timeScale();
-    if (!timeScale) return;
-    
-    const handler = () => {
-      if (!isRestoringStateRef?.current && paddingAppliedRef.current) {
-        ensurePadding();
-      }
-    };
-    
-    timeScale.subscribeVisibleTimeRangeChange(handler);
-    
-    return () => {
-      if (chart.current && timeScale) {
-        timeScale.unsubscribeVisibleTimeRangeChange(handler);
-      }
-    };
-  }, [chart, isRestoringStateRef, ensurePadding]);
-  
-  return { setupInitialScale, setupPriceScales, setupTimeScalePadding };
+  return { setupInitialScale, setupPriceScales };
 };
 
