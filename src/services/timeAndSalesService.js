@@ -141,14 +141,33 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
       const newCandleTime = lastCandle?.date?.getTime();
       
       if (oldCandleTime && newCandleTime && newCandleTime !== oldCandleTime) {
-        intervalSums.delete(key);
+        intervalSums.set(key, { buySum: 0, sellSum: 0 });
+        
+        if (subscriber.callback) {
+          subscriber.callback({ buySum: 0, sellSum: 0 });
+        }
       }
       
       fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
-        intervalSums.set(key, sums);
+        const currentSums = intervalSums.get(key);
         
-        if (subscriber.callback) {
-          subscriber.callback(sums);
+        if (!currentSums || (currentSums.buySum === 0 && currentSums.sellSum === 0)) {
+          intervalSums.set(key, sums);
+          
+          if (subscriber.callback) {
+            subscriber.callback(sums);
+          }
+        } else {
+          const mergedSums = {
+            buySum: Math.max(currentSums.buySum, sums.buySum),
+            sellSum: Math.max(currentSums.sellSum, sums.sellSum)
+          };
+          
+          intervalSums.set(key, mergedSums);
+          
+          if (subscriber.callback) {
+            subscriber.callback(mergedSums);
+          }
         }
       });
     }
