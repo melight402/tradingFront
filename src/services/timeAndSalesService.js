@@ -54,11 +54,8 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
 
   const symbolSubscribers = subscribers.get(symbol);
   const subscriberId = `${symbol}-${interval}`;
-  const key = `${symbol}-${interval}`;
   
   let subscriber = null;
-  let isNewSubscriber = false;
-  
   for (const sub of symbolSubscribers) {
     if (sub.interval === interval) {
       subscriber = sub;
@@ -71,28 +68,19 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
   if (!subscriber) {
     subscriber = { interval, lastCandle, callback, id: subscriberId };
     symbolSubscribers.add(subscriber);
-    isNewSubscriber = true;
   }
 
+  const key = `${symbol}-${interval}`;
+
   const loadHistoricalData = async () => {
-    try {
-      const historical = await fetchTimeAndSalesFromKline(symbol, interval);
+    const historical = await fetchTimeAndSalesFromKline(symbol, interval);
+    
+    if (historical) {
+      intervalSums.set(key, historical);
       
-      if (historical && (historical.buySum > 0 || historical.sellSum > 0)) {
-        intervalSums.set(key, historical);
-        
-        if (subscriber.callback) {
-          subscriber.callback(historical);
-        }
-      } else if (historical) {
-        intervalSums.set(key, historical);
-        
-        if (subscriber.callback) {
-          subscriber.callback(historical);
-        }
+      if (subscriber.callback && getCurrentActiveSymbol() === symbol) {
+        subscriber.callback(historical);
       }
-    } catch {
-      void 0;
     }
   };
 
@@ -112,15 +100,11 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
     switchWebSocketToSymbol(symbol);
     loadHistoricalData();
   } else {
-    if (isNewSubscriber) {
+    const existingSums = intervalSums.get(key);
+    if (!existingSums) {
       loadHistoricalData();
-    } else {
-      const existingSums = intervalSums.get(key);
-      if (existingSums && subscriber.callback) {
-        subscriber.callback(existingSums);
-      } else {
-        loadHistoricalData();
-      }
+    } else if (subscriber.callback && getCurrentActiveSymbol() === symbol) {
+      subscriber.callback(existingSums);
     }
   }
 
@@ -184,10 +168,6 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
       }
       
       subscriber.lastCandle = lastCandle;
-      
-      if (!isNewCandle && oldCandle) {
-        return;
-      }
       
       fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
         const currentSums = intervalSums.get(key);

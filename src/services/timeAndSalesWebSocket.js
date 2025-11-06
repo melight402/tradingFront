@@ -29,11 +29,6 @@ const updateSumsForAllIntervals = (symbol, trade) => {
 
     const interval = subscriber.interval;
     const lastCandle = subscriber.lastCandle;
-    
-    if (!lastCandle.date || !(lastCandle.date instanceof Date)) {
-      return;
-    }
-    
     const intervalMs = getIntervalMs(interval);
     const candleStartTime = lastCandle.date.getTime();
     const candleEndTime = candleStartTime + intervalMs;
@@ -43,7 +38,7 @@ const updateSumsForAllIntervals = (symbol, trade) => {
       let sums = intervalSums.get(key);
       
       if (!sums) {
-        sums = { buySum: 0, sellSum: 0 };
+        return;
       }
 
       sums = { ...sums };
@@ -97,8 +92,7 @@ const switchWebSocketToSymbol = (symbol) => {
       if (data && data.p && data.q && data.T) {
         updateSumsForAllIntervals(symbol, data);
       }
-    } catch {
-      void 0;
+    } catch (err) {
       void 0;
     }
   };

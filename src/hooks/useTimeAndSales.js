@@ -8,57 +8,51 @@ export const useTimeAndSales = (symbol, interval, lastCandle) => {
   const [error, setError] = useState(null);
   const unsubscribeRef = useRef(null);
   const lastCandleRef = useRef(lastCandle);
-  const symbolIntervalRef = useRef(`${symbol}-${interval}`);
 
   useEffect(() => {
     lastCandleRef.current = lastCandle;
   }, [lastCandle]);
 
   useEffect(() => {
+    setBuySum(0);
+    setSellSum(0);
+    setLoading(true);
+    setError(null);
+
     if (!lastCandle || !lastCandle.date) {
       setLoading(false);
       return;
     }
 
-    const currentKey = `${symbol}-${interval}`;
-    const previousKey = symbolIntervalRef.current;
-
-    if (unsubscribeRef.current && currentKey !== previousKey) {
+    if (unsubscribeRef.current) {
       unsubscribeRef.current();
       unsubscribeRef.current = null;
-      setBuySum(0);
-      setSellSum(0);
-      setLoading(true);
-      setError(null);
     }
 
-    if (!unsubscribeRef.current) {
-      unsubscribeRef.current = subscribeToTimeAndSales(
-        symbol,
-        interval,
-        lastCandle,
-        (sums) => {
-          if (sums) {
-            setBuySum(sums.buySum || 0);
-            setSellSum(sums.sellSum || 0);
-            setLoading(false);
-            setError(null);
-          }
+    unsubscribeRef.current = subscribeToTimeAndSales(
+      symbol,
+      interval,
+      lastCandle,
+      (sums) => {
+        if (sums) {
+          setBuySum(sums.buySum || 0);
+          setSellSum(sums.sellSum || 0);
+          setLoading(false);
+          setError(null);
         }
-      );
-      symbolIntervalRef.current = currentKey;
-    }
+      }
+    );
 
     return () => {
-      if (unsubscribeRef.current && currentKey !== previousKey) {
+      if (unsubscribeRef.current) {
         unsubscribeRef.current();
         unsubscribeRef.current = null;
       }
     };
-  }, [symbol, interval]);
+  }, [symbol, interval, lastCandle]);
 
   useEffect(() => {
-    if (lastCandle && lastCandle.date && unsubscribeRef.current) {
+    if (lastCandle && lastCandle.date) {
       updateLastCandleForInterval(symbol, interval, lastCandle);
     }
   }, [symbol, interval, lastCandle]);
