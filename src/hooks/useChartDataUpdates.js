@@ -168,10 +168,7 @@ export const useChartDataUpdates = (
                   }
                   
                   if (priceScale && savedState.priceScale) {
-                    const options = {
-                      entireTextOnly: false,
-                      drawTicks: true,
-                    };
+                    const options = {};
                     if (savedState.priceScale.autoScale !== undefined) {
                       options.autoScale = savedState.priceScale.autoScale;
                     }
@@ -179,7 +176,9 @@ export const useChartDataUpdates = (
                       options.scaleMargins = savedState.priceScale.scaleMargins;
                     }
                     
-                    priceScale.applyOptions(options);
+                    if (Object.keys(options).length > 0) {
+                      priceScale.applyOptions(options);
+                    }
                     
                     if (!savedState.priceScale.autoScale && savedState.priceRange && 
                         savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
