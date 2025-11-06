@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { setHorizontalScale, addRightPadding } from "../utils/chartHelpers";
 import { useChartState } from "../contexts/ChartStateContext";
 
