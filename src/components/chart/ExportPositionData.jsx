@@ -8,26 +8,20 @@ const ExportPositionData = ({
   chart1hRef, 
   chart1dRef, 
   symbol, 
-  openClose,
   orderType,
   tvxValue,
   risk,
   stopPrice,
-  purchasePrice, 
-  manualStopLoss 
 }) => {
   const { handleExport, isExporting, confirmationModal } = usePositionExportFlow(
     chart5mRef,
     chart1hRef,
     chart1dRef,
     symbol,
-    openClose,
     orderType,
     tvxValue,
     risk,
-    stopPrice,
-    purchasePrice,
-    manualStopLoss
+    stopPrice
   );
 
   return (

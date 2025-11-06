@@ -4,8 +4,6 @@ import {
   saveSelectedSymbol,
   loadRisk,
   saveRisk,
-  loadOpenClose,
-  saveOpenClose,
   loadOrderType,
   saveOrderType,
   loadTVXValue,
@@ -18,10 +16,8 @@ export const useTradingState = () => {
   const [risk, setRisk] = useState(() => loadRisk(1));
   const [orderType, setOrderType] = useState(() => loadOrderType());
   const [tvxValue, setTVXValue] = useState(() => loadTVXValue());
-  const [openClose, setOpenClose] = useState(() => loadOpenClose());
   const [stopPrice, setStopPrice] = useState(null);
-  const [purchasePrice, setPurchasePrice] = useState(null);
-  const [manualStopLoss, setManualStopLoss] = useState(null);
+  const [atrValue, setAtrValue] = useState(1);
   const [profitLoss, setProfitLoss] = useState("profit");
 
   useEffect(() => {
@@ -42,10 +38,6 @@ export const useTradingState = () => {
   }, [symbol]);
 
   useEffect(() => {
-    saveOpenClose(openClose);
-  }, [openClose]);
-
-  useEffect(() => {
     saveOrderType(orderType);
   }, [orderType]);
 
@@ -64,14 +56,10 @@ export const useTradingState = () => {
     setOrderType,
     tvxValue,
     setTVXValue,
-    openClose,
-    setOpenClose,
     stopPrice,
     setStopPrice,
-    purchasePrice,
-    setPurchasePrice,
-    manualStopLoss,
-    setManualStopLoss,
+    atrValue,
+    setAtrValue,
     profitLoss,
     setProfitLoss,
   };

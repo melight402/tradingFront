@@ -13,12 +13,9 @@ export const TopChartRightControls = ({
   chart1hRef,
   chart1dRef,
   symbol,
-  openClose,
   orderType,
   tvxValue,
   stopPrice,
-  purchasePrice,
-  manualStopLoss,
 }) => {
   return (
     <>
@@ -36,13 +33,10 @@ export const TopChartRightControls = ({
         chart1hRef={chart1hRef}
         chart1dRef={chart1dRef}
         symbol={symbol}
-        openClose={openClose}
         orderType={orderType}
         tvxValue={tvxValue}
         risk={risk}
         stopPrice={stopPrice}
-        purchasePrice={purchasePrice}
-        manualStopLoss={manualStopLoss}
       />
     </>
   );

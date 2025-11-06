@@ -1,16 +1,14 @@
 import React from "react";
-import OpenCloseSelector from "../controls/OpenCloseSelector";
 import OrderTypeSelector from "../controls/OrderTypeSelector";
 import TVXSelector from "../controls/TVXSelector";
 import DrawingToolsSelector from "../controls/DrawingToolsSelector";
 import DeleteTools from "../controls/DeleteTools";
 import StopPriceInput from "../controls/StopPriceInput";
-import PurchasePriceInput from "../controls/PurchasePriceInput";
-import ManualStopLossInput from "../controls/ManualStopLossInput";
+import ATRSlider from "../controls/ATRSlider";
+import BuyButton from "../controls/BuyButton";
+import SellButton from "../controls/SellButton";
 
 export const TopChartControls = ({
-  openClose,
-  setOpenClose,
   orderType,
   setOrderType,
   tvxValue,
@@ -19,17 +17,14 @@ export const TopChartControls = ({
   setDrawingTool,
   stopPrice,
   setStopPrice,
-  purchasePrice,
-  setPurchasePrice,
-  manualStopLoss,
-  setManualStopLoss,
+  atrValue,
+  setAtrValue,
   deleteToolsHandlers,
 }) => {
   return (
     <>
       <div className="chart-controls-first-row-subrow">
         <div className="chart-controls-first-row-left">
-          <OpenCloseSelector value={openClose} onChange={setOpenClose} />
           <OrderTypeSelector orderType={orderType} onOrderTypeChange={setOrderType} />
           <TVXSelector tvxValue={tvxValue} onTVXChange={setTVXValue} />
           <DrawingToolsSelector drawingTool={drawingTool} onDrawingToolChange={setDrawingTool} />
@@ -39,8 +34,9 @@ export const TopChartControls = ({
         <DeleteTools {...deleteToolsHandlers} />
         <div className="chart-controls-first-row-right">
           <StopPriceInput value={stopPrice} onChange={setStopPrice} />
-          <PurchasePriceInput value={purchasePrice} onChange={setPurchasePrice} />
-          <ManualStopLossInput value={manualStopLoss} onChange={setManualStopLoss} />
+          <ATRSlider value={atrValue} onChange={setAtrValue} />
+          <BuyButton onClick={() => {}} />
+          <SellButton onClick={() => {}} />
         </div>
       </div>
     </>

@@ -174,6 +174,7 @@ export const COLORS = {
 };
 
 export const TVX_OPTIONS = [
+  { value: "trend_after_pullback", label: "По тренду после отката" },
   { value: "abc", label: "ABC" },
   { value: "level_breakout", label: "Пробой уровня" },
   { value: "false_breakout", label: "Ложный пробой" },

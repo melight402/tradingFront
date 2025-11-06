@@ -25,14 +25,10 @@ const App = () => {
     setOrderType,
     tvxValue,
     setTVXValue,
-    openClose,
-    setOpenClose,
     stopPrice,
     setStopPrice,
-    purchasePrice,
-    setPurchasePrice,
-    manualStopLoss,
-    setManualStopLoss,
+    atrValue,
+    setAtrValue,
     profitLoss,
     setProfitLoss,
   } = tradingState;
@@ -59,8 +55,6 @@ const App = () => {
 
   const topChartFirstRow = useMemo(() => (
     <TopChartControls
-      openClose={openClose}
-      setOpenClose={setOpenClose}
       orderType={orderType}
       setOrderType={setOrderType}
       tvxValue={tvxValue}
@@ -69,13 +63,11 @@ const App = () => {
       setDrawingTool={setDrawingTool}
       stopPrice={stopPrice}
       setStopPrice={setStopPrice}
-      purchasePrice={purchasePrice}
-      setPurchasePrice={setPurchasePrice}
-      manualStopLoss={manualStopLoss}
-      setManualStopLoss={setManualStopLoss}
+      atrValue={atrValue}
+      setAtrValue={setAtrValue}
       deleteToolsHandlers={deleteToolsHandlers}
     />
-  ), [drawingTool, orderType, openClose, stopPrice, purchasePrice, manualStopLoss, tvxValue, deleteToolsHandlers]);
+  ), [drawingTool, orderType, stopPrice, atrValue, tvxValue, deleteToolsHandlers, setOrderType, setTVXValue, setDrawingTool, setStopPrice, setAtrValue]);
 
   const topChartSecondRowRight = useMemo(() => (
     <TopChartRightControls
@@ -87,14 +79,11 @@ const App = () => {
       chart1hRef={chart1hRef}
       chart1dRef={chart1dRef}
       symbol={symbol}
-      openClose={openClose}
       orderType={orderType}
       tvxValue={tvxValue}
       stopPrice={stopPrice}
-      purchasePrice={purchasePrice}
-      manualStopLoss={manualStopLoss}
     />
-  ), [symbol, openClose, orderType, tvxValue, risk, stopPrice, purchasePrice, manualStopLoss, profitLoss, tradingState.setRisk]);
+  ), [symbol, orderType, tvxValue, risk, stopPrice, profitLoss, tradingState.setRisk, setProfitLoss]);
 
   return (
     <ChartDataProvider>

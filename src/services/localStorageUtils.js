@@ -2,7 +2,6 @@ const STORAGE_KEYS = {
   SELECTED_SYMBOL: 'tradingFront_selectedSymbol',
   RISK_VALUE: 'tradingFront_riskValue',
   BUY_SELL: 'tradingFront_buySell',
-  OPEN_CLOSE: 'tradingFront_openClose',
   ORDER_TYPE: 'tradingFront_orderType',
   TVX_VALUE: 'tradingFront_tvxValue',
   TAKE_PROFIT: 'tradingFront_takeProfit',
@@ -80,27 +79,6 @@ export const loadBuySell = (defaultValue = "BUY") => {
   }
 };
 
-export const saveOpenClose = (value) => {
-  try {
-    if (value) {
-      localStorage.setItem(STORAGE_KEYS.OPEN_CLOSE, value);
-    } else {
-      localStorage.removeItem(STORAGE_KEYS.OPEN_CLOSE);
-    }
-  } catch (error) {
-    console.warn('Failed to save openClose to localStorage:', error);
-  }
-};
-
-export const loadOpenClose = (defaultValue = "open") => {
-  try {
-    return localStorage.getItem(STORAGE_KEYS.OPEN_CLOSE) || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load openClose from localStorage:', error);
-    return defaultValue;
-  }
-};
-
 export const saveOrderType = (value) => {
   try {
     if (value) {
@@ -134,7 +112,7 @@ export const saveTVXValue = (value) => {
   }
 };
 
-export const loadTVXValue = (defaultValue = "level_breakout") => {
+export const loadTVXValue = (defaultValue = "trend_after_pullback") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TVX_VALUE) || defaultValue;
   } catch (error) {

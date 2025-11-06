@@ -11,7 +11,7 @@ const TVXSelector = ({ tvxValue, onTVXChange }) => {
     <div style={containerStyle}>
       <label style={labelStyle}>ТВХ:</label>
       <select
-        value={tvxValue || "level_breakout"}
+        value={tvxValue || "trend_after_pullback"}
         onChange={(e) => onTVXChange(e.target.value)}
         style={selectStyle}
       >

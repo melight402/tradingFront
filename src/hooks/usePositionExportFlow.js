@@ -8,13 +8,10 @@ export const usePositionExportFlow = (
   chart1hRef,
   chart1dRef,
   symbol,
-  openClose,
   orderType,
   tvxValue,
   risk,
-  stopPrice,
-  purchasePrice,
-  manualStopLoss
+  stopPrice
 ) => {
   const [isExporting, setIsExporting] = useState(false);
   const { exportPosition } = usePositionExport(
@@ -22,13 +19,9 @@ export const usePositionExportFlow = (
     chart1hRef,
     chart1dRef,
     symbol,
-    openClose,
     orderType,
     tvxValue,
-    risk,
-    stopPrice,
-    purchasePrice,
-    manualStopLoss
+    risk
   );
   const { openPositionWithData, confirmationModal } = usePositionOpening();
   const { validateQuantity } = useQuantityValidation();
@@ -44,16 +37,14 @@ export const usePositionExportFlow = (
 
       const { positions, finalValues, lastTool } = result;
 
-      if (openClose === "open" && finalValues.entryPrice && finalValues.stopLoss && finalValues.direction) {
+      if (finalValues.entryPrice && finalValues.stopLoss && finalValues.direction) {
         const quantityResult = validateQuantity(risk, finalValues.entryPrice, finalValues.stopLoss, symbol);
         
         if (!quantityResult.isValid) {
           alert(quantityResult.error);
           return;
         }
-      }
 
-      if (openClose === "open" && finalValues.entryPrice && finalValues.stopLoss && finalValues.direction) {
         const success = await openPositionWithData(
           finalValues.entryPrice,
           finalValues.stopLoss,
