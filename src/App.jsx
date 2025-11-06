@@ -5,6 +5,7 @@ import { ChartStateProvider } from "./contexts/ChartStateContext";
 import { useTradingState } from "./hooks/useTradingState";
 import { useLineToolsUpdate } from "./hooks/useLineToolsUpdate";
 import { useDeleteToolsHandlers } from "./hooks/useDeleteToolsHandlers";
+import { useDeleteKeyHandler } from "./hooks/useDeleteKeyHandler";
 import { TopChartControls } from "./components/app/TopChartControls";
 import { TopChartRightControls } from "./components/app/TopChartRightControls";
 import { ChartLayout } from "./components/app/ChartLayout";
@@ -37,6 +38,7 @@ const AppContent = ({ tradingState, chart5mRef, chart1hRef, chart1dRef, handleCh
   useLineToolsUpdate(chart5mRef, chart1hRef, chart1dRef, symbol, risk);
 
   const deleteToolsHandlers = useDeleteToolsHandlers(chart5mRef, chart1hRef, chart1dRef, symbol);
+  useDeleteKeyHandler(deleteToolsHandlers.onDeleteSelected);
 
   const topChartFirstRow = useMemo(() => (
     <TopChartControls
