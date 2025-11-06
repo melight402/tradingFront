@@ -28,6 +28,10 @@ const ChartHeader = ({
       return;
     }
 
+    if (chartKey === "chart5m") {
+      console.log(`[Tape Debug] chart5m subscribing: symbol=${symbol}, interval=${interval}, tapeKey=${tapeKey}`);
+    }
+
     const unsubscribe = subscribeToTape(tapeKey, symbol, interval, lastCandle);
 
     return () => {

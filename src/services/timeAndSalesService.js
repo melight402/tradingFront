@@ -163,13 +163,6 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
         if (subscriber.callback) {
           subscriber.callback({ buySum: 0, sellSum: 0 });
         }
-        
-        closeGlobalWebSocket();
-        setCurrentActiveSymbol(null);
-        
-        setTimeout(() => {
-          switchWebSocketToSymbol(symbol);
-        }, 100);
       }
       
       fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
