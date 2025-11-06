@@ -84,8 +84,9 @@ const App = () => {
       setRatio={setRatio}
       atrValue={atrValue}
       setAtrValue={setAtrValue}
+      symbol={symbol}
     />
-  ), [risk, ratio, atrValue, tradingState.setRisk, setRatio, setAtrValue]);
+  ), [risk, ratio, atrValue, symbol, tradingState.setRisk, setRatio, setAtrValue]);
 
   return (
     <ChartDataProvider>

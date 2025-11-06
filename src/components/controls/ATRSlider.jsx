@@ -45,7 +45,7 @@ const ATRSlider = ({ value, onChange }) => {
         onChange={handleChange}
         style={sliderStyle}
       />
-      <span style={{ color: "#FFFFFF", fontSize: "14px", marginLeft: "10px", minWidth: "60px" }}>
+      <span style={{ color: "#FFFFFF", fontSize: "14px", marginLeft: "0px", minWidth: "10px" }}>
         {ATR_VALUES[index]}
       </span>
     </div>
