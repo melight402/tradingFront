@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { getCurrentPrice } from "../services/priceDataStorage";
-import { roundQuantityToStepSize, roundPriceToTickSize } from "../utils/tickSizeCache";
+import { roundQuantityToStepSize, roundPriceToTickSize, getTickSizeFromSymbol } from "../utils/tickSizeCache";
 import { openPosition } from "../utils/api";
 
 export const useMarketOrderPlacement = () => {
@@ -58,9 +58,18 @@ export const useMarketOrderPlacement = () => {
     const positionSide = isLong ? "LONG" : "SHORT";
     const isLimitOrder = orderType === "LIMIT";
 
-    const roundedEntryPrice = isLimitOrder 
-      ? await roundPriceToTickSize(entryPrice, symbol)
-      : entryPrice;
+    let roundedEntryPrice = entryPrice;
+    if (isLimitOrder) {
+      const tickSize = await getTickSizeFromSymbol(symbol);
+      if (tickSize && tickSize > 0) {
+        const adjustedPrice = isLong 
+          ? entryPrice - tickSize
+          : entryPrice + tickSize;
+        roundedEntryPrice = await roundPriceToTickSize(adjustedPrice, symbol);
+      } else {
+        roundedEntryPrice = await roundPriceToTickSize(entryPrice, symbol);
+      }
+    }
 
     const mainOrderData = {
       dateTime,
