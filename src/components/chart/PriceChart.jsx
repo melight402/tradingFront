@@ -47,6 +47,64 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     chartKey
   );
 
+  useEffect(() => {
+    if (!chart.current || !candlestickSeries.current) return;
+    if (prevIntervalRef.current === interval && prevSymbolRef.current === symbol) return;
+    
+    const oldSymbol = prevSymbolRef.current;
+    const oldInterval = prevIntervalRef.current;
+    
+    if (oldSymbol && oldInterval && chart.current && candlestickSeries.current) {
+      try {
+        const timeScale = chart.current.timeScale();
+        const priceScale = chart.current.priceScale('right');
+        
+        if (timeScale && priceScale) {
+          const state = {};
+          
+          const logicalRange = timeScale.getVisibleLogicalRange();
+          const timeRange = timeScale.getVisibleRange();
+          
+          if (logicalRange && typeof logicalRange.from === 'number' && typeof logicalRange.to === 'number' && 
+              !isNaN(logicalRange.from) && !isNaN(logicalRange.to)) {
+            state.logicalRange = logicalRange;
+          }
+          if (timeRange && timeRange.from != null && timeRange.to != null) {
+            state.timeRange = timeRange;
+          }
+          
+          try {
+            const priceScaleOptions = priceScale.options();
+            state.priceScale = {
+              autoScale: priceScaleOptions?.autoScale ?? true,
+              scaleMargins: priceScaleOptions?.scaleMargins
+            };
+            
+            try {
+              const visibleRange = priceScale.getVisibleRange();
+              if (visibleRange && visibleRange.minValue !== null && visibleRange.maxValue !== null) {
+                state.priceRange = {
+                  from: visibleRange.minValue,
+                  to: visibleRange.maxValue
+                };
+              }
+            } catch {
+              void 0;
+            }
+          } catch {
+            void 0;
+          }
+          
+          if (state.logicalRange || state.timeRange || state.priceScale || state.priceRange) {
+            saveChartState(chartKey, oldSymbol, oldInterval, state);
+          }
+        }
+      } catch {
+        void 0;
+      }
+    }
+  }, [symbol, interval, chart, candlestickSeries, chartKey]);
+
   const { restoreLineTools } = useChartLineTools(
     chart,
     candlestickSeries,

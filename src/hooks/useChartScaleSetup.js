@@ -118,6 +118,27 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
       }
     }
 
+    const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
+      ? loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
+      : null;
+
+    if (!savedState) {
+      requestAnimationFrame(() => {
+        if (!chart.current || !candlestickSeries.current) {
+          return;
+        }
+
+        const rightPriceScale = chart.current.priceScale("right");
+        if (rightPriceScale) {
+          rightPriceScale.applyOptions({
+            visible: true,
+            autoScale: true,
+          });
+        }
+      });
+      return;
+    }
+
     const candleCount = interval === '5m' ? 120 : 50;
     setHorizontalScale(chart.current, candleCount, candlestickData, 100);
 
@@ -125,10 +146,6 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
       if (!chart.current || !candlestickSeries.current) {
         return;
       }
-
-      const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
-        ? loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
-        : null;
 
       const rightPriceScale = chart.current.priceScale("right");
       if (rightPriceScale) {
