@@ -9,6 +9,7 @@ import { useChartLineTools } from "../../hooks/useChartLineTools";
 import { useChartDataSync } from "../../hooks/useChartDataSync";
 import { useChartStateAutoSave } from "../../hooks/useChartStateAutoSave";
 import { useMovingAverages } from "../../hooks/useMovingAverages";
+import { useLastCandleFollow } from "../../hooks/useLastCandleFollow";
 import CandlePopup from "./CandlePopup";
 import "../../styles/styles.css";
 
@@ -34,7 +35,16 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
 
   const { popupState, setPopupState } = useChartPopup(chart, candlestickSeries, loaded, drawingToolRef);
 
-  const { updateLastCandle, updateChartData, dataUpdateTimeoutRef } = useChartDataUpdates(
+  const isTopChart = chartKey === "chart5m";
+  const { checkAndFollowLastCandle, setupUserInteractionListeners } = useLastCandleFollow(
+    chart,
+    candlestickSeries,
+    chartContainerRef,
+    chartKey,
+    isTopChart
+  );
+
+  const { updateLastCandle: originalUpdateLastCandle, updateChartData, dataUpdateTimeoutRef } = useChartDataUpdates(
     chart,
     candlestickSeries,
     volumeSeries,
@@ -47,6 +57,13 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     volumeAreaHeight,
     chartKey
   );
+
+  const updateLastCandle = React.useCallback((lastCandle) => {
+    originalUpdateLastCandle(lastCandle);
+    if (isTopChart) {
+      checkAndFollowLastCandle(lastCandle);
+    }
+  }, [originalUpdateLastCandle, isTopChart, checkAndFollowLastCandle]);
 
   useEffect(() => {
     if (!chart.current || !candlestickSeries.current) return;
@@ -174,6 +191,12 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
   useMovingAverages(chart, candlestickSeries, data, chartKey);
 
   useChartStateAutoSave();
+
+  useEffect(() => {
+    if (isTopChart && chart.current && loaded) {
+      return setupUserInteractionListeners();
+    }
+  }, [isTopChart, chart, loaded, setupUserInteractionListeners]);
 
   const handleContainerContextMenu = (e) => {
       e.preventDefault();
