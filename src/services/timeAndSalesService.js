@@ -75,14 +75,24 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
   }
 
   const loadHistoricalData = async () => {
-    const historical = await fetchTimeAndSalesFromKline(symbol, interval);
-    
-    if (historical) {
-      intervalSums.set(key, historical);
+    try {
+      const historical = await fetchTimeAndSalesFromKline(symbol, interval);
       
-      if (subscriber.callback) {
-        subscriber.callback(historical);
+      if (historical && (historical.buySum > 0 || historical.sellSum > 0)) {
+        intervalSums.set(key, historical);
+        
+        if (subscriber.callback) {
+          subscriber.callback(historical);
+        }
+      } else if (historical) {
+        intervalSums.set(key, historical);
+        
+        if (subscriber.callback) {
+          subscriber.callback(historical);
+        }
       }
+    } catch {
+      void 0;
     }
   };
 
