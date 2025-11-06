@@ -73,14 +73,20 @@ export const useLineToolRestore = (
               if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
                 const saved = getLineTools(symbol, interval);
                 if (saved) {
-                  const restored = importLineToolsToChart(chart.current, saved);
-                  if (restored) {
-                    lineToolsRestoredRef.current = true;
-                    lineToolsModifiedRef.current = true;
+                  try {
+                    const restored = importLineToolsToChart(chart.current, saved);
+                    if (restored) {
+                      lineToolsRestoredRef.current = true;
+                      lineToolsModifiedRef.current = true;
+                    }
+                  } catch (error) {
+                    console.warn('Failed to restore line tools:', error);
                   }
+                } else {
+                  lineToolsRestoredRef.current = true;
                 }
               }
-            }, 1200);
+            }, 1500);
           });
         });
       }
