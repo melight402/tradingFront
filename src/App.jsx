@@ -29,6 +29,8 @@ const App = () => {
     setStopPrice,
     atrValue,
     setAtrValue,
+    ratio,
+    setRatio,
     profitLoss,
     setProfitLoss,
   } = tradingState;
@@ -78,10 +80,12 @@ const App = () => {
     <TopChartRightControls
       risk={risk}
       setRisk={tradingState.setRisk}
+      ratio={ratio}
+      setRatio={setRatio}
       atrValue={atrValue}
       setAtrValue={setAtrValue}
     />
-  ), [risk, atrValue, tradingState.setRisk, setAtrValue]);
+  ), [risk, ratio, atrValue, tradingState.setRisk, setRatio, setAtrValue]);
 
   return (
     <ChartDataProvider>

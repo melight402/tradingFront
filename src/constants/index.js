@@ -191,6 +191,14 @@ export const TAKE_PROFIT_OPTIONS = Array.from({ length: 11 }, (_, i) => {
   return { value, label: `x${value}` };
 });
 
+export const RATIO_OPTIONS = [
+  { value: "2", label: "1 к 2" },
+  { value: "3", label: "1 к 3" },
+  { value: "4", label: "1 к 4" },
+  { value: "5", label: "1 к 5" },
+  { value: "10", label: "1 к 10" },
+];
+
 export const EXPORT_POSITION_DATA_STRUCTURE = {
   createExportData: (positions) => ({
     totalPositions: positions.length,

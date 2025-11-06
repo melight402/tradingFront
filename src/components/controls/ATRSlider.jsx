@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createLabelStyle, createContainerStyle } from "../../utils";
 
-const ATR_VALUES = [0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000, 5000];
+const ATR_VALUES = [0.01, 0.1, 0.5, 1, 2.5, 3, 5, 6, 7.5, 10, 25, 50, 75, 100, 500, 1000, 5000];
 
 const ATRSlider = ({ value, onChange }) => {
   const [index, setIndex] = useState(() => {

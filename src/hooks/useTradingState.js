@@ -18,6 +18,7 @@ export const useTradingState = () => {
   const [tvxValue, setTVXValue] = useState(() => loadTVXValue());
   const [stopPrice, setStopPrice] = useState(null);
   const [atrValue, setAtrValue] = useState(1);
+  const [ratio, setRatio] = useState("2");
   const [profitLoss, setProfitLoss] = useState("profit");
 
   useEffect(() => {
@@ -60,6 +61,8 @@ export const useTradingState = () => {
     setStopPrice,
     atrValue,
     setAtrValue,
+    ratio,
+    setRatio,
     profitLoss,
     setProfitLoss,
   };
