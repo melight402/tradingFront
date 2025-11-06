@@ -21,7 +21,6 @@ export const useChartDataUpdates = (
   const dataUpdateTimeoutRef = useRef(null);
   const { updateLastCandle } = useLastCandleUpdate(chart, candlestickSeries, volumeSeries, lastCandleTimeRef);
   const { processChartData } = useChartDataProcessor();
-  const { setupInitialScale, setupPriceScales } = useChartScaleSetup(chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey);
 
   const updateChartData = useCallback(async (data) => {
     if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
@@ -73,9 +72,6 @@ export const useChartDataUpdates = (
               },
             });
           
-          if (isInitialRender.current && !isRestoringStateRef.current && candlestickData.length > 0) {
-            setupPriceScales();
-          }
 
           if (priceFormat && typeof priceFormat.precision === 'number' && typeof priceFormat.minMove === 'number') {
             candlestickSeries.current.applyOptions({
@@ -142,48 +138,9 @@ export const useChartDataUpdates = (
             }
           }
 
-          if (isInitialRender.current && !isRestoringStateRef.current) {
-            const timeScale = chart.current?.timeScale();
-            if (timeScale) {
-              requestAnimationFrame(() => {
-                if (!chart.current || !timeScale) {
-                  isUpdatingDataRef.current = false;
-                  isInitialRender.current = false;
-                  return;
-                }
-
-                if (currentSymbolRef.current !== currentSymbol || currentIntervalRef.current !== currentInterval) {
-                  isUpdatingDataRef.current = false;
-                  isInitialRender.current = false;
-                  return;
-                }
-
-                if (!isRestoringStateRef.current) {
-                  setTimeout(() => {
-                    if (!isRestoringStateRef.current && 
-                        currentSymbolRef.current === currentSymbol && 
-                        currentIntervalRef.current === currentInterval &&
-                        isInitialRender.current) {
-                      setupInitialScale(candlestickData, currentInterval);
-                    }
-                  }, 200);
-                }
-
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    if (currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
-                      isUpdatingDataRef.current = false;
-                      isInitialRender.current = false;
-                    }
-                  });
-                });
-              });
-            } else {
-              isUpdatingDataRef.current = false;
-              isInitialRender.current = false;
-            }
-          } else {
-            isUpdatingDataRef.current = false;
+          isUpdatingDataRef.current = false;
+          if (isInitialRender.current) {
+            isInitialRender.current = false;
           }
         } catch (error) {
           console.error("Error setting chart data:", error);
@@ -194,7 +151,7 @@ export const useChartDataUpdates = (
       console.error("Error updating chart data:", error);
       isUpdatingDataRef.current = false;
     }
-  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, isRestoringStateRef, chartKey, processChartData, setupPriceScales, setupInitialScale]);
+  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, processChartData]);
 
   return { updateLastCandle, updateChartData, dataUpdateTimeoutRef };
 };
