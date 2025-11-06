@@ -2,6 +2,7 @@ import { useRef, useCallback } from "react";
 import { useLastCandleUpdate } from "./useLastCandleUpdate";
 import { useChartDataProcessor } from "./useChartDataProcessor";
 import { useChartScaleSetup } from "./useChartScaleSetup";
+import { getLastCandle } from "../services/priceDataStorage";
 
 export const useChartDataUpdates = (
   chart,
@@ -111,6 +112,34 @@ export const useChartDataUpdates = (
 
           if (candlestickData.length > 0) {
             lastCandleTimeRef.current = candlestickData[candlestickData.length - 1].time;
+          }
+
+          const storedLastCandle = getLastCandle(currentSymbol, currentInterval);
+          if (storedLastCandle && storedLastCandle.date && storedLastCandle.date instanceof Date) {
+            const storedTime = storedLastCandle.date.getTime() / 1000;
+            const lastDataTime = candlestickData.length > 0 ? candlestickData[candlestickData.length - 1].time : 0;
+            
+            if (storedTime >= lastDataTime) {
+              try {
+                candlestickSeries.current.update({
+                  time: storedTime,
+                  open: storedLastCandle.open,
+                  high: storedLastCandle.high,
+                  low: storedLastCandle.low,
+                  close: storedLastCandle.close,
+                });
+
+                volumeSeries.current.update({
+                  time: storedTime,
+                  value: storedLastCandle.volume || 0,
+                  color: storedLastCandle.close >= storedLastCandle.open ? "#26a69a80" : "#ef535080",
+                });
+
+                lastCandleTimeRef.current = storedTime;
+              } catch {
+                void 0;
+              }
+            }
           }
 
           if (isInitialRender.current) {

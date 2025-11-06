@@ -95,6 +95,7 @@ const handleCandleUpdate = (symbol, subscriber, baseCandle, price, candlesMap) =
     low: Math.min(baseCandle.low, price)
   };
   
+  setLastCandle(symbol, subscriber.interval, updatedCandle);
   subscriber.callback(updatedCandle);
   candlesMap.set(subscriber.interval, updatedCandle);
 };
