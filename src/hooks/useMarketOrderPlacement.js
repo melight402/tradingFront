@@ -78,20 +78,20 @@ export const useMarketOrderPlacement = () => {
 
     if (isLimitOrder) {
       const stopLimitActivationPrice = isLong 
-        ? await roundPriceToTickSize(stopLossPrice * 1.1, symbol)
-        : await roundPriceToTickSize(stopLossPrice * 0.9, symbol);
+        ? await roundPriceToTickSize(stopLossPrice * 0.99, symbol)
+        : await roundPriceToTickSize(stopLossPrice * 1.01, symbol);
       
       const stopLimitExecutionPrice = isLong
-        ? await roundPriceToTickSize(stopLimitActivationPrice * 0.995, symbol)
-        : await roundPriceToTickSize(stopLimitActivationPrice * 1.005, symbol);
+        ? await roundPriceToTickSize(stopLimitActivationPrice * 0.998, symbol)
+        : await roundPriceToTickSize(stopLimitActivationPrice * 1.002, symbol);
       
       const takeProfitLimitActivationPrice = isLong
-        ? await roundPriceToTickSize(takeProfit * 0.9, symbol)
-        : await roundPriceToTickSize(takeProfit * 1.1, symbol);
+        ? await roundPriceToTickSize(takeProfit * 1.01, symbol)
+        : await roundPriceToTickSize(takeProfit * 0.99, symbol);
       
       const takeProfitLimitExecutionPrice = isLong
-        ? await roundPriceToTickSize(takeProfitLimitActivationPrice * 1.005, symbol)
-        : await roundPriceToTickSize(takeProfitLimitActivationPrice * 0.995, symbol);
+        ? await roundPriceToTickSize(takeProfitLimitActivationPrice * 0.998, symbol)
+        : await roundPriceToTickSize(takeProfitLimitActivationPrice * 1.002, symbol);
 
       const stopLimitOrderData = {
         dateTime,
