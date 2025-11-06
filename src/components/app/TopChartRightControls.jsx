@@ -14,12 +14,13 @@ export const TopChartRightControls = ({
   atrValue,
   setAtrValue,
   symbol,
+  orderType,
 }) => {
   const { placeMarketOrder } = useMarketOrderPlacement();
 
   const handleBuy = async () => {
     try {
-      await placeMarketOrder("BUY", symbol, risk, atrValue, ratio);
+      await placeMarketOrder("BUY", symbol, risk, atrValue, ratio, orderType);
       alert("Ордер на покупку успешно размещен");
     } catch (error) {
       const errorMessage = error.message || "Неизвестная ошибка";
@@ -30,7 +31,7 @@ export const TopChartRightControls = ({
 
   const handleSell = async () => {
     try {
-      await placeMarketOrder("SELL", symbol, risk, atrValue, ratio);
+      await placeMarketOrder("SELL", symbol, risk, atrValue, ratio, orderType);
       alert("Ордер на продажу успешно размещен");
     } catch (error) {
       const errorMessage = error.message || "Неизвестная ошибка";

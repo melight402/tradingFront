@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { getCurrentPrice } from "../services/priceDataStorage";
-import { roundQuantityToStepSize } from "../utils/tickSizeCache";
+import { roundQuantityToStepSize, roundPriceToTickSize } from "../utils/tickSizeCache";
 import { openPosition } from "../utils/api";
 
 export const useMarketOrderPlacement = () => {
-  const placeMarketOrder = useCallback(async (side, symbol, risk, atrValue, ratio) => {
+  const placeMarketOrder = useCallback(async (side, symbol, risk, atrValue, ratio, orderType = "MARKET") => {
     const entryPrice = getCurrentPrice(symbol);
     
     if (!entryPrice) {
@@ -50,70 +50,191 @@ export const useMarketOrderPlacement = () => {
 
     const dateTime = new Date().toISOString();
     const positionSide = isLong ? "LONG" : "SHORT";
+    const isLimitOrder = orderType === "LIMIT";
 
-    const marketOrderData = {
+    const roundedEntryPrice = isLimitOrder 
+      ? await roundPriceToTickSize(entryPrice, symbol)
+      : entryPrice;
+
+    const mainOrderData = {
       dateTime,
       symbol,
       side,
-      type: "MARKET",
-      price: entryPrice.toString(),
+      type: isLimitOrder ? "LIMIT" : "MARKET",
+      price: roundedEntryPrice.toString(),
       quantity: quantity.toString(),
       positionSide,
+      timeInForce: isLimitOrder ? "GTC" : undefined,
       stopLossPrice: stopPrice.toString(),
       takeProfitPrice: takeProfit.toString(),
       risk: risk.toString(),
     };
 
-    const stopOrderData = {
-      dateTime,
-      symbol,
-      side: isLong ? "SELL" : "BUY",
-      type: "STOP_MARKET",
-      price: entryPrice.toString(),
-      quantity: quantity.toString(),
-      positionSide,
-      stopPrice: stopPrice.toString(),
-      workingType: "CONTRACT_PRICE",
-      closePosition: true,
-      stopLossPrice: stopPrice.toString(),
-      takeProfitPrice: takeProfit.toString(),
-      risk: risk.toString(),
-    };
+    if (isLimitOrder) {
+      const stopLimitActivationPrice = isLong 
+        ? await roundPriceToTickSize(stopPrice * 1.1, symbol)
+        : await roundPriceToTickSize(stopPrice * 0.9, symbol);
+      
+      const stopLimitExecutionPrice = isLong
+        ? await roundPriceToTickSize(stopPrice * 1.05, symbol)
+        : await roundPriceToTickSize(stopPrice * 0.95, symbol);
+      
+      const takeProfitLimitActivationPrice = isLong
+        ? await roundPriceToTickSize(takeProfit * 0.9, symbol)
+        : await roundPriceToTickSize(takeProfit * 1.1, symbol);
+      
+      const takeProfitLimitExecutionPrice = isLong
+        ? await roundPriceToTickSize(takeProfit * 0.95, symbol)
+        : await roundPriceToTickSize(takeProfit * 1.05, symbol);
 
-    const takeProfitOrderData = {
-      dateTime,
-      symbol,
-      side: isLong ? "SELL" : "BUY",
-      type: "TAKE_PROFIT",
-      price: takeProfit.toString(),
-      quantity: quantity.toString(),
-      positionSide,
-      stopPrice: takeProfit.toString(),
-      timeInForce: "GTC",
-      workingType: "CONTRACT_PRICE",
-      stopLossPrice: stopPrice.toString(),
-      takeProfitPrice: takeProfit.toString(),
-      risk: risk.toString(),
-    };
+      const stopLimitOrderData = {
+        dateTime,
+        symbol,
+        side: isLong ? "SELL" : "BUY",
+        type: "STOP_LIMIT",
+        price: stopLimitExecutionPrice.toString(),
+        quantity: quantity.toString(),
+        positionSide,
+        stopPrice: stopLimitActivationPrice.toString(),
+        timeInForce: "GTC",
+        workingType: "CONTRACT_PRICE",
+        stopLossPrice: stopPrice.toString(),
+        takeProfitPrice: takeProfit.toString(),
+        risk: risk.toString(),
+      };
 
-    try {
-      await openPosition(marketOrderData, null);
-    } catch (error) {
-      throw error;
-    }
+      const stopMarketOrderData = {
+        dateTime,
+        symbol,
+        side: isLong ? "SELL" : "BUY",
+        type: "STOP_MARKET",
+        price: entryPrice.toString(),
+        quantity: quantity.toString(),
+        positionSide,
+        stopPrice: stopPrice.toString(),
+        workingType: "CONTRACT_PRICE",
+        closePosition: true,
+        stopLossPrice: stopPrice.toString(),
+        takeProfitPrice: takeProfit.toString(),
+        risk: risk.toString(),
+      };
 
-    try {
-      await openPosition(stopOrderData, null);
-    } catch (error) {
-      console.error("Ошибка при размещении стоп-лосса:", error);
-      throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить стоп-лосс: ${error.message}`);
-    }
+      const takeProfitLimitOrderData = {
+        dateTime,
+        symbol,
+        side: isLong ? "SELL" : "BUY",
+        type: "TAKE_PROFIT",
+        price: takeProfitLimitExecutionPrice.toString(),
+        quantity: quantity.toString(),
+        positionSide,
+        stopPrice: takeProfitLimitActivationPrice.toString(),
+        timeInForce: "GTC",
+        workingType: "CONTRACT_PRICE",
+        stopLossPrice: stopPrice.toString(),
+        takeProfitPrice: takeProfit.toString(),
+        risk: risk.toString(),
+      };
 
-    try {
-      await openPosition(takeProfitOrderData, null);
-    } catch (error) {
-      console.error("Ошибка при размещении тейк-профита:", error);
-      throw new Error(`Ордер на открытие позиции и стоп-лосс размещены, но не удалось разместить тейк-профит: ${error.message}`);
+      const takeProfitMarketOrderData = {
+        dateTime,
+        symbol,
+        side: isLong ? "SELL" : "BUY",
+        type: "TAKE_PROFIT_MARKET",
+        quantity: quantity.toString(),
+        positionSide,
+        stopPrice: takeProfit.toString(),
+        workingType: "CONTRACT_PRICE",
+        closePosition: true,
+        stopLossPrice: stopPrice.toString(),
+        takeProfitPrice: takeProfit.toString(),
+        risk: risk.toString(),
+      };
+
+      try {
+        await openPosition(mainOrderData, null);
+      } catch (error) {
+        throw error;
+      }
+
+      try {
+        await openPosition(stopLimitOrderData, null);
+      } catch (error) {
+        console.error("Ошибка при размещении лимитного стоп-лосса:", error);
+        throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить лимитный стоп-лосс: ${error.message}`);
+      }
+
+      try {
+        await openPosition(takeProfitLimitOrderData, null);
+      } catch (error) {
+        console.error("Ошибка при размещении лимитного тейк-профита:", error);
+        throw new Error(`Ордер на открытие позиции и лимитный стоп-лосс размещены, но не удалось разместить лимитный тейк-профит: ${error.message}`);
+      }
+
+      try {
+        await openPosition(stopMarketOrderData, null);
+      } catch (error) {
+        console.error("Ошибка при размещении рыночного стоп-лосса:", error);
+        throw new Error(`Ордер на открытие позиции, лимитный стоп-лосс и лимитный тейк-профит размещены, но не удалось разместить рыночный стоп-лосс: ${error.message}`);
+      }
+
+      try {
+        await openPosition(takeProfitMarketOrderData, null);
+      } catch (error) {
+        console.error("Ошибка при размещении рыночного тейк-профита:", error);
+        throw new Error(`Ордер на открытие позиции, лимитные и рыночный стоп-лосс размещены, но не удалось разместить рыночный тейк-профит: ${error.message}`);
+      }
+    } else {
+      const stopOrderData = {
+        dateTime,
+        symbol,
+        side: isLong ? "SELL" : "BUY",
+        type: "STOP_MARKET",
+        price: entryPrice.toString(),
+        quantity: quantity.toString(),
+        positionSide,
+        stopPrice: stopPrice.toString(),
+        workingType: "CONTRACT_PRICE",
+        closePosition: true,
+        stopLossPrice: stopPrice.toString(),
+        takeProfitPrice: takeProfit.toString(),
+        risk: risk.toString(),
+      };
+
+      const takeProfitOrderData = {
+        dateTime,
+        symbol,
+        side: isLong ? "SELL" : "BUY",
+        type: "TAKE_PROFIT",
+        price: takeProfit.toString(),
+        quantity: quantity.toString(),
+        positionSide,
+        stopPrice: takeProfit.toString(),
+        timeInForce: "GTC",
+        workingType: "CONTRACT_PRICE",
+        stopLossPrice: stopPrice.toString(),
+        takeProfitPrice: takeProfit.toString(),
+        risk: risk.toString(),
+      };
+
+      try {
+        await openPosition(mainOrderData, null);
+      } catch (error) {
+        throw error;
+      }
+
+      try {
+        await openPosition(stopOrderData, null);
+      } catch (error) {
+        console.error("Ошибка при размещении стоп-лосса:", error);
+        throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить стоп-лосс: ${error.message}`);
+      }
+
+      try {
+        await openPosition(takeProfitOrderData, null);
+      } catch (error) {
+        console.error("Ошибка при размещении тейк-профита:", error);
+        throw new Error(`Ордер на открытие позиции и стоп-лосс размещены, но не удалось разместить тейк-профит: ${error.message}`);
+      }
     }
   }, []);
 

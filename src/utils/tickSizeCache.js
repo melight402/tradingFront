@@ -133,5 +133,22 @@ export const roundQuantityToStepSize = (quantity, symbol) => {
   return Math.round(steps * stepSize);
 };
 
+export const roundPriceToTickSize = async (price, symbol) => {
+  if (!price || price <= 0) {
+    return price || 0;
+  }
+
+  const tickSize = await getTickSizeFromSymbol(symbol);
+  if (!tickSize || tickSize <= 0) {
+    return price;
+  }
+
+  const steps = Math.round(price / tickSize);
+  const rounded = steps * tickSize;
+  
+  const precision = getPriceFormatFromTickSize(tickSize).precision;
+  return Number(rounded.toFixed(precision));
+};
+
 export { getTickSizeFromSymbol };
 
