@@ -111,14 +111,6 @@ export const useChartDataUpdates = (
             lastCandleTimeRef.current = candlestickData[candlestickData.length - 1].time;
           }
 
-          const rightPriceScale = chart.current.priceScale("right");
-          if (rightPriceScale) {
-            rightPriceScale.applyOptions({
-              entireTextOnly: false,
-              drawTicks: true,
-            });
-          }
-
           const storedLastCandle = getLastCandle(currentSymbol, currentInterval);
           if (storedLastCandle && storedLastCandle.date && storedLastCandle.date instanceof Date) {
             const storedTime = storedLastCandle.date.getTime() / 1000;
