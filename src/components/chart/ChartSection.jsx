@@ -1,11 +1,23 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import ChartControls from "../controls/ChartControls";
 import { PriceChart } from "./PriceChart";
 import { useChartData } from "../../contexts/ChartDataContext";
+import { saveTopChartTimeframe, loadTopChartTimeframe } from "../../services/localStorageUtils";
+import { INTERVALS } from "../../constants";
 import "../../styles/styles.css";
 
+const VALID_INTERVALS = new Set(INTERVALS.map(i => i.value));
+
 const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onChartReady = null, onDrawingToolDeactivate = null, firstRowContent = null, secondRowCenter = null, secondRowRight = null, volumeAreaHeight = 0.07, limit = 500, chartKey = "chart1h", collapseButtonProps = null }) => {
-  const [interval, setInterval] = useState(initialInterval);
+  const isTopChart = chartKey === "chart5m";
+  
+  const [interval, setInterval] = useState(() => {
+    if (isTopChart) {
+      const saved = loadTopChartTimeframe(initialInterval);
+      return VALID_INTERVALS.has(saved) ? saved : initialInterval;
+    }
+    return initialInterval;
+  });
   const containerRef = React.useRef(null);
   const controlsRef = React.useRef(null);
   const [chartHeight, setChartHeight] = React.useState(400);
@@ -17,6 +29,12 @@ const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onCh
     }
     return data[data.length - 1];
   }, [data]);
+
+  useEffect(() => {
+    if (isTopChart) {
+      saveTopChartTimeframe(interval);
+    }
+  }, [interval, isTopChart]);
 
   React.useEffect(() => {
     const updateHeight = () => {

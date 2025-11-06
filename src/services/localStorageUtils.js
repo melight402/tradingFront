@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   TVX_VALUE: 'tradingFront_tvxValue',
   TAKE_PROFIT: 'tradingFront_takeProfit',
   BOTTOM_CHARTS_COLLAPSED: 'tradingFront_bottomChartsCollapsed',
+  TOP_CHART_TIMEFRAME: 'tradingFront_topChartTimeframe',
 };
 
 
@@ -159,6 +160,27 @@ export const loadBottomChartsCollapsed = (defaultValue = false) => {
     return defaultValue;
   } catch (error) {
     console.warn('Failed to load bottom charts collapsed state from localStorage:', error);
+    return defaultValue;
+  }
+};
+
+export const saveTopChartTimeframe = (timeframe) => {
+  try {
+    if (timeframe) {
+      localStorage.setItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME, timeframe);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME);
+    }
+  } catch (error) {
+    console.warn('Failed to save top chart timeframe to localStorage:', error);
+  }
+};
+
+export const loadTopChartTimeframe = (defaultValue = '5m') => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME) || defaultValue;
+  } catch (error) {
+    console.warn('Failed to load top chart timeframe from localStorage:', error);
     return defaultValue;
   }
 };
