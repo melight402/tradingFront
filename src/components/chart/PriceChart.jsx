@@ -89,9 +89,11 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
                 };
               }
             } catch {
+      void 0;
               void 0;
             }
           } catch {
+      void 0;
             void 0;
           }
           
@@ -100,6 +102,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
           }
         }
       } catch {
+      void 0;
         void 0;
       }
     }
@@ -213,9 +216,11 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
                 };
               }
             } catch {
+      void 0;
               void 0;
             }
           } catch {
+      void 0;
             void 0;
           }
         }
@@ -224,6 +229,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
           setChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current, state);
         }
       } catch {
+      void 0;
         void 0;
       }
     }

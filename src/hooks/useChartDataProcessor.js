@@ -30,6 +30,7 @@ export const useChartDataProcessor = () => {
     try {
       tickSize = await getTickSizeFromSymbol(symbol);
     } catch {
+      void 0;
       tickSize = null;
     }
 
@@ -66,6 +67,7 @@ export const useChartDataProcessor = () => {
           candlestickDataMap.set(time, candle);
         }
       } catch {
+      void 0;
         void 0;
       }
     });
@@ -113,6 +115,7 @@ export const useChartDataProcessor = () => {
           volumeDataMap.set(time, volume);
         }
       } catch {
+      void 0;
         void 0;
       }
     });

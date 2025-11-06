@@ -12,8 +12,8 @@ export const saveChartState = (chartKey, symbol, interval, state) => {
     } else {
       localStorage.removeItem(key);
     }
-  } catch (error) {
-    console.warn('Failed to save chart state to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -25,8 +25,8 @@ export const loadChartState = (chartKey, symbol, interval) => {
       return JSON.parse(saved);
     }
     return null;
-  } catch (error) {
-    console.warn('Failed to load chart state from localStorage:', error);
+  } catch {
+      void 0;
     return null;
   }
 };
@@ -47,8 +47,8 @@ export const clearAllChartStates = () => {
       localStorage.removeItem(key);
     });
     
-  } catch (error) {
-    console.warn('Failed to clear all chart states from localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 

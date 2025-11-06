@@ -48,6 +48,7 @@ export const ChartDataProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useChartData = (key, symbol, interval, limit = 500) => {
   const context = useContext(ChartDataContext);
   

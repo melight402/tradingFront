@@ -64,6 +64,7 @@ export const switchWebSocketToSymbol = (symbol) => {
       }
     } catch {
       void 0;
+      void 0;
     }
   };
   

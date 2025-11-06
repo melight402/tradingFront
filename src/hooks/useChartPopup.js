@@ -85,6 +85,7 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
         
         updateStateIfChanged(newState);
       } catch {
+      void 0;
         updateStateIfChanged({ open: 0, high: 0, low: 0, close: 0 });
       }
     };
@@ -96,6 +97,7 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
         try {
           chart.current.subscribeCrosshairMove(crosshairHandlerRef.current);
         } catch {
+      void 0;
           void 0;
         }
       }
@@ -107,6 +109,7 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
         try {
           chart.current.unsubscribeCrosshairMove(crosshairHandlerRef.current);
         } catch {
+      void 0;
           void 0;
         }
       }

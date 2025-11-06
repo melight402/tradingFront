@@ -64,9 +64,8 @@ export const usePositionExportFlow = (
       } else {
         alert(`Успешно экспортировано ${positions.length} позиций`);
       }
-    } catch (error) {
-      console.error("Ошибка при экспорте:", error);
-      alert(`Ошибка при экспорте: ${error.message}`);
+    } catch (err) {
+      alert(`Ошибка при экспорте: ${err.message}`);
     } finally {
       setIsExporting(false);
     }

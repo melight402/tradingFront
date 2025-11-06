@@ -97,7 +97,8 @@ const switchWebSocketToSymbol = (symbol) => {
       if (data && data.p && data.q && data.T) {
         updateSumsForAllIntervals(symbol, data);
       }
-    } catch (err) {
+    } catch {
+      void 0;
       void 0;
     }
   };

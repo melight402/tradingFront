@@ -24,10 +24,9 @@ export const TopChartRightControls = ({
     try {
       await placeMarketOrder("BUY", symbol, risk, stopLossPrice, ratio, orderType);
       alert("Ордер на покупку успешно размещен");
-    } catch (error) {
-      const errorMessage = error.message || "Неизвестная ошибка";
+    } catch (err) {
+      const errorMessage = err.message || "Неизвестная ошибка";
       alert(`Ошибка при размещении ордера: ${errorMessage}`);
-      console.error("Ошибка размещения ордера:", error);
     }
   };
 
@@ -35,10 +34,9 @@ export const TopChartRightControls = ({
     try {
       await placeMarketOrder("SELL", symbol, risk, stopLossPrice, ratio, orderType);
       alert("Ордер на продажу успешно размещен");
-    } catch (error) {
-      const errorMessage = error.message || "Неизвестная ошибка";
+    } catch (err) {
+      const errorMessage = err.message || "Неизвестная ошибка";
       alert(`Ошибка при размещении ордера: ${errorMessage}`);
-      console.error("Ошибка размещения ордера:", error);
     }
   };
 

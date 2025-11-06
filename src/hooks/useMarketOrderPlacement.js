@@ -156,38 +156,30 @@ export const useMarketOrderPlacement = () => {
         risk: risk.toString(),
       };
 
-      try {
-        await openPosition(mainOrderData, null);
-      } catch (error) {
-        throw error;
-      }
+      await openPosition(mainOrderData, null);
 
       try {
         await openPosition(stopLimitOrderData, null);
-      } catch (error) {
-        console.error("Ошибка при размещении лимитного стоп-лосса:", error);
-        throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить лимитный стоп-лосс: ${error.message}`);
+      } catch (err) {
+        throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить лимитный стоп-лосс: ${err.message}`);
       }
 
       try {
         await openPosition(takeProfitLimitOrderData, null);
-      } catch (error) {
-        console.error("Ошибка при размещении лимитного тейк-профита:", error);
-        throw new Error(`Ордер на открытие позиции и лимитный стоп-лосс размещены, но не удалось разместить лимитный тейк-профит: ${error.message}`);
+      } catch (err) {
+        throw new Error(`Ордер на открытие позиции и лимитный стоп-лосс размещены, но не удалось разместить лимитный тейк-профит: ${err.message}`);
       }
 
       try {
         await openPosition(stopMarketOrderData, null);
-      } catch (error) {
-        console.error("Ошибка при размещении рыночного стоп-лосса:", error);
-        throw new Error(`Ордер на открытие позиции, лимитный стоп-лосс и лимитный тейк-профит размещены, но не удалось разместить рыночный стоп-лосс: ${error.message}`);
+      } catch (err) {
+        throw new Error(`Ордер на открытие позиции, лимитный стоп-лосс и лимитный тейк-профит размещены, но не удалось разместить рыночный стоп-лосс: ${err.message}`);
       }
 
       try {
         await openPosition(takeProfitMarketOrderData, null);
-      } catch (error) {
-        console.error("Ошибка при размещении рыночного тейк-профита:", error);
-        throw new Error(`Ордер на открытие позиции, лимитные и рыночный стоп-лосс размещены, но не удалось разместить рыночный тейк-профит: ${error.message}`);
+      } catch (err) {
+        throw new Error(`Ордер на открытие позиции, лимитные и рыночный стоп-лосс размещены, но не удалось разместить рыночный тейк-профит: ${err.message}`);
       }
     } else {
       const stopOrderData = {
@@ -222,24 +214,18 @@ export const useMarketOrderPlacement = () => {
         risk: risk.toString(),
       };
 
-      try {
-        await openPosition(mainOrderData, null);
-      } catch (error) {
-        throw error;
-      }
+      await openPosition(mainOrderData, null);
 
       try {
         await openPosition(stopOrderData, null);
-      } catch (error) {
-        console.error("Ошибка при размещении стоп-лосса:", error);
-        throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить стоп-лосс: ${error.message}`);
+      } catch (err) {
+        throw new Error(`Ордер на открытие позиции размещен, но не удалось разместить стоп-лосс: ${err.message}`);
       }
 
       try {
         await openPosition(takeProfitOrderData, null);
-      } catch (error) {
-        console.error("Ошибка при размещении тейк-профита:", error);
-        throw new Error(`Ордер на открытие позиции и стоп-лосс размещены, но не удалось разместить тейк-профит: ${error.message}`);
+      } catch (err) {
+        throw new Error(`Ордер на открытие позиции и стоп-лосс размещены, но не удалось разместить тейк-профит: ${err.message}`);
       }
     }
   }, []);

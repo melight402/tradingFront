@@ -83,8 +83,8 @@ export const useLineToolRestore = (
                     } else {
                       lineToolsRestoredRef.current = true;
                     }
-                  } catch (error) {
-                    console.warn('Failed to restore line tools:', error);
+                  } catch {
+      void 0;
                     lineToolsRestoredRef.current = true;
                   }
                 } else {

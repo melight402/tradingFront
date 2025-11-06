@@ -134,6 +134,7 @@ export const useChartDataUpdates = (
 
                 lastCandleTimeRef.current = storedTime;
               } catch {
+      void 0;
                 void 0;
               }
             }
@@ -189,6 +190,7 @@ export const useChartDataUpdates = (
                               maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
                             });
                           } catch {
+      void 0;
                             void 0;
                           }
                         }
@@ -208,13 +210,13 @@ export const useChartDataUpdates = (
               isInitialRender.current = false;
             }
           }
-        } catch (error) {
-          console.error("Error setting chart data:", error);
+        } catch {
+      void 0;
           isUpdatingDataRef.current = false;
         }
       });
-    } catch (error) {
-      console.error("Error updating chart data:", error);
+    } catch {
+      void 0;
       isUpdatingDataRef.current = false;
     }
   }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, chartKey, processChartData, getChartState]);

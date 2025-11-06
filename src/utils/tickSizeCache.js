@@ -28,7 +28,8 @@ const getSymbolInfo = async (symbol) => {
 
     symbolInfoCache.set(symbol, symbolInfo);
     return symbolInfo;
-  } catch (error) {
+  } catch {
+      void 0;
     return null;
   }
 };

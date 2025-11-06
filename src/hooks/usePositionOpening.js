@@ -96,8 +96,8 @@ export const usePositionOpening = () => {
       await openPosition(positionData, screenshotBlob);
       localStorage.setItem(`lastOpenPosition_${symbol}`, JSON.stringify(positionData));
       return true;
-    } catch (error) {
-      alert(`Ошибка при открытии позиции: ${error.message}`);
+    } catch (err) {
+      alert(`Ошибка при открытии позиции: ${err.message}`);
       return false;
     }
   };

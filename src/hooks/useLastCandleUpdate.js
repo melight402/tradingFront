@@ -35,8 +35,8 @@ export const useLastCandleUpdate = (chart, candlestickSeries, volumeSeries, last
         value: lastCandle.volume,
         color: lastCandle.close >= lastCandle.open ? "#26a69a80" : "#ef535080",
       });
-    } catch (error) {
-      console.error("Error updating last candle:", error);
+    } catch {
+      void 0;
     }
   }, [chart, candlestickSeries, volumeSeries, lastCandleTimeRef]);
 

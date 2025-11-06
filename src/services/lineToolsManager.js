@@ -14,8 +14,8 @@ export const saveLineToolsToStorage = (symbol, interval, lineToolsJson) => {
     } else {
       localStorage.removeItem(key);
     }
-  } catch (error) {
-    console.warn('Failed to save line tools to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -29,8 +29,8 @@ export const loadLineToolsFromStorage = (symbol, interval) => {
       return saved;
     }
     return null;
-  } catch (error) {
-    console.warn('Failed to load line tools from localStorage:', error);
+  } catch {
+      void 0;
     return null;
   }
 };
@@ -40,8 +40,8 @@ export const removeLineToolsFromStorage = (symbol, interval) => {
   try {
     const key = getLineToolsStorageKey(symbol, interval);
     localStorage.removeItem(key);
-  } catch (error) {
-    console.warn('Failed to remove line tools from localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -62,8 +62,8 @@ export const removeAllLineToolsFromStorage = () => {
       localStorage.removeItem(key);
     });
     
-  } catch (error) {
-    console.warn('Failed to remove all line tools from localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -78,8 +78,8 @@ export const exportLineToolsFromChart = (chart) => {
       return exported;
     }
     return null;
-  } catch (error) {
-    console.warn('Failed to export line tools from chart:', error);
+  } catch {
+      void 0;
     return null;
   }
 };
@@ -93,8 +93,8 @@ export const importLineToolsToChart = (chart, lineToolsJson) => {
     chart.removeAllLineTools();
     chart.importLineTools(lineToolsJson);
     return true;
-  } catch (error) {
-    console.warn('Failed to import line tools to chart:', error);
+  } catch {
+      void 0;
     return false;
   }
 };

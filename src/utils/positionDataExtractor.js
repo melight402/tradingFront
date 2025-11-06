@@ -44,8 +44,8 @@ export const extractPositionData = (chart5mRef, chart1hRef, chart1dRef, symbol, 
           });
         }
       });
-    } catch (error) {
-      console.warn(`Ошибка при извлечении данных из графика ${interval}:`, error);
+    } catch {
+      void 0;
     }
   });
 

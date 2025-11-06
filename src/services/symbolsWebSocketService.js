@@ -43,7 +43,8 @@ const handleMessage = (event) => {
         callback(Array.from(symbolsData.values()));
       });
     });
-  } catch (err) {
+  } catch {
+      void 0;
     void 0;
   }
 };

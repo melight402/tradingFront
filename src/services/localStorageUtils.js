@@ -15,8 +15,8 @@ const STORAGE_KEYS = {
 export const saveSelectedSymbol = (symbol) => {
   try {
     localStorage.setItem(STORAGE_KEYS.SELECTED_SYMBOL, symbol);
-  } catch (error) {
-    console.warn('Failed to save selected symbol to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -25,8 +25,8 @@ export const loadSelectedSymbol = (defaultSymbol = 'BTCUSDT') => {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.SELECTED_SYMBOL);
     return saved || defaultSymbol;
-  } catch (error) {
-    console.warn('Failed to load selected symbol from localStorage:', error);
+  } catch {
+      void 0;
     return defaultSymbol;
   }
 };
@@ -36,8 +36,8 @@ export const loadSelectedSymbol = (defaultSymbol = 'BTCUSDT') => {
 export const saveRisk = (risk) => {
   try {
     localStorage.setItem(STORAGE_KEYS.RISK_VALUE, JSON.stringify(risk));
-  } catch (error) {
-    console.warn('Failed to save risk to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -52,8 +52,8 @@ export const loadRisk = (defaultValue = 1) => {
       }
     }
     return defaultValue;
-  } catch (error) {
-    console.warn('Failed to load risk from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -65,8 +65,8 @@ export const saveBuySell = (value) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.BUY_SELL);
     }
-  } catch (error) {
-    console.warn('Failed to save buySell to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -76,8 +76,8 @@ export const loadBuySell = (defaultValue = "BUY") => {
     if (value === "buy") return "BUY";
     if (value === "sell") return "SELL";
     return value || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load buySell from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -89,16 +89,16 @@ export const saveOrderType = (value) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.ORDER_TYPE);
     }
-  } catch (error) {
-    console.warn('Failed to save orderType to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
 export const loadOrderType = (defaultValue = "MARKET") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.ORDER_TYPE) || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load orderType from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -110,16 +110,16 @@ export const saveTVXValue = (value) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.TVX_VALUE);
     }
-  } catch (error) {
-    console.warn('Failed to save tvxValue to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
 export const loadTVXValue = (defaultValue = "trend_after_pullback") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TVX_VALUE) || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load tvxValue from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -131,16 +131,16 @@ export const saveTakeProfit = (value) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.TAKE_PROFIT);
     }
-  } catch (error) {
-    console.warn('Failed to save takeProfit to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
 export const loadTakeProfit = (defaultValue = "3") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TAKE_PROFIT) || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load takeProfit from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -148,8 +148,8 @@ export const loadTakeProfit = (defaultValue = "3") => {
 export const saveBottomChartsCollapsed = (collapsed) => {
   try {
     localStorage.setItem(STORAGE_KEYS.BOTTOM_CHARTS_COLLAPSED, JSON.stringify(collapsed));
-  } catch (error) {
-    console.warn('Failed to save bottom charts collapsed state to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -160,8 +160,8 @@ export const loadBottomChartsCollapsed = (defaultValue = false) => {
       return JSON.parse(saved);
     }
     return defaultValue;
-  } catch (error) {
-    console.warn('Failed to load bottom charts collapsed state from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -173,16 +173,16 @@ export const saveTopChartTimeframe = (timeframe) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME);
     }
-  } catch (error) {
-    console.warn('Failed to save top chart timeframe to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
 export const loadTopChartTimeframe = (defaultValue = '5m') => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME) || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load top chart timeframe from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -194,16 +194,16 @@ export const saveRatio = (value) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.RATIO);
     }
-  } catch (error) {
-    console.warn('Failed to save ratio to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
 export const loadRatio = (defaultValue = "2") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.RATIO) || defaultValue;
-  } catch (error) {
-    console.warn('Failed to load ratio from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };
@@ -215,8 +215,8 @@ export const saveATRValue = (value) => {
     } else {
       localStorage.removeItem(STORAGE_KEYS.ATR_VALUE);
     }
-  } catch (error) {
-    console.warn('Failed to save ATR value to localStorage:', error);
+  } catch {
+      void 0;
   }
 };
 
@@ -230,8 +230,8 @@ export const loadATRValue = (defaultValue = 1) => {
       }
     }
     return defaultValue;
-  } catch (error) {
-    console.warn('Failed to load ATR value from localStorage:', error);
+  } catch {
+      void 0;
     return defaultValue;
   }
 };

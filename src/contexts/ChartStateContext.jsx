@@ -35,6 +35,7 @@ export const ChartStateProvider = ({ children }) => {
               }
             }
           } catch {
+      void 0;
             void 0;
           }
         } else if (key.startsWith("tradingFront_lineTools_")) {
@@ -52,11 +53,13 @@ export const ChartStateProvider = ({ children }) => {
               }
             }
           } catch {
+      void 0;
             void 0;
           }
         }
       });
     } catch {
+      void 0;
       void 0;
     }
 
@@ -115,6 +118,7 @@ export const ChartStateProvider = ({ children }) => {
   return <ChartStateContext.Provider value={value}>{children}</ChartStateContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useChartState = () => {
   const context = useContext(ChartStateContext);
   if (!context) {

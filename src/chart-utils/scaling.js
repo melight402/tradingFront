@@ -13,6 +13,7 @@ export const setHorizontalScale = (chart, candleCount, candlestickData) => {
       to: lastCandleTime
     });
   } catch {
+      void 0;
     void 0;
   }
 };
@@ -39,6 +40,7 @@ export const setVerticalScale = (chart, candlestickData) => {
       autoScale: true,
     });
   } catch {
+      void 0;
     void 0;
   }
 };
@@ -92,6 +94,7 @@ export const addRightPadding = (chart, candlestickSeries, paddingPx = 100) => {
       to: logicalRange.to + logicalShift
     });
   } catch {
+      void 0;
     void 0;
   }
 };

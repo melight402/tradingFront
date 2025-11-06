@@ -1,3 +1,5 @@
+import { calculateEntryPtCoins, calculateEntryPtUSDT } from "../utils/positionCalculations";
+
 export const usePositionExtractor = () => {
   const getLastPositionTool = (chart5mRef, chart1hRef, chart1dRef) => {
     const charts = [
@@ -32,8 +34,8 @@ export const usePositionExtractor = () => {
             }
           }
         });
-      } catch (error) {
-        console.warn(`Ошибка при извлечении данных из графика ${interval}:`, error);
+      } catch {
+      void 0;
       }
     });
 
@@ -48,7 +50,6 @@ export const usePositionExtractor = () => {
     ].filter((item) => item.chart !== null);
 
     const allPositions = [];
-    const { calculateEntryPtCoins, calculateEntryPtUSDT } = require("../utils/positionCalculations");
 
     charts.forEach(({ chart, interval }) => {
       try {
@@ -85,8 +86,8 @@ export const usePositionExtractor = () => {
             });
           }
         });
-      } catch (error) {
-        console.warn(`Ошибка при извлечении данных из графика ${interval}:`, error);
+      } catch {
+      void 0;
       }
     });
 

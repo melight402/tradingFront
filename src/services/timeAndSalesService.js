@@ -1,4 +1,3 @@
-import { getIntervalMs } from './timeAndSalesHelpers';
 import { 
   subscribers, 
   intervalSums, 
@@ -6,7 +5,6 @@ import {
   getCurrentActiveSymbol,
   setCurrentActiveSymbol,
   getGlobalWebSocket,
-  setGlobalWebSocket,
   closeGlobalWebSocket
 } from './timeAndSalesWebSocket';
 
@@ -42,7 +40,8 @@ const fetchTimeAndSalesFromKline = async (symbol, interval) => {
     const sellSum = quoteVolume - takerBuyQuoteVolume;
 
     return { buySum, sellSum };
-  } catch (err) {
+  } catch {
+      void 0;
     return { buySum: 0, sellSum: 0 };
   }
 };

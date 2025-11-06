@@ -29,8 +29,8 @@ export const useLineToolsUpdate = (chart5mRef, chart1hRef, chart1dRef, symbol, r
             }
           });
         }
-      } catch (error) {
-        console.warn('Error updating line tools:', error);
+      } catch {
+      void 0;
       }
     });
   }, [symbol, risk, chart5mRef, chart1hRef, chart1dRef]);

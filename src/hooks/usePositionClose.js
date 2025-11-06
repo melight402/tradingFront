@@ -22,6 +22,7 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => 
     try {
       positionData = JSON.parse(lastOpenPositionData);
     } catch {
+      void 0;
       alert("Ошибка при чтении данных открытой позиции");
       return false;
     }
@@ -43,9 +44,8 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => 
       let screenshotBlob = null;
       try {
         screenshotBlob = await takeScreenshot();
-        console.log('Screenshot taken successfully, size:', screenshotBlob?.size);
-      } catch (screenshotError) {
-        console.error('Failed to take screenshot:', screenshotError);
+      } catch {
+      void 0;
         const shouldContinue = confirm('Не удалось создать скриншот при закрытии. Продолжить закрытие позиции без скриншота?');
         if (!shouldContinue) {
           setIsClosing(false);
@@ -62,24 +62,21 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => 
         takeProfitPrice: toolData.takeProfitPrice,
       };
       
-      console.log('Closing position with data:', closeData);
-      console.log('Screenshot blob:', screenshotBlob ? `Present, size: ${screenshotBlob.size}` : 'Missing');
       
       const result = await closePosition(closeData, screenshotBlob);
       
-      console.log('Close position result:', result);
       if (result.data?.closeScreenshotPath) {
-        console.log('Close screenshot path saved:', result.data.closeScreenshotPath);
+        void 0;
       } else {
-        console.warn('No close screenshot path in response');
+        void 0;
       }
 
       localStorage.removeItem(`lastOpenPosition_${symbol}`);
 
       alert(`Позиция закрыта с ${profitLoss === "profit" ? "прибылью" : "убытком"}`);
       return true;
-    } catch (error) {
-      alert(`Ошибка при закрытии позиции: ${error.message}`);
+    } catch (err) {
+      alert(`Ошибка при закрытии позиции: ${err.message}`);
       return false;
     } finally {
       setIsClosing(false);

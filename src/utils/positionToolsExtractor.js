@@ -31,8 +31,8 @@ export const getLastPositionTool = (chart5mRef, chart1hRef, chart1dRef) => {
           }
         }
       });
-    } catch (error) {
-      console.warn(`Ошибка при извлечении данных из графика ${interval}:`, error);
+    } catch {
+      void 0;
     }
   });
 

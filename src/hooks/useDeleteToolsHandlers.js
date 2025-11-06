@@ -27,6 +27,7 @@ export const useDeleteToolsHandlers = (chart5mRef, chart1hRef, chart1dRef, symbo
             }
           }, 100);
         } catch {
+      void 0;
           void 0;
         }
       });
@@ -42,6 +43,7 @@ export const useDeleteToolsHandlers = (chart5mRef, chart1hRef, chart1dRef, symbo
         try {
           chart.removeAllLineTools();
         } catch {
+      void 0;
           void 0;
         }
       });

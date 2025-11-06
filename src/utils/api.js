@@ -83,18 +83,16 @@ export const closePosition = async (closeData, screenshotBlob) => {
   
   if (screenshotBlob) {
     formData.append('screenshot', screenshotBlob, 'screenshot.png');
-    console.log('✅ Screenshot blob added to FormData, size:', screenshotBlob.size, 'bytes, type:', screenshotBlob.type);
     
     for (const pair of formData.entries()) {
       if (pair[0] === 'screenshot') {
-        console.log('FormData entry "screenshot":', pair[0], 'size:', pair[1].size || 'unknown');
+        void 0;
       }
     }
   } else {
-    console.error('❌ No screenshot blob provided to closePosition');
+    void 0;
   }
 
-  console.log('Sending close position request to:', `${API_BASE_URL}/positions/trading/close`);
   const response = await fetch(`${API_BASE_URL}/positions/trading/close`, {
     method: 'POST',
     body: formData,
@@ -102,16 +100,14 @@ export const closePosition = async (closeData, screenshotBlob) => {
 
   if (!response.ok) {
     const error = await response.json();
-    console.error('❌ Close position request failed:', error);
     throw new Error(error.error || 'Failed to close position');
   }
 
   const result = await response.json();
-  console.log('✅ Position closed successfully. Response:', result);
   if (result.data?.closeScreenshotPath) {
-    console.log('✅ Close screenshot path in response:', result.data.closeScreenshotPath);
+    void 0;
   } else {
-    console.error('❌ No close screenshot path in response!');
+    void 0;
   }
   return result;
 };
