@@ -80,7 +80,7 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
     if (historical) {
       intervalSums.set(key, historical);
       
-      if (subscriber.callback && getCurrentActiveSymbol() === symbol) {
+      if (subscriber.callback) {
         subscriber.callback(historical);
       }
     }
@@ -106,7 +106,7 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
       loadHistoricalData();
     } else {
       const existingSums = intervalSums.get(key);
-      if (existingSums && subscriber.callback && getCurrentActiveSymbol() === symbol) {
+      if (existingSums && subscriber.callback) {
         subscriber.callback(existingSums);
       } else {
         loadHistoricalData();
