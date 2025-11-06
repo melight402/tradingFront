@@ -4,7 +4,7 @@ import { roundQuantityToStepSize, roundPriceToTickSize } from "../utils/tickSize
 import { openPosition } from "../utils/api";
 
 export const useMarketOrderPlacement = () => {
-  const placeMarketOrder = useCallback(async (side, symbol, risk, atrValue, ratio, orderType = "MARKET") => {
+  const placeMarketOrder = useCallback(async (side, symbol, risk, stopLossPrice, ratio, orderType = "MARKET") => {
     const entryPrice = getCurrentPrice(symbol);
     
     if (!entryPrice) {
@@ -16,8 +16,8 @@ export const useMarketOrderPlacement = () => {
       throw new Error("Неверное значение Ratio");
     }
 
-    if (!atrValue || atrValue <= 0) {
-      throw new Error("ATR должен быть больше 0");
+    if (!stopLossPrice || stopLossPrice <= 0) {
+      throw new Error("Цена стоп-лосса не найдена. Выставьте горизонтальный уровень на графике.");
     }
 
     if (!risk || risk <= 0) {
@@ -26,24 +26,30 @@ export const useMarketOrderPlacement = () => {
 
     const isLong = side === "BUY";
     
-    const stopPrice = isLong 
-      ? entryPrice - atrValue 
-      : entryPrice + atrValue;
-
-    const priceDifference = Math.abs(entryPrice - stopPrice);
+    const priceDifference = Math.abs(entryPrice - stopLossPrice);
     
     if (priceDifference === 0) {
       throw new Error("Разница между ценой входа и стоп-лоссом равна нулю");
+    }
+
+    const isValidStopLoss = isLong 
+      ? stopLossPrice < entryPrice 
+      : stopLossPrice > entryPrice;
+
+    if (!isValidStopLoss) {
+      throw new Error(isLong 
+        ? "Стоп-лосс для LONG должен быть ниже цены входа" 
+        : "Стоп-лосс для SHORT должен быть выше цены входа");
     }
 
     let quantity = risk / priceDifference;
     quantity = roundQuantityToStepSize(quantity, symbol);
 
     if (quantity <= 0) {
-      throw new Error("Рассчитанное количество слишком мало. Увеличьте риск или уменьшите ATR.");
+      throw new Error("Рассчитанное количество слишком мало. Увеличьте риск или измените стоп-лосс.");
     }
 
-    const takeProfitDistance = atrValue * ratioNumber;
+    const takeProfitDistance = priceDifference * ratioNumber;
     const takeProfit = isLong
       ? entryPrice + takeProfitDistance
       : entryPrice - takeProfitDistance;
@@ -65,19 +71,19 @@ export const useMarketOrderPlacement = () => {
       quantity: quantity.toString(),
       positionSide,
       timeInForce: isLimitOrder ? "GTC" : undefined,
-      stopLossPrice: stopPrice.toString(),
+      stopLossPrice: stopLossPrice.toString(),
       takeProfitPrice: takeProfit.toString(),
       risk: risk.toString(),
     };
 
     if (isLimitOrder) {
       const stopLimitActivationPrice = isLong 
-        ? await roundPriceToTickSize(stopPrice * 1.1, symbol)
-        : await roundPriceToTickSize(stopPrice * 0.9, symbol);
+        ? await roundPriceToTickSize(stopLossPrice * 1.1, symbol)
+        : await roundPriceToTickSize(stopLossPrice * 0.9, symbol);
       
       const stopLimitExecutionPrice = isLong
-        ? await roundPriceToTickSize(stopPrice * 1.05, symbol)
-        : await roundPriceToTickSize(stopPrice * 0.95, symbol);
+        ? await roundPriceToTickSize(stopLossPrice * 1.05, symbol)
+        : await roundPriceToTickSize(stopLossPrice * 0.95, symbol);
       
       const takeProfitLimitActivationPrice = isLong
         ? await roundPriceToTickSize(takeProfit * 0.9, symbol)
@@ -98,7 +104,7 @@ export const useMarketOrderPlacement = () => {
         stopPrice: stopLimitActivationPrice.toString(),
         timeInForce: "GTC",
         workingType: "CONTRACT_PRICE",
-        stopLossPrice: stopPrice.toString(),
+        stopLossPrice: stopLossPrice.toString(),
         takeProfitPrice: takeProfit.toString(),
         risk: risk.toString(),
       };
@@ -111,10 +117,10 @@ export const useMarketOrderPlacement = () => {
         price: entryPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
-        stopPrice: stopPrice.toString(),
+        stopPrice: stopLossPrice.toString(),
         workingType: "CONTRACT_PRICE",
         closePosition: true,
-        stopLossPrice: stopPrice.toString(),
+        stopLossPrice: stopLossPrice.toString(),
         takeProfitPrice: takeProfit.toString(),
         risk: risk.toString(),
       };
@@ -130,7 +136,7 @@ export const useMarketOrderPlacement = () => {
         stopPrice: takeProfitLimitActivationPrice.toString(),
         timeInForce: "GTC",
         workingType: "CONTRACT_PRICE",
-        stopLossPrice: stopPrice.toString(),
+        stopLossPrice: stopLossPrice.toString(),
         takeProfitPrice: takeProfit.toString(),
         risk: risk.toString(),
       };
@@ -145,7 +151,7 @@ export const useMarketOrderPlacement = () => {
         stopPrice: takeProfit.toString(),
         workingType: "CONTRACT_PRICE",
         closePosition: true,
-        stopLossPrice: stopPrice.toString(),
+        stopLossPrice: stopLossPrice.toString(),
         takeProfitPrice: takeProfit.toString(),
         risk: risk.toString(),
       };
@@ -192,10 +198,10 @@ export const useMarketOrderPlacement = () => {
         price: entryPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
-        stopPrice: stopPrice.toString(),
+        stopPrice: stopLossPrice.toString(),
         workingType: "CONTRACT_PRICE",
         closePosition: true,
-        stopLossPrice: stopPrice.toString(),
+        stopLossPrice: stopLossPrice.toString(),
         takeProfitPrice: takeProfit.toString(),
         risk: risk.toString(),
       };
@@ -211,7 +217,7 @@ export const useMarketOrderPlacement = () => {
         stopPrice: takeProfit.toString(),
         timeInForce: "GTC",
         workingType: "CONTRACT_PRICE",
-        stopLossPrice: stopPrice.toString(),
+        stopLossPrice: stopLossPrice.toString(),
         takeProfitPrice: takeProfit.toString(),
         risk: risk.toString(),
       };
