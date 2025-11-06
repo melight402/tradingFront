@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import ChartControls from "../controls/ChartControls";
+import ChartHeader from "./ChartHeader";
 import { PriceChart } from "./PriceChart";
 import { useChartData } from "../../contexts/ChartDataContext";
 import { saveTopChartTimeframe, loadTopChartTimeframe } from "../../services/localStorageUtils";
@@ -75,7 +75,7 @@ const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onCh
   return (
     <div ref={containerRef} className="chart-section-container">
       <div ref={controlsRef} className="chart-section-controls">
-        <ChartControls
+        <ChartHeader
           interval={interval}
           onIntervalChange={setInterval}
           firstRowContent={firstRowContent}
@@ -84,6 +84,7 @@ const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onCh
           symbol={symbol}
           lastCandle={lastCandle}
           collapseButtonProps={collapseButtonProps}
+          chartKey={chartKey}
         />
       </div>
       <div className="chart-section-chart-wrapper">

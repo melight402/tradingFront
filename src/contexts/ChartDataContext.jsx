@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import { useChartDataLoader } from "../hooks/useChartDataLoader";
 import { useChartDataCleanup } from "../hooks/useChartDataCleanup";
 import { useChartDataCallback } from "../hooks/useChartDataCallback";
+import { useSocketContext } from "./SocketContext";
 
 const ChartDataContext = createContext(null);
 
@@ -12,6 +13,7 @@ export const ChartDataProvider = ({ children }) => {
   const currentSymbolRefs = useRef({});
   const currentIntervalRefs = useRef({});
   const instanceIdRefs = useRef({});
+  const { subscribeToCandles } = useSocketContext();
 
   const { loadChartData } = useChartDataLoader(
     setChartData,
@@ -19,7 +21,8 @@ export const ChartDataProvider = ({ children }) => {
     onLastCandleUpdateRefs,
     currentSymbolRefs,
     currentIntervalRefs,
-    instanceIdRefs
+    instanceIdRefs,
+    subscribeToCandles
   );
 
   const { cleanup } = useChartDataCleanup(

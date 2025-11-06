@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useMemo } from "react";
+import { SocketProvider } from "./contexts/SocketContext";
 import { ChartDataProvider } from "./contexts/ChartDataContext";
 import { ChartStateProvider } from "./contexts/ChartStateContext";
 import { useTradingState } from "./hooks/useTradingState";
@@ -116,17 +117,19 @@ const App = () => {
   }, []);
 
   return (
-    <ChartStateProvider>
-      <AppContent
-        tradingState={tradingState}
-        chart5mRef={chart5mRef}
-        chart1hRef={chart1hRef}
-        chart1dRef={chart1dRef}
-        handleChart5mReady={handleChart5mReady}
-        handleChart1hReady={handleChart1hReady}
-        handleChart1dReady={handleChart1dReady}
-      />
-    </ChartStateProvider>
+    <SocketProvider>
+      <ChartStateProvider>
+        <AppContent
+          tradingState={tradingState}
+          chart5mRef={chart5mRef}
+          chart1hRef={chart1hRef}
+          chart1dRef={chart1dRef}
+          handleChart5mReady={handleChart5mReady}
+          handleChart1hReady={handleChart1hReady}
+          handleChart1dReady={handleChart1dReady}
+        />
+      </ChartStateProvider>
+    </SocketProvider>
   );
 };
 

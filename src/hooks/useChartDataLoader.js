@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { fetchWithRetry } from "../utils/fetchWithRetry";
 import { convertKlineData } from "../utils/klineDataConverter";
-import { subscribeToPriceUpdates } from "../services/priceUpdateService";
 
 export const useChartDataLoader = (
   setChartData,
@@ -9,7 +8,8 @@ export const useChartDataLoader = (
   onLastCandleUpdateRefs,
   currentSymbolRefs,
   currentIntervalRefs,
-  instanceIdRefs
+  instanceIdRefs,
+  subscribeToCandles
 ) => {
   const loadChartData = useCallback((key, symbol, interval, limit) => {
     const instanceId = Symbol();
@@ -75,8 +75,9 @@ export const useChartDataLoader = (
             return;
           }
 
-          if (currentSymbolRefs.current[key] === symbol && currentIntervalRefs.current[key] === interval) {
-            const unsubscribe = subscribeToPriceUpdates(
+          if (currentSymbolRefs.current[key] === symbol && currentIntervalRefs.current[key] === interval && subscribeToCandles) {
+            const unsubscribe = subscribeToCandles(
+              key,
               symbol,
               interval,
               (lastCandle) => {
@@ -127,7 +128,7 @@ export const useChartDataLoader = (
           };
         });
       });
-  }, [setChartData, unsubscribeRefs, onLastCandleUpdateRefs, currentSymbolRefs, currentIntervalRefs, instanceIdRefs]);
+  }, [setChartData, unsubscribeRefs, onLastCandleUpdateRefs, currentSymbolRefs, currentIntervalRefs, instanceIdRefs, subscribeToCandles]);
 
   return { loadChartData };
 };
