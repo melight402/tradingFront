@@ -13,9 +13,7 @@ export const useChartDataUpdates = (
   currentSymbolRef,
   currentIntervalRef,
   isUpdatingDataRef,
-  volumeAreaHeight,
-  isRestoringStateRef,
-  chartKey
+  volumeAreaHeight
 ) => {
   const dataUpdateTimeoutRef = useRef(null);
   const { updateLastCandle } = useLastCandleUpdate(chart, candlestickSeries, volumeSeries, lastCandleTimeRef);
