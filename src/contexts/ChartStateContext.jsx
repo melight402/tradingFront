@@ -1,11 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { loadChartState, saveChartState } from "../services/chartStateStorage";
-import { loadLineToolsFromStorage, saveLineToolsToStorage } from "../services/lineToolsManager";
+import { saveChartState } from "../services/chartStateStorage";
+import { saveLineToolsToStorage } from "../services/lineToolsManager";
 
 const ChartStateContext = createContext(null);
-
-const CHART_KEYS = ["chart5m", "chart1h", "chart1d"];
-const INTERVALS = ["5m", "1h", "1d"];
 
 export const ChartStateProvider = ({ children }) => {
   const [chartStates, setChartStates] = useState({});
