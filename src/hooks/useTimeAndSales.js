@@ -15,11 +15,6 @@ export const useTimeAndSales = (symbol, interval, lastCandle) => {
   }, [lastCandle]);
 
   useEffect(() => {
-    setBuySum(0);
-    setSellSum(0);
-    setLoading(true);
-    setError(null);
-
     if (!lastCandle || !lastCandle.date) {
       setLoading(false);
       return;
@@ -31,6 +26,10 @@ export const useTimeAndSales = (symbol, interval, lastCandle) => {
     if (unsubscribeRef.current && currentKey !== previousKey) {
       unsubscribeRef.current();
       unsubscribeRef.current = null;
+      setBuySum(0);
+      setSellSum(0);
+      setLoading(true);
+      setError(null);
     }
 
     if (!unsubscribeRef.current) {

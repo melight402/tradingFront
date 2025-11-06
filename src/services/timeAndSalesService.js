@@ -54,8 +54,11 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
 
   const symbolSubscribers = subscribers.get(symbol);
   const subscriberId = `${symbol}-${interval}`;
+  const key = `${symbol}-${interval}`;
   
   let subscriber = null;
+  let isNewSubscriber = false;
+  
   for (const sub of symbolSubscribers) {
     if (sub.interval === interval) {
       subscriber = sub;
@@ -68,9 +71,8 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
   if (!subscriber) {
     subscriber = { interval, lastCandle, callback, id: subscriberId };
     symbolSubscribers.add(subscriber);
+    isNewSubscriber = true;
   }
-
-  const key = `${symbol}-${interval}`;
 
   const loadHistoricalData = async () => {
     const historical = await fetchTimeAndSalesFromKline(symbol, interval);
@@ -100,11 +102,15 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
     switchWebSocketToSymbol(symbol);
     loadHistoricalData();
   } else {
-    const existingSums = intervalSums.get(key);
-    if (!existingSums) {
+    if (isNewSubscriber) {
       loadHistoricalData();
-    } else if (subscriber.callback && getCurrentActiveSymbol() === symbol) {
-      subscriber.callback(existingSums);
+    } else {
+      const existingSums = intervalSums.get(key);
+      if (existingSums && subscriber.callback && getCurrentActiveSymbol() === symbol) {
+        subscriber.callback(existingSums);
+      } else {
+        loadHistoricalData();
+      }
     }
   }
 
@@ -168,6 +174,10 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
       }
       
       subscriber.lastCandle = lastCandle;
+      
+      if (!isNewCandle) {
+        return;
+      }
       
       fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
         const currentSums = intervalSums.get(key);
