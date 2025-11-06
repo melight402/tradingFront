@@ -76,5 +76,8 @@ export default defineConfig({
       '@react-financial-charts/series',
       '@react-financial-charts/utils',
     ]
+  },
+  server: {
+    port: 5174
   }
 })
