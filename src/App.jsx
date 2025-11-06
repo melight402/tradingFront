@@ -63,27 +63,25 @@ const App = () => {
       setDrawingTool={setDrawingTool}
       stopPrice={stopPrice}
       setStopPrice={setStopPrice}
-      atrValue={atrValue}
-      setAtrValue={setAtrValue}
-      deleteToolsHandlers={deleteToolsHandlers}
-    />
-  ), [drawingTool, orderType, stopPrice, atrValue, tvxValue, deleteToolsHandlers, setOrderType, setTVXValue, setDrawingTool, setStopPrice, setAtrValue]);
-
-  const topChartSecondRowRight = useMemo(() => (
-    <TopChartRightControls
-      risk={risk}
-      setRisk={tradingState.setRisk}
       profitLoss={profitLoss}
       setProfitLoss={setProfitLoss}
       chart5mRef={chart5mRef}
       chart1hRef={chart1hRef}
       chart1dRef={chart1dRef}
       symbol={symbol}
-      orderType={orderType}
-      tvxValue={tvxValue}
-      stopPrice={stopPrice}
+      risk={risk}
+      deleteToolsHandlers={deleteToolsHandlers}
     />
-  ), [symbol, orderType, tvxValue, risk, stopPrice, profitLoss, tradingState.setRisk, setProfitLoss]);
+  ), [drawingTool, orderType, stopPrice, tvxValue, profitLoss, risk, symbol, chart5mRef, chart1hRef, chart1dRef, deleteToolsHandlers, setOrderType, setTVXValue, setDrawingTool, setStopPrice, setProfitLoss]);
+
+  const topChartSecondRowRight = useMemo(() => (
+    <TopChartRightControls
+      risk={risk}
+      setRisk={tradingState.setRisk}
+      atrValue={atrValue}
+      setAtrValue={setAtrValue}
+    />
+  ), [risk, atrValue, tradingState.setRisk, setAtrValue]);
 
   return (
     <ChartDataProvider>
