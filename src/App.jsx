@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useMemo } from "react";
 import { ChartDataProvider } from "./contexts/ChartDataContext";
+import { ChartStateProvider } from "./contexts/ChartStateContext";
 import { useTradingState } from "./hooks/useTradingState";
 import { useLineToolsUpdate } from "./hooks/useLineToolsUpdate";
 import { useDeleteToolsHandlers } from "./hooks/useDeleteToolsHandlers";
@@ -27,6 +28,8 @@ const App = () => {
     setTVXValue,
     stopPrice,
     setStopPrice,
+    atrValue,
+    setAtrValue,
     ratio,
     setRatio,
     profitLoss,
@@ -80,17 +83,17 @@ const App = () => {
       setRisk={tradingState.setRisk}
       ratio={ratio}
       setRatio={setRatio}
+      atrValue={atrValue}
+      setAtrValue={setAtrValue}
       symbol={symbol}
       orderType={orderType}
-      chart5mRef={chart5mRef}
-      chart1hRef={chart1hRef}
-      chart1dRef={chart1dRef}
     />
-  ), [risk, ratio, symbol, orderType, tradingState.setRisk, setRatio, chart5mRef, chart1hRef, chart1dRef]);
+  ), [risk, ratio, atrValue, symbol, orderType, tradingState.setRisk, setRatio, setAtrValue]);
 
   return (
-    <ChartDataProvider>
-      <div className="app-container">
+    <ChartStateProvider>
+      <ChartDataProvider>
+        <div className="app-container">
         <ChartLayout
           symbol={symbol}
           drawingTool={drawingTool}
@@ -107,8 +110,9 @@ const App = () => {
           selectedSymbol={symbol}
           onSymbolSelect={tradingState.setSymbol}
         />
-      </div>
-    </ChartDataProvider>
+        </div>
+      </ChartDataProvider>
+    </ChartStateProvider>
   );
 };
 

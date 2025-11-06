@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useChartData } from "../../contexts/ChartDataContext";
-import { persistLineToolsFromChart } from "../../services/lineToolsManager";
-import { saveChartState } from "../../services/chartStateStorage";
+import { useChartState } from "../../contexts/ChartStateContext";
+import { exportLineToolsFromChart } from "../../services/lineToolsManager";
 import { useChartInitialization } from "../../hooks/useChartInitialization";
 import { useChartPopup } from "../../hooks/useChartPopup";
 import { useChartDataUpdates } from "../../hooks/useChartDataUpdates";
@@ -29,6 +29,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
   const isUpdatingDataRef = useRef(false);
   
   const { data, loaded, error, setOnLastCandleUpdate } = useChartData(chartKey, symbol, interval, limit);
+  const { setChartState, setLineTools } = useChartState();
 
   const { popupState, setPopupState } = useChartPopup(chart, candlestickSeries, loaded, drawingToolRef);
 
@@ -96,7 +97,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
           }
           
           if (state.logicalRange || state.timeRange || state.priceScale || state.priceRange) {
-            saveChartState(chartKey, oldSymbol, oldInterval, state);
+            setChartState(chartKey, oldSymbol, oldInterval, state);
           }
         }
       } catch {
@@ -176,7 +177,10 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
   const handleContainerContextMenu = (e) => {
       e.preventDefault();
     if (chart.current && currentSymbolRef.current && currentIntervalRef.current) {
-      persistLineToolsFromChart(chart.current, currentSymbolRef.current, currentIntervalRef.current);
+      const exported = exportLineToolsFromChart(chart.current);
+      if (exported) {
+        setLineTools(currentSymbolRef.current, currentIntervalRef.current, exported);
+      }
       
       try {
         const timeScale = chart.current.timeScale();
@@ -222,7 +226,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
         }
         
         if (state.logicalRange || state.timeRange || state.priceScale || state.priceRange) {
-          saveChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current, state);
+          setChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current, state);
         }
       } catch {
         void 0;

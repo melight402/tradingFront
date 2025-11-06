@@ -1,8 +1,9 @@
 import { useCallback } from "react";
 import { setHorizontalScale, addRightPadding } from "../utils/chartHelpers";
-import { loadChartState } from "../services/chartStateStorage";
+import { useChartState } from "../contexts/ChartStateContext";
 
 export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey) => {
+  const { getChartState } = useChartState();
   
   const setupInitialScale = useCallback((candlestickData, interval) => {
     if (!chart.current || !candlestickSeries.current) {
@@ -13,9 +14,9 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
     const priceScale = chart.current?.priceScale('right');
     
     if (timeScale && currentSymbolRef?.current && currentIntervalRef?.current && chartKey) {
-      const savedState = loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current);
+      const savedState = getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current);
       
-      if (savedState && candlestickData && candlestickData.length > 0) {
+      if (savedState) {
         requestAnimationFrame(() => {
           if (!chart.current || !timeScale) {
             return;
@@ -100,13 +101,11 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
                   if (chart.current && candlestickSeries.current) {
                     addRightPadding(chart.current, candlestickSeries.current, 100);
                   }
-                  setTimeout(() => {
-                    requestAnimationFrame(() => {
-                      if (chart.current) {
-                        isRestoringStateRef.current = false;
-                      }
-                    });
-                  }, 300);
+                  requestAnimationFrame(() => {
+                    if (chart.current) {
+                      isRestoringStateRef.current = false;
+                    }
+                  });
                 });
               });
             }, 500);
@@ -121,7 +120,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
     }
 
     const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
-      ? loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
+      ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
       : null;
 
     if (!savedState) {
@@ -168,7 +167,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
         }
       }
     });
-  }, [chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey]);
+  }, [chart, candlestickSeries, volumeAreaHeight, currentSymbolRef, currentIntervalRef, isRestoringStateRef, chartKey, getChartState]);
 
   const setupPriceScales = useCallback(() => {
     if (!chart.current) {
@@ -176,7 +175,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
     }
 
     const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
-      ? loadChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
+      ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
       : null;
 
     const savedScaleMargins = savedState?.priceScale?.scaleMargins;
@@ -211,7 +210,7 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
         autoScale: true,
       });
     }
-  }, [chart, volumeAreaHeight, currentSymbolRef, currentIntervalRef, chartKey]);
+  }, [chart, volumeAreaHeight, currentSymbolRef, currentIntervalRef, chartKey, getChartState]);
 
   return { setupInitialScale, setupPriceScales };
 };

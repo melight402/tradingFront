@@ -1,0 +1,141 @@
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import { loadChartState, saveChartState } from "../services/chartStateStorage";
+import { loadLineToolsFromStorage, saveLineToolsToStorage } from "../services/lineToolsManager";
+
+const ChartStateContext = createContext(null);
+
+const CHART_KEYS = ["chart5m", "chart1h", "chart1d"];
+const INTERVALS = ["5m", "1h", "1d"];
+
+export const ChartStateProvider = ({ children }) => {
+  const [chartStates, setChartStates] = useState({});
+  const [lineToolsStates, setLineToolsStates] = useState({});
+  const isInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (isInitializedRef.current) return;
+
+    const loadedChartStates = {};
+    const loadedLineToolsStates = {};
+
+    CHART_KEYS.forEach((chartKey) => {
+      INTERVALS.forEach((interval) => {
+        const symbols = ["BTCUSDT", "ETHUSDT", "BNBUSDT"];
+        symbols.forEach((symbol) => {
+          const chartState = loadChartState(chartKey, symbol, interval);
+          if (chartState) {
+            const key = `${chartKey}_${symbol}_${interval}`;
+            loadedChartStates[key] = chartState;
+          }
+
+          const lineTools = loadLineToolsFromStorage(symbol, interval);
+          if (lineTools) {
+            const key = `${symbol}_${interval}`;
+            loadedLineToolsStates[key] = lineTools;
+          }
+        });
+      });
+    });
+
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach((key) => {
+      if (key.startsWith("tradingFront_chartState_")) {
+        const parts = key.replace("tradingFront_chartState_", "").split("_");
+        if (parts.length >= 3) {
+          const chartKey = parts[0];
+          const symbol = parts.slice(1, -1).join("_");
+          const interval = parts[parts.length - 1];
+          const stateKey = `${chartKey}_${symbol}_${interval}`;
+          if (!loadedChartStates[stateKey]) {
+            try {
+              const saved = localStorage.getItem(key);
+              if (saved) {
+                loadedChartStates[stateKey] = JSON.parse(saved);
+              }
+            } catch {
+              void 0;
+            }
+          }
+        }
+      } else if (key.startsWith("tradingFront_lineTools_")) {
+        const parts = key.replace("tradingFront_lineTools_", "").split("_");
+        if (parts.length >= 2) {
+          const interval = parts[parts.length - 1];
+          const symbol = parts.slice(0, -1).join("_");
+          const toolsKey = `${symbol}_${interval}`;
+          if (!loadedLineToolsStates[toolsKey]) {
+            try {
+              const saved = localStorage.getItem(key);
+              if (saved && saved.trim() !== "" && saved !== "[]") {
+                loadedLineToolsStates[toolsKey] = saved;
+              }
+            } catch {
+              void 0;
+            }
+          }
+        }
+      }
+    });
+
+    setChartStates(loadedChartStates);
+    setLineToolsStates(loadedLineToolsStates);
+    isInitializedRef.current = true;
+  }, []);
+
+  const getChartState = (chartKey, symbol, interval) => {
+    const key = `${chartKey}_${symbol}_${interval}`;
+    return chartStates[key] || null;
+  };
+
+  const setChartState = (chartKey, symbol, interval, state) => {
+    const key = `${chartKey}_${symbol}_${interval}`;
+    setChartStates((prev) => {
+      const updated = { ...prev };
+      if (state && (state.logicalRange || state.timeRange || state.priceScale || state.priceRange)) {
+        updated[key] = state;
+        saveChartState(chartKey, symbol, interval, state);
+      } else {
+        delete updated[key];
+      }
+      return updated;
+    });
+  };
+
+  const getLineTools = (symbol, interval) => {
+    const key = `${symbol}_${interval}`;
+    return lineToolsStates[key] || null;
+  };
+
+  const setLineTools = (symbol, interval, lineToolsJson) => {
+    const key = `${symbol}_${interval}`;
+    setLineToolsStates((prev) => {
+      const updated = { ...prev };
+      if (lineToolsJson && lineToolsJson.trim() !== "" && lineToolsJson !== "[]") {
+        updated[key] = lineToolsJson;
+        saveLineToolsToStorage(symbol, interval, lineToolsJson);
+      } else {
+        delete updated[key];
+      }
+      return updated;
+    });
+  };
+
+  const value = {
+    getChartState,
+    setChartState,
+    getLineTools,
+    setLineTools,
+    isInitialized: isInitializedRef.current,
+  };
+
+  return <ChartStateContext.Provider value={value}>{children}</ChartStateContext.Provider>;
+};
+
+export const useChartState = () => {
+  const context = useContext(ChartStateContext);
+  if (!context) {
+    throw new Error("useChartState must be used within ChartStateProvider");
+  }
+  return context;
+};
+

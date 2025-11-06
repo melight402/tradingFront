@@ -1,5 +1,6 @@
 import { useCallback } from "react";
-import { restoreLineToolsToChart } from "../services/lineToolsManager";
+import { useChartState } from "../contexts/ChartStateContext";
+import { importLineToolsToChart } from "../services/lineToolsManager";
 
 export const useLineToolRestore = (
   chart,
@@ -16,9 +17,10 @@ export const useLineToolRestore = (
   pendingSymbolRef,
   pendingIntervalRef,
   lineToolsRestoredRef,
-  lineToolsModifiedRef,
-  isRestoringStateRef
+  lineToolsModifiedRef
 ) => {
+  const { getLineTools } = useChartState();
+  
   const restoreLineTools = useCallback((data, loaded, updateChartData) => {
     if (!loaded || !data || !data.length || !chart.current || !candlestickSeries.current || !volumeSeries.current) {
       return;
@@ -48,15 +50,14 @@ export const useLineToolRestore = (
             requestAnimationFrame(() => {
               setTimeout(() => {
                 if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
-                  isRestoringStateRef.current = true;
-                  const restored = restoreLineToolsToChart(chart.current, targetSymbol, targetInterval);
-                  if (restored) {
-                    lineToolsRestoredRef.current = true;
-                    lineToolsModifiedRef.current = true;
+                  const saved = getLineTools(targetSymbol, targetInterval);
+                  if (saved) {
+                    const restored = importLineToolsToChart(chart.current, saved);
+                    if (restored) {
+                      lineToolsRestoredRef.current = true;
+                      lineToolsModifiedRef.current = true;
+                    }
                   }
-                  setTimeout(() => {
-                    isRestoringStateRef.current = false;
-                  }, 500);
                 }
                 shouldLoadLineToolsAfterDataUpdate.current = false;
                 pendingSymbolRef.current = null;
@@ -69,23 +70,22 @@ export const useLineToolRestore = (
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             setTimeout(() => {
-              if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current && !isRestoringStateRef.current) {
-                isRestoringStateRef.current = true;
-                const restored = restoreLineToolsToChart(chart.current, symbol, interval);
-                if (restored) {
-                  lineToolsRestoredRef.current = true;
-                  lineToolsModifiedRef.current = true;
+              if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
+                const saved = getLineTools(symbol, interval);
+                if (saved) {
+                  const restored = importLineToolsToChart(chart.current, saved);
+                  if (restored) {
+                    lineToolsRestoredRef.current = true;
+                    lineToolsModifiedRef.current = true;
+                  }
                 }
-                setTimeout(() => {
-                  isRestoringStateRef.current = false;
-                }, 500);
               }
-            }, 2000);
+            }, 1200);
           });
         });
       }
     }, 0);
-  }, [chart, candlestickSeries, volumeSeries, symbol, interval, currentSymbolRef, currentIntervalRef, prevSymbolRef, prevIntervalRef, isInitialRender, shouldLoadLineToolsAfterDataUpdate, pendingSymbolRef, pendingIntervalRef, lineToolsRestoredRef, lineToolsModifiedRef, isRestoringStateRef]);
+  }, [chart, candlestickSeries, volumeSeries, symbol, interval, currentSymbolRef, currentIntervalRef, prevSymbolRef, prevIntervalRef, isInitialRender, shouldLoadLineToolsAfterDataUpdate, pendingSymbolRef, pendingIntervalRef, lineToolsRestoredRef, lineToolsModifiedRef, getLineTools]);
 
   return { restoreLineTools };
 };

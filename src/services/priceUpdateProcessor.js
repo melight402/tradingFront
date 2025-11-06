@@ -38,7 +38,7 @@ export const updatePriceFromWebSocket = (symbol, price) => {
         const candleEndTime = candleStartTime + intervalMs;
         
         if (currentTime >= candleEndTime) {
-          handleNewCandle(symbol, subscriber, price, intervalMs, candleStartTime);
+          handleNewCandle(symbol, subscriber, price, intervalMs, candleStartTime, baseCandle);
         } else {
           handleCandleUpdate(symbol, subscriber, baseCandle, price, candlesMap);
         }
@@ -47,15 +47,17 @@ export const updatePriceFromWebSocket = (symbol, price) => {
   }
 };
 
-const handleNewCandle = (symbol, subscriber, price, intervalMs, candleStartTime) => {
+const handleNewCandle = (symbol, subscriber, price, intervalMs, candleStartTime, baseCandle) => {
   const newCandleStartTime = calculateCandleStartTime(Date.now(), subscriber.interval);
   
   if (newCandleStartTime > candleStartTime) {
+    const previousClose = baseCandle && baseCandle.close ? baseCandle.close : price;
+    
     const newCandle = {
       date: new Date(newCandleStartTime),
-      open: price,
-      high: price,
-      low: price,
+      open: previousClose,
+      high: Math.max(previousClose, price),
+      low: Math.min(previousClose, price),
       close: price,
       volume: 0
     };
@@ -70,9 +72,9 @@ const handleNewCandle = (symbol, subscriber, price, intervalMs, candleStartTime)
         if (apiCandleTime === newCandleStartTime || (apiCandleTime >= newCandleStartTime && apiCandleTime < newCandleStartTime + intervalMs)) {
           const finalCandle = {
             date: apiCandle.date,
-            open: apiCandle.open,
-            high: Math.max(apiCandle.high, price),
-            low: Math.min(apiCandle.low, price),
+            open: previousClose,
+            high: Math.max(apiCandle.high, price, previousClose),
+            low: Math.min(apiCandle.low, price, previousClose),
             close: price,
             volume: apiCandle.volume
           };

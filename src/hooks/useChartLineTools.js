@@ -59,8 +59,7 @@ export const useChartLineTools = (
     pendingSymbolRef,
     pendingIntervalRef,
     lineToolsRestoredRef,
-    lineToolsModifiedRef,
-    isRestoringStateRef
+    lineToolsModifiedRef
   );
 
   useDrawingToolActivation(chart, candlestickSeries, drawingTool, symbol, setPopupState, isRestoringStateRef, currentSymbolRef);

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { persistLineToolsFromChart } from "../services/lineToolsManager";
+import { useChartState } from "../contexts/ChartStateContext";
+import { exportLineToolsFromChart } from "../services/lineToolsManager";
 
 export const useSymbolChangeHandler = (
   chart,
@@ -17,6 +18,7 @@ export const useSymbolChangeHandler = (
   lineToolsRestoredRef,
   lineToolsModifiedRef
 ) => {
+  const { setLineTools } = useChartState();
   useEffect(() => {
     const symbolChanged = prevSymbolRef.current !== symbol;
     const intervalChanged = prevIntervalRef.current !== interval;
@@ -39,9 +41,9 @@ export const useSymbolChangeHandler = (
       if (chart.current && candlestickSeries.current) {
         try {
           if (oldSymbol && oldInterval) {
-            const exported = chart.current.exportLineTools();
-            if (exported && exported.trim() !== '' && exported !== '[]') {
-              persistLineToolsFromChart(chart.current, oldSymbol, oldInterval);
+            const exported = exportLineToolsFromChart(chart.current);
+            if (exported) {
+              setLineTools(oldSymbol, oldInterval, exported);
             }
           }
         } catch {
@@ -83,6 +85,6 @@ export const useSymbolChangeHandler = (
         prevIntervalRef.current = interval;
       }, 150);
     }
-  }, [symbol, interval, chart, candlestickSeries, prevSymbolRef, prevIntervalRef, currentSymbolRef, currentIntervalRef, isInitialRender, shouldLoadLineToolsAfterDataUpdate, pendingSymbolRef, pendingIntervalRef, lineToolsRestoredRef, lineToolsModifiedRef]);
+  }, [symbol, interval, chart, candlestickSeries, prevSymbolRef, prevIntervalRef, currentSymbolRef, currentIntervalRef, isInitialRender, shouldLoadLineToolsAfterDataUpdate, pendingSymbolRef, pendingIntervalRef, lineToolsRestoredRef, lineToolsModifiedRef, setLineTools]);
 };
 

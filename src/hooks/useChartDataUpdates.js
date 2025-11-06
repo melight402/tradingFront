@@ -158,7 +158,9 @@ export const useChartDataUpdates = (
                   return;
                 }
 
-                setupInitialScale(candlestickData, currentInterval);
+                if (!isRestoringStateRef.current) {
+                  setupInitialScale(candlestickData, currentInterval);
+                }
 
                 requestAnimationFrame(() => {
                   requestAnimationFrame(() => {

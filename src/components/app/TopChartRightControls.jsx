@@ -1,28 +1,26 @@
 import React from "react";
 import RiskInput from "../controls/RiskInput";
 import RatioSelector from "../controls/RatioSelector";
+import ATRSlider from "../controls/ATRSlider";
 import BuyButton from "../controls/BuyButton";
 import SellButton from "../controls/SellButton";
 import { useMarketOrderPlacement } from "../../hooks/useMarketOrderPlacement";
-import { useHorizontalLinePrice } from "../../hooks/useHorizontalLinePrice";
 
 export const TopChartRightControls = ({
   risk,
   setRisk,
   ratio,
   setRatio,
+  atrValue,
+  setAtrValue,
   symbol,
   orderType,
-  chart5mRef,
-  chart1hRef,
-  chart1dRef,
 }) => {
   const { placeMarketOrder } = useMarketOrderPlacement();
-  const stopLossPrice = useHorizontalLinePrice(chart5mRef, chart1hRef, chart1dRef);
 
   const handleBuy = async () => {
     try {
-      await placeMarketOrder("BUY", symbol, risk, stopLossPrice, ratio, orderType);
+      await placeMarketOrder("BUY", symbol, risk, atrValue, ratio, orderType);
       alert("Ордер на покупку успешно размещен");
     } catch (error) {
       const errorMessage = error.message || "Неизвестная ошибка";
@@ -33,7 +31,7 @@ export const TopChartRightControls = ({
 
   const handleSell = async () => {
     try {
-      await placeMarketOrder("SELL", symbol, risk, stopLossPrice, ratio, orderType);
+      await placeMarketOrder("SELL", symbol, risk, atrValue, ratio, orderType);
       alert("Ордер на продажу успешно размещен");
     } catch (error) {
       const errorMessage = error.message || "Неизвестная ошибка";
@@ -46,6 +44,7 @@ export const TopChartRightControls = ({
     <>
       <RiskInput risk={risk} onRiskChange={setRisk} />
       <RatioSelector value={ratio} onChange={setRatio} />
+      <ATRSlider value={atrValue} onChange={setAtrValue} />
       <BuyButton onClick={handleBuy} />
       <SellButton onClick={handleSell} />
     </>

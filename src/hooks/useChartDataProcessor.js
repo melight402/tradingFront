@@ -73,6 +73,21 @@ export const useChartDataProcessor = () => {
     const candlestickData = Array.from(candlestickDataMap.values())
       .sort((a, b) => a.time - b.time);
 
+    for (let i = 1; i < candlestickData.length; i++) {
+      const currentCandle = candlestickData[i];
+      const previousCandle = candlestickData[i - 1];
+      
+      if (previousCandle && previousCandle.close !== undefined && typeof previousCandle.close === 'number' && isFinite(previousCandle.close)) {
+        currentCandle.open = previousCandle.close;
+        if (currentCandle.high < currentCandle.open) {
+          currentCandle.high = currentCandle.open;
+        }
+        if (currentCandle.low > currentCandle.open) {
+          currentCandle.low = currentCandle.open;
+        }
+      }
+    }
+
     const volumeDataMap = new Map();
     validData.forEach((d) => {
       try {
