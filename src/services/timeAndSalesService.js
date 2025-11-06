@@ -155,24 +155,33 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
       
       const isNewCandle = oldCandleTime && newCandleTime && newCandleTime !== oldCandleTime;
       
-      if (isNewCandle) {
-        const currentSums = intervalSums.get(key);
-        
-        if (!currentSums || (currentSums.buySum === 0 && currentSums.sellSum === 0)) {
-          intervalSums.set(key, { buySum: 0, sellSum: 0 });
-          
-          if (subscriber.callback) {
-            subscriber.callback({ buySum: 0, sellSum: 0 });
-          }
-        }
-      }
-      
       subscriber.lastCandle = lastCandle;
+      
+      if (isNewCandle) {
+        intervalSums.set(key, { buySum: 0, sellSum: 0 });
+        
+        if (subscriber.callback) {
+          subscriber.callback({ buySum: 0, sellSum: 0 });
+        }
+        
+        closeGlobalWebSocket();
+        setCurrentActiveSymbol(null);
+        
+        setTimeout(() => {
+          switchWebSocketToSymbol(symbol);
+        }, 100);
+      }
       
       fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
         const currentSums = intervalSums.get(key);
         
-        if (!currentSums || (currentSums.buySum === 0 && currentSums.sellSum === 0)) {
+        if (isNewCandle) {
+          intervalSums.set(key, sums);
+          
+          if (subscriber.callback) {
+            subscriber.callback(sums);
+          }
+        } else if (!currentSums || (currentSums.buySum === 0 && currentSums.sellSum === 0)) {
           intervalSums.set(key, sums);
           
           if (subscriber.callback) {
