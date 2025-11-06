@@ -111,6 +111,14 @@ export const useChartDataUpdates = (
             lastCandleTimeRef.current = candlestickData[candlestickData.length - 1].time;
           }
 
+          const rightPriceScale = chart.current.priceScale("right");
+          if (rightPriceScale) {
+            rightPriceScale.applyOptions({
+              entireTextOnly: false,
+              drawTicks: true,
+            });
+          }
+
           const storedLastCandle = getLastCandle(currentSymbol, currentInterval);
           if (storedLastCandle && storedLastCandle.date && storedLastCandle.date instanceof Date) {
             const storedTime = storedLastCandle.date.getTime() / 1000;
@@ -168,7 +176,10 @@ export const useChartDataUpdates = (
                   }
                   
                   if (priceScale && savedState.priceScale) {
-                    const options = {};
+                    const options = {
+                      entireTextOnly: false,
+                      drawTicks: true,
+                    };
                     if (savedState.priceScale.autoScale !== undefined) {
                       options.autoScale = savedState.priceScale.autoScale;
                     }
@@ -176,9 +187,7 @@ export const useChartDataUpdates = (
                       options.scaleMargins = savedState.priceScale.scaleMargins;
                     }
                     
-                    if (Object.keys(options).length > 0) {
-                      priceScale.applyOptions(options);
-                    }
+                    priceScale.applyOptions(options);
                     
                     if (!savedState.priceScale.autoScale && savedState.priceRange && 
                         savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
