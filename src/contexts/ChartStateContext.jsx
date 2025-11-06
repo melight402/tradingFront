@@ -18,64 +18,49 @@ export const ChartStateProvider = ({ children }) => {
     const loadedChartStates = {};
     const loadedLineToolsStates = {};
 
-    CHART_KEYS.forEach((chartKey) => {
-      INTERVALS.forEach((interval) => {
-        const symbols = ["BTCUSDT", "ETHUSDT", "BNBUSDT"];
-        symbols.forEach((symbol) => {
-          const chartState = loadChartState(chartKey, symbol, interval);
-          if (chartState) {
-            const key = `${chartKey}_${symbol}_${interval}`;
-            loadedChartStates[key] = chartState;
+    try {
+      const allKeys = Object.keys(localStorage);
+      allKeys.forEach((key) => {
+        if (key.startsWith("tradingFront_chartState_")) {
+          try {
+            const parts = key.replace("tradingFront_chartState_", "").split("_");
+            if (parts.length >= 3) {
+              const chartKey = parts[0];
+              const interval = parts[parts.length - 1];
+              const symbol = parts.slice(1, -1).join("_");
+              const stateKey = `${chartKey}_${symbol}_${interval}`;
+              if (!loadedChartStates[stateKey]) {
+                const saved = localStorage.getItem(key);
+                if (saved) {
+                  loadedChartStates[stateKey] = JSON.parse(saved);
+                }
+              }
+            }
+          } catch {
+            void 0;
           }
-
-          const lineTools = loadLineToolsFromStorage(symbol, interval);
-          if (lineTools) {
-            const key = `${symbol}_${interval}`;
-            loadedLineToolsStates[key] = lineTools;
+        } else if (key.startsWith("tradingFront_lineTools_")) {
+          try {
+            const parts = key.replace("tradingFront_lineTools_", "").split("_");
+            if (parts.length >= 2) {
+              const interval = parts[parts.length - 1];
+              const symbol = parts.slice(0, -1).join("_");
+              const toolsKey = `${symbol}_${interval}`;
+              if (!loadedLineToolsStates[toolsKey]) {
+                const saved = localStorage.getItem(key);
+                if (saved && saved.trim() !== "" && saved !== "[]") {
+                  loadedLineToolsStates[toolsKey] = saved;
+                }
+              }
+            }
+          } catch {
+            void 0;
           }
-        });
+        }
       });
-    });
-
-    const allKeys = Object.keys(localStorage);
-    allKeys.forEach((key) => {
-      if (key.startsWith("tradingFront_chartState_")) {
-        const parts = key.replace("tradingFront_chartState_", "").split("_");
-        if (parts.length >= 3) {
-          const chartKey = parts[0];
-          const symbol = parts.slice(1, -1).join("_");
-          const interval = parts[parts.length - 1];
-          const stateKey = `${chartKey}_${symbol}_${interval}`;
-          if (!loadedChartStates[stateKey]) {
-            try {
-              const saved = localStorage.getItem(key);
-              if (saved) {
-                loadedChartStates[stateKey] = JSON.parse(saved);
-              }
-            } catch {
-              void 0;
-            }
-          }
-        }
-      } else if (key.startsWith("tradingFront_lineTools_")) {
-        const parts = key.replace("tradingFront_lineTools_", "").split("_");
-        if (parts.length >= 2) {
-          const interval = parts[parts.length - 1];
-          const symbol = parts.slice(0, -1).join("_");
-          const toolsKey = `${symbol}_${interval}`;
-          if (!loadedLineToolsStates[toolsKey]) {
-            try {
-              const saved = localStorage.getItem(key);
-              if (saved && saved.trim() !== "" && saved !== "[]") {
-                loadedLineToolsStates[toolsKey] = saved;
-              }
-            } catch {
-              void 0;
-            }
-          }
-        }
-      }
-    });
+    } catch {
+      void 0;
+    }
 
     setChartStates(loadedChartStates);
     setLineToolsStates(loadedLineToolsStates);
