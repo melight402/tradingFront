@@ -53,11 +53,23 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
     subscribers.set(symbol, new Set());
   }
 
-  const subscriberId = `${symbol}-${interval}-${Date.now()}-${Math.random()}`;
-  const subscriber = { interval, lastCandle, callback, id: subscriberId };
-
   const symbolSubscribers = subscribers.get(symbol);
-  symbolSubscribers.add(subscriber);
+  const subscriberId = `${symbol}-${interval}`;
+  
+  let subscriber = null;
+  for (const sub of symbolSubscribers) {
+    if (sub.interval === interval) {
+      subscriber = sub;
+      subscriber.lastCandle = lastCandle;
+      subscriber.callback = callback;
+      break;
+    }
+  }
+
+  if (!subscriber) {
+    subscriber = { interval, lastCandle, callback, id: subscriberId };
+    symbolSubscribers.add(subscriber);
+  }
 
   const key = `${symbol}-${interval}`;
 
@@ -89,8 +101,12 @@ export const subscribeToTimeAndSales = (symbol, interval, lastCandle, callback) 
     switchWebSocketToSymbol(symbol);
     loadHistoricalData();
   } else {
-    intervalSums.delete(key);
-    loadHistoricalData();
+    const existingSums = intervalSums.get(key);
+    if (!existingSums) {
+      loadHistoricalData();
+    } else if (subscriber.callback && getCurrentActiveSymbol() === symbol) {
+      subscriber.callback(existingSums);
+    }
   }
 
   return () => {
@@ -133,20 +149,26 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
   symbolSubscribers.forEach((subscriber) => {
     if (subscriber.interval === interval) {
       const oldCandle = subscriber.lastCandle;
-      subscriber.lastCandle = lastCandle;
-      
       const key = `${symbol}-${interval}`;
       
       const oldCandleTime = oldCandle?.date?.getTime();
       const newCandleTime = lastCandle?.date?.getTime();
       
-      if (oldCandleTime && newCandleTime && newCandleTime !== oldCandleTime) {
-        intervalSums.set(key, { buySum: 0, sellSum: 0 });
+      const isNewCandle = oldCandleTime && newCandleTime && newCandleTime !== oldCandleTime;
+      
+      if (isNewCandle) {
+        const currentSums = intervalSums.get(key);
         
-        if (subscriber.callback) {
-          subscriber.callback({ buySum: 0, sellSum: 0 });
+        if (!currentSums || (currentSums.buySum === 0 && currentSums.sellSum === 0)) {
+          intervalSums.set(key, { buySum: 0, sellSum: 0 });
+          
+          if (subscriber.callback) {
+            subscriber.callback({ buySum: 0, sellSum: 0 });
+          }
         }
       }
+      
+      subscriber.lastCandle = lastCandle;
       
       fetchTimeAndSalesFromKline(symbol, interval).then((sums) => {
         const currentSums = intervalSums.get(key);

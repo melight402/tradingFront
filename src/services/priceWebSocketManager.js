@@ -1,5 +1,5 @@
 import { setCurrentActiveSymbol, getCurrentActiveSymbol, updatePriceFromWebSocket } from './priceUpdateProcessor';
-import { getSubscribers, hasAnySubscribers, getFirstSymbolWithSubscribers } from './priceSubscriberManager';
+import { getSubscribers } from './priceSubscriberManager';
 import { initializeCandlesMap, setCurrentPrice } from './priceDataStorage';
 import { fetchInitialPrice } from './candleDataService';
 import { fetchLastCandleForInterval } from './candleDataService';
@@ -62,7 +62,7 @@ export const switchWebSocketToSymbol = (symbol) => {
           updatePriceFromWebSocket(symbol, price);
         }
       }
-    } catch (err) {
+    } catch {
       void 0;
     }
   };

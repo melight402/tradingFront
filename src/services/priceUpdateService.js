@@ -1,4 +1,4 @@
-import { addSubscriber, removeSubscriber, getSubscribers, hasAnySubscribers, getFirstSymbolWithSubscribers } from './priceSubscriberManager';
+import { addSubscriber, removeSubscriber, hasAnySubscribers, getFirstSymbolWithSubscribers } from './priceSubscriberManager';
 import { getCurrentPrice as getPriceFromStorage, setLastCandle, getCandlesMap, deleteCurrentPrice, deleteCandlesMap } from './priceDataStorage';
 import { getCurrentActiveSymbol, setCurrentActiveSymbol } from './priceUpdateProcessor';
 import { switchWebSocketToSymbol, isWebSocketOpen, closeWebSocket } from './priceWebSocketManager';

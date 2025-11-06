@@ -8,6 +8,7 @@ export const useTimeAndSales = (symbol, interval, lastCandle) => {
   const [error, setError] = useState(null);
   const unsubscribeRef = useRef(null);
   const lastCandleRef = useRef(lastCandle);
+  const symbolIntervalRef = useRef(`${symbol}-${interval}`);
 
   useEffect(() => {
     lastCandleRef.current = lastCandle;
@@ -24,35 +25,41 @@ export const useTimeAndSales = (symbol, interval, lastCandle) => {
       return;
     }
 
-    if (unsubscribeRef.current) {
+    const currentKey = `${symbol}-${interval}`;
+    const previousKey = symbolIntervalRef.current;
+
+    if (unsubscribeRef.current && currentKey !== previousKey) {
       unsubscribeRef.current();
       unsubscribeRef.current = null;
     }
 
-    unsubscribeRef.current = subscribeToTimeAndSales(
-      symbol,
-      interval,
-      lastCandle,
-      (sums) => {
-        if (sums) {
-          setBuySum(sums.buySum || 0);
-          setSellSum(sums.sellSum || 0);
-          setLoading(false);
-          setError(null);
+    if (!unsubscribeRef.current) {
+      unsubscribeRef.current = subscribeToTimeAndSales(
+        symbol,
+        interval,
+        lastCandle,
+        (sums) => {
+          if (sums) {
+            setBuySum(sums.buySum || 0);
+            setSellSum(sums.sellSum || 0);
+            setLoading(false);
+            setError(null);
+          }
         }
-      }
-    );
+      );
+      symbolIntervalRef.current = currentKey;
+    }
 
     return () => {
-      if (unsubscribeRef.current) {
+      if (unsubscribeRef.current && currentKey !== previousKey) {
         unsubscribeRef.current();
         unsubscribeRef.current = null;
       }
     };
-  }, [symbol, interval, lastCandle]);
+  }, [symbol, interval]);
 
   useEffect(() => {
-    if (lastCandle && lastCandle.date) {
+    if (lastCandle && lastCandle.date && unsubscribeRef.current) {
       updateLastCandleForInterval(symbol, interval, lastCandle);
     }
   }, [symbol, interval, lastCandle]);

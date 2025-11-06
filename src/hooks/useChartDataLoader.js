@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { fetchWithRetry } from "../utils/fetchWithRetry";
 import { convertKlineData } from "../utils/klineDataConverter";
 import { subscribeToPriceUpdates } from "../services/priceUpdateService";
