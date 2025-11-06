@@ -41,6 +41,11 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
         },
         priceScaleId: "right",
         title: "MA50",
+        priceLineVisible: false,
+      });
+    } else {
+      ma50Series.current.applyOptions({
+        priceLineVisible: false,
       });
     }
 
@@ -55,6 +60,11 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
         },
         priceScaleId: "right",
         title: "MA200",
+        priceLineVisible: false,
+      });
+    } else {
+      ma200Series.current.applyOptions({
+        priceLineVisible: false,
       });
     }
 
