@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   ORDER_TYPE: 'tradingFront_orderType',
   TVX_VALUE: 'tradingFront_tvxValue',
   TAKE_PROFIT: 'tradingFront_takeProfit',
+  RATIO: 'tradingFront_ratio',
   BOTTOM_CHARTS_COLLAPSED: 'tradingFront_bottomChartsCollapsed',
   TOP_CHART_TIMEFRAME: 'tradingFront_topChartTimeframe',
 };
@@ -181,6 +182,27 @@ export const loadTopChartTimeframe = (defaultValue = '5m') => {
     return localStorage.getItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME) || defaultValue;
   } catch (error) {
     console.warn('Failed to load top chart timeframe from localStorage:', error);
+    return defaultValue;
+  }
+};
+
+export const saveRatio = (value) => {
+  try {
+    if (value) {
+      localStorage.setItem(STORAGE_KEYS.RATIO, value);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.RATIO);
+    }
+  } catch (error) {
+    console.warn('Failed to save ratio to localStorage:', error);
+  }
+};
+
+export const loadRatio = (defaultValue = "2") => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.RATIO) || defaultValue;
+  } catch (error) {
+    console.warn('Failed to load ratio from localStorage:', error);
     return defaultValue;
   }
 };
