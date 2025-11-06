@@ -1,7 +1,6 @@
 import { useRef, useCallback } from "react";
 import { useLastCandleUpdate } from "./useLastCandleUpdate";
 import { useChartDataProcessor } from "./useChartDataProcessor";
-import { useChartScaleSetup } from "./useChartScaleSetup";
 import { getLastCandle } from "../services/priceDataStorage";
 
 export const useChartDataUpdates = (
