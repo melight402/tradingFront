@@ -8,6 +8,7 @@ import { useChartDataUpdates } from "../../hooks/useChartDataUpdates";
 import { useChartLineTools } from "../../hooks/useChartLineTools";
 import { useChartDataSync } from "../../hooks/useChartDataSync";
 import { useChartStateAutoSave } from "../../hooks/useChartStateAutoSave";
+import { useMovingAverages } from "../../hooks/useMovingAverages";
 import CandlePopup from "./CandlePopup";
 import "../../styles/styles.css";
 
@@ -169,6 +170,8 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
     setOnLastCandleUpdate,
     updateLastCandle
   );
+
+  useMovingAverages(chart, candlestickSeries, data, chartKey);
 
   useChartStateAutoSave();
 
