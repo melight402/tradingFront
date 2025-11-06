@@ -66,11 +66,13 @@ export const useLineToolRestore = (
             });
           });
         }
-      } else if (isInitialRender.current && prevSymbolRef.current === symbol && prevIntervalRef.current === interval && !lineToolsRestoredRef.current) {
+      } else if (isInitialRender.current && !lineToolsRestoredRef.current) {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             setTimeout(() => {
-              if (chart.current && candlestickSeries.current && volumeSeries.current && !lineToolsRestoredRef.current) {
+              if (chart.current && candlestickSeries.current && volumeSeries.current && 
+                  currentSymbolRef.current === symbol && currentIntervalRef.current === interval &&
+                  !lineToolsRestoredRef.current) {
                 const saved = getLineTools(symbol, interval);
                 if (saved) {
                   try {
@@ -78,9 +80,12 @@ export const useLineToolRestore = (
                     if (restored) {
                       lineToolsRestoredRef.current = true;
                       lineToolsModifiedRef.current = true;
+                    } else {
+                      lineToolsRestoredRef.current = true;
                     }
                   } catch (error) {
                     console.warn('Failed to restore line tools:', error);
+                    lineToolsRestoredRef.current = true;
                   }
                 } else {
                   lineToolsRestoredRef.current = true;
