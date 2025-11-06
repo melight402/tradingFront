@@ -175,7 +175,7 @@ export const updateLastCandleForInterval = (symbol, interval, lastCandle) => {
       
       subscriber.lastCandle = lastCandle;
       
-      if (!isNewCandle) {
+      if (!isNewCandle && oldCandle) {
         return;
       }
       
