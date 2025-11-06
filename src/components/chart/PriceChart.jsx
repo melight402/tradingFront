@@ -107,7 +107,7 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
         void 0;
       }
     }
-  }, [symbol, interval, chart, candlestickSeries, chartKey]);
+  }, [symbol, interval, chart, candlestickSeries, chartKey, setChartState]);
 
   const { restoreLineTools } = useChartLineTools(
     chart,

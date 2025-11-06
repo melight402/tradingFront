@@ -156,6 +156,7 @@ export const useChartInitialization = (
 
     window.addEventListener("resize", handleResize);
 
+    const onChartReady = onChartReadyRef.current;
     return () => {
       window.removeEventListener("resize", handleResize);
       if (chart.current) {
@@ -170,8 +171,8 @@ export const useChartInitialization = (
         candlestickSeries.current = null;
         volumeSeries.current = null;
       }
-      if (onChartReadyRef.current) {
-        onChartReadyRef.current(null);
+      if (onChartReady) {
+        onChartReady(null);
       }
     };
   }, [volumeAreaHeight, height, chartContainerRef, chart, candlestickSeries, volumeSeries, onChartReadyRef]);

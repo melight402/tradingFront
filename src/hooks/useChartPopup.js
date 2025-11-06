@@ -103,11 +103,12 @@ export const useChartPopup = (chart, candlestickSeries, loaded, drawingToolRef) 
       }
     }, 100);
 
+    const chartInstance = chart.current;
     return () => {
       clearTimeout(timeoutId);
-      if (chart.current && crosshairHandlerRef.current) {
+      if (chartInstance && crosshairHandlerRef.current) {
         try {
-          chart.current.unsubscribeCrosshairMove(crosshairHandlerRef.current);
+          chartInstance.unsubscribeCrosshairMove(crosshairHandlerRef.current);
         } catch {
       void 0;
           void 0;

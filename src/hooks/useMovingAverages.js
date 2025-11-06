@@ -85,18 +85,19 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
   }, [chart, candlestickSeries, data, chartKey]);
 
   useEffect(() => {
+    const chartInstance = chart.current;
     return () => {
-      if (ma50Series.current && chart.current) {
+      if (ma50Series.current && chartInstance) {
         try {
-          chart.current.removeSeries(ma50Series.current);
+          chartInstance.removeSeries(ma50Series.current);
         } catch {
           void 0;
         }
         ma50Series.current = null;
       }
-      if (ma200Series.current && chart.current) {
+      if (ma200Series.current && chartInstance) {
         try {
-          chart.current.removeSeries(ma200Series.current);
+          chartInstance.removeSeries(ma200Series.current);
         } catch {
           void 0;
         }

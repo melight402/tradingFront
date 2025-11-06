@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useRef, useState, useCallback, useMemo } from "react";
 import { subscribeToPriceUpdates } from "../services/priceUpdateService";
 import { subscribeToTimeAndSales, updateLastCandleForInterval } from "../services/timeAndSalesService";
 
@@ -117,6 +117,7 @@ export const SocketProvider = ({ children }) => {
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useSocketContext = () => {
   const context = useContext(SocketContext);
   if (!context) {
@@ -125,6 +126,7 @@ export const useSocketContext = () => {
   return context;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCandleData = (key, symbol, interval) => {
   const { candleData } = useSocketContext();
   
@@ -139,6 +141,7 @@ export const useCandleData = (key, symbol, interval) => {
   }, [candleData, key, symbol, interval]);
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTimeAndSalesData = (key, symbol, interval) => {
   const { timeAndSalesData } = useSocketContext();
   

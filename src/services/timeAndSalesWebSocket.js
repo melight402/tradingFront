@@ -54,8 +54,6 @@ const updateSumsForAllIntervals = (symbol, trade) => {
       if (subscriber.callback) {
         subscriber.callback({ ...sums });
       }
-    } else if (interval === "1m" || interval === "5m") {
-      console.log(`[Tape WebSocket] Trade outside candle: interval=${interval}, tradeTime=${tradeTime}, candleStart=${candleStartTime}, candleEnd=${candleEndTime}`);
     }
   });
 };
@@ -94,7 +92,7 @@ const switchWebSocketToSymbol = (symbol) => {
       if (data && data.p && data.q && data.T) {
         updateSumsForAllIntervals(symbol, data);
       }
-    } catch (err) {
+    } catch {
       void 0;
     }
   };
