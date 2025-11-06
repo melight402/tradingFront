@@ -82,16 +82,16 @@ export const useMarketOrderPlacement = () => {
         : await roundPriceToTickSize(stopLossPrice * 0.9, symbol);
       
       const stopLimitExecutionPrice = isLong
-        ? await roundPriceToTickSize(stopLossPrice * 1.05, symbol)
-        : await roundPriceToTickSize(stopLossPrice * 0.95, symbol);
+        ? await roundPriceToTickSize(stopLimitActivationPrice * 0.995, symbol)
+        : await roundPriceToTickSize(stopLimitActivationPrice * 1.005, symbol);
       
       const takeProfitLimitActivationPrice = isLong
         ? await roundPriceToTickSize(takeProfit * 0.9, symbol)
         : await roundPriceToTickSize(takeProfit * 1.1, symbol);
       
       const takeProfitLimitExecutionPrice = isLong
-        ? await roundPriceToTickSize(takeProfit * 0.95, symbol)
-        : await roundPriceToTickSize(takeProfit * 1.05, symbol);
+        ? await roundPriceToTickSize(takeProfitLimitActivationPrice * 1.005, symbol)
+        : await roundPriceToTickSize(takeProfitLimitActivationPrice * 0.995, symbol);
 
       const stopLimitOrderData = {
         dateTime,
