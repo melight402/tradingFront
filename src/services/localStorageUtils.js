@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   TVX_VALUE: 'tradingFront_tvxValue',
   TAKE_PROFIT: 'tradingFront_takeProfit',
   RATIO: 'tradingFront_ratio',
+  ATR_VALUE: 'tradingFront_atrValue',
   BOTTOM_CHARTS_COLLAPSED: 'tradingFront_bottomChartsCollapsed',
   TOP_CHART_TIMEFRAME: 'tradingFront_topChartTimeframe',
 };
@@ -203,6 +204,34 @@ export const loadRatio = (defaultValue = "2") => {
     return localStorage.getItem(STORAGE_KEYS.RATIO) || defaultValue;
   } catch (error) {
     console.warn('Failed to load ratio from localStorage:', error);
+    return defaultValue;
+  }
+};
+
+export const saveATRValue = (value) => {
+  try {
+    if (value !== null && value !== undefined) {
+      localStorage.setItem(STORAGE_KEYS.ATR_VALUE, JSON.stringify(value));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.ATR_VALUE);
+    }
+  } catch (error) {
+    console.warn('Failed to save ATR value to localStorage:', error);
+  }
+};
+
+export const loadATRValue = (defaultValue = 1) => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.ATR_VALUE);
+    if (saved !== null) {
+      const parsed = JSON.parse(saved);
+      if (typeof parsed === 'number' && !isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+    return defaultValue;
+  } catch (error) {
+    console.warn('Failed to load ATR value from localStorage:', error);
     return defaultValue;
   }
 };

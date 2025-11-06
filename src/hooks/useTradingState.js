@@ -10,6 +10,8 @@ import {
   saveTVXValue,
   loadRatio,
   saveRatio,
+  loadATRValue,
+  saveATRValue,
 } from "../services/localStorageUtils";
 
 export const useTradingState = () => {
@@ -19,7 +21,7 @@ export const useTradingState = () => {
   const [orderType, setOrderType] = useState(() => loadOrderType());
   const [tvxValue, setTVXValue] = useState(() => loadTVXValue());
   const [stopPrice, setStopPrice] = useState(null);
-  const [atrValue, setAtrValue] = useState(1);
+  const [atrValue, setAtrValue] = useState(() => loadATRValue(1));
   const [ratio, setRatio] = useState(() => loadRatio("2"));
   const [profitLoss, setProfitLoss] = useState("profit");
 
@@ -51,6 +53,10 @@ export const useTradingState = () => {
   useEffect(() => {
     saveRatio(ratio);
   }, [ratio]);
+
+  useEffect(() => {
+    saveATRValue(atrValue);
+  }, [atrValue]);
 
   return {
     symbol,
