@@ -26,6 +26,7 @@ export const useChartLineTools = (
   const pendingIntervalRef = useRef(null);
   const lineToolsRestoredRef = useRef(false);
   const lineToolsModifiedRef = useRef(false);
+  const justFinishedDrawingRef = useRef(false);
 
   useSymbolChangeHandler(
     chart,
@@ -62,13 +63,14 @@ export const useChartLineTools = (
     lineToolsModifiedRef
   );
 
-  useDrawingToolActivation(chart, candlestickSeries, drawingTool, symbol, setPopupState, isRestoringStateRef, currentSymbolRef);
+  useDrawingToolActivation(chart, candlestickSeries, drawingTool, symbol, setPopupState, isRestoringStateRef, currentSymbolRef, justFinishedDrawingRef);
 
   useLineToolEditHandler(
     chart,
     drawingToolRef,
     isRestoringStateRef,
-    onDrawingToolDeactivate
+    onDrawingToolDeactivate,
+    justFinishedDrawingRef
   );
 
   return { restoreLineTools };

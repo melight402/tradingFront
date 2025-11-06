@@ -4,8 +4,10 @@ export const useLineToolEditHandler = (
   chart,
   drawingToolRef,
   isRestoringStateRef,
-  onDrawingToolDeactivate
+  onDrawingToolDeactivate,
+  justFinishedDrawingRef
 ) => {
+
   useEffect(() => {
     if (!chart.current) return;
 
@@ -19,12 +21,17 @@ export const useLineToolEditHandler = (
       const currentDrawingTool = drawingToolRef?.current;
       
       if (currentDrawingTool && (params.stage === 'lineToolFinished' || params.stage === 'pathFinished')) {
+        if (justFinishedDrawingRef) {
+          justFinishedDrawingRef.current = true;
+        }
         setTimeout(() => {
           if (chartInstance && drawingToolRef?.current === currentDrawingTool) {
             chartInstance.setActiveLineTool(null);
-            if (onDrawingToolDeactivate) {
-              onDrawingToolDeactivate();
-            }
+            setTimeout(() => {
+              if (justFinishedDrawingRef) {
+                justFinishedDrawingRef.current = false;
+              }
+            }, 200);
           }
         }, 100);
       }

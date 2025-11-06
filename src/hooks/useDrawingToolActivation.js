@@ -21,11 +21,15 @@ const getToolOptions = (drawingTool, symbol) => {
   return {};
 };
 
-export const useDrawingToolActivation = (chart, candlestickSeries, drawingTool, symbol, setPopupState, isRestoringStateRef, currentSymbolRef) => {
+export const useDrawingToolActivation = (chart, candlestickSeries, drawingTool, symbol, setPopupState, isRestoringStateRef, currentSymbolRef, justFinishedDrawingRef) => {
   const prevDrawingToolRef = useRef(drawingTool);
 
   useEffect(() => {
     if (!chart.current || !candlestickSeries.current) return;
+
+    if (justFinishedDrawingRef?.current) {
+      return;
+    }
 
     if (drawingTool) {
       setPopupState(prev => {
