@@ -35,7 +35,7 @@ export const ORDER_TYPES = [
   { value: "LIMIT", label: "Лимит ордер" },
   { value: "POST_ONLY", label: "Только размещение" },
   { value: "STOP_MARKET", label: "Стоп Маркет" },
-  { value: "STOP_LIMIT", label: "Стоп Лимит" },
+  { value: "STOP", label: "Стоп Лимит" },
 ];
 
 export const ORDER_TYPE_LABELS = {
@@ -43,7 +43,7 @@ export const ORDER_TYPE_LABELS = {
   LIMIT: "Лимит ордер",
   POST_ONLY: "Только размещение",
   STOP_MARKET: "Стоп Маркет",
-  STOP_LIMIT: "Стоп Лимит",
+  STOP: "Стоп Лимит",
 };
 
 export const ORDER_FIELDS_INFO = {
@@ -68,9 +68,10 @@ export const ORDER_FIELDS_INFO = {
     ],
     description: "Рыночный ордер может использовать quantity или quoteOrderQty (сумма в USDT). Может быть использован для закрытия позиции (closePosition=true)."
   },
-  STOP_LIMIT: {
+  STOP: {
     required: [
       { field: "stopPrice", label: "Стоп-цена активации", type: "number" },
+      { field: "price", label: "Лимитная цена", type: "number" },
       { field: "timeInForce", label: "Время действия ордера", type: "select", options: ["GTC", "IOC", "FOK"] },
       { field: "workingType", label: "Тип стоп-цены", type: "select", options: ["CONTRACT_PRICE", "MARK_PRICE"], note: "Контрактная цена или маркировочная" },
     ],

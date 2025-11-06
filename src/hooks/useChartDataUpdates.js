@@ -19,6 +19,8 @@ export const useChartDataUpdates = (
 ) => {
   const { getChartState } = useChartState();
   const hasAppliedStateRef = useRef(false);
+  const lastAppliedSymbolRef = useRef(null);
+  const lastAppliedIntervalRef = useRef(null);
   const dataUpdateTimeoutRef = useRef(null);
   const { updateLastCandle } = useLastCandleUpdate(chart, candlestickSeries, volumeSeries, lastCandleTimeRef);
   const { processChartData } = useChartDataProcessor();
@@ -36,6 +38,12 @@ export const useChartDataUpdates = (
 
     const currentSymbol = currentSymbolRef.current;
     const currentInterval = currentIntervalRef.current;
+
+    if (lastAppliedSymbolRef.current !== currentSymbol || lastAppliedIntervalRef.current !== currentInterval) {
+      hasAppliedStateRef.current = false;
+      lastAppliedSymbolRef.current = currentSymbol;
+      lastAppliedIntervalRef.current = currentInterval;
+    }
 
     if (isUpdatingDataRef.current) {
       return;
@@ -141,69 +149,105 @@ export const useChartDataUpdates = (
           }
 
           if (isInitialRender.current && !hasAppliedStateRef.current && candlestickData.length > 0) {
-            hasAppliedStateRef.current = true;
-            isInitialRender.current = false;
+            const currentSymbol = currentSymbolRef.current;
+            const currentInterval = currentIntervalRef.current;
             
-            requestAnimationFrame(() => {
+            if (currentSymbol && currentInterval) {
+              hasAppliedStateRef.current = true;
+              lastAppliedSymbolRef.current = currentSymbol;
+              lastAppliedIntervalRef.current = currentInterval;
+              isInitialRender.current = false;
+              
               requestAnimationFrame(() => {
-                if (!chart.current || !candlestickSeries.current) {
-                  isUpdatingDataRef.current = false;
-                  return;
-                }
-                
-                const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
-                  ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
-                  : null;
-                
-                if (savedState) {
-                  const timeScale = chart.current.timeScale();
-                  const priceScale = chart.current.priceScale('right');
-                  
-                  if (timeScale) {
-                    if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
-                      timeScale.setVisibleLogicalRange(savedState.logicalRange);
-                    } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
-                      timeScale.setVisibleRange(savedState.timeRange);
-                    }
+                requestAnimationFrame(() => {
+                  if (!chart.current || !candlestickSeries.current) {
+                    isUpdatingDataRef.current = false;
+                    return;
                   }
                   
-                  if (priceScale && savedState.priceScale) {
-                    const options = {};
-                    if (savedState.priceScale.autoScale !== undefined) {
-                      options.autoScale = savedState.priceScale.autoScale;
-                    }
-                    if (savedState.priceScale.scaleMargins) {
-                      options.scaleMargins = savedState.priceScale.scaleMargins;
+                  if (currentSymbolRef.current !== currentSymbol || currentIntervalRef.current !== currentInterval) {
+                    isUpdatingDataRef.current = false;
+                    return;
+                  }
+                  
+                  const savedState = chartKey
+                    ? getChartState(chartKey, currentSymbol, currentInterval)
+                    : null;
+                
+                  if (savedState) {
+                    const timeScale = chart.current.timeScale();
+                    const priceScale = chart.current.priceScale('right');
+                    
+                    if (timeScale) {
+                      if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
+                        timeScale.setVisibleLogicalRange(savedState.logicalRange);
+                      } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
+                        timeScale.setVisibleRange(savedState.timeRange);
+                      }
                     }
                     
-                    if (Object.keys(options).length > 0) {
-                      priceScale.applyOptions(options);
-                    }
-                    
-                    if (!savedState.priceScale.autoScale && savedState.priceRange && 
-                        savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
-                      requestAnimationFrame(() => {
-                        if (chart.current && priceScale) {
-                          try {
-                            priceScale.setVisibleRange({
-                              minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
-                              maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
-                            });
-                          } catch {
-      void 0;
-                            void 0;
+                    if (priceScale && savedState.priceScale) {
+                      const minPrice = Math.min(...candlestickData.map(d => Math.min(d.low, d.open, d.close, d.high)));
+                      const maxPrice = Math.max(...candlestickData.map(d => Math.max(d.high, d.open, d.close, d.low)));
+                      const dataRange = maxPrice - minPrice;
+                      
+                      let shouldApplyPriceRange = false;
+                      if (!savedState.priceScale.autoScale && savedState.priceRange && 
+                          savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
+                        const savedMin = Math.min(savedState.priceRange.from, savedState.priceRange.to);
+                        const savedMax = Math.max(savedState.priceRange.from, savedState.priceRange.to);
+                        const savedRange = savedMax - savedMin;
+                        
+                        if (dataRange > 0 && savedRange > 0) {
+                          const rangeRatio = Math.max(dataRange / savedRange, savedRange / dataRange);
+                          const minDiff = Math.abs(savedMin - minPrice) / Math.max(Math.abs(minPrice), 1);
+                          const maxDiff = Math.abs(savedMax - maxPrice) / Math.max(Math.abs(maxPrice), 1);
+                          
+                          if (rangeRatio <= 10 && minDiff <= 5 && maxDiff <= 5) {
+                            shouldApplyPriceRange = true;
                           }
                         }
-                        isUpdatingDataRef.current = false;
-                      });
-                      return;
+                      }
+                      
+                      const options = {};
+                      if (savedState.priceScale.autoScale !== undefined) {
+                        options.autoScale = shouldApplyPriceRange ? false : savedState.priceScale.autoScale;
+                      }
+                      if (savedState.priceScale.scaleMargins) {
+                        options.scaleMargins = savedState.priceScale.scaleMargins;
+                      }
+                      
+                      if (Object.keys(options).length > 0) {
+                        priceScale.applyOptions(options);
+                      }
+                      
+                      if (shouldApplyPriceRange) {
+                        requestAnimationFrame(() => {
+                          if (chart.current && priceScale && 
+                              currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
+                            try {
+                              priceScale.setVisibleRange({
+                                minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
+                                maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
+                              });
+                            } catch {
+      void 0;
+                              void 0;
+                            }
+                          }
+                          isUpdatingDataRef.current = false;
+                        });
+                        return;
+                      }
                     }
                   }
-                }
-                
-                isUpdatingDataRef.current = false;
+                  
+                  isUpdatingDataRef.current = false;
+                });
               });
-            });
+            } else {
+              isUpdatingDataRef.current = false;
+            }
           } else {
             isUpdatingDataRef.current = false;
             if (isInitialRender.current) {

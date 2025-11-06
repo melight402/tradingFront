@@ -98,17 +98,21 @@ const PriceChart = ({ height = 900, symbol = "BTCUSDT", interval = "1h", drawing
               scaleMargins: priceScaleOptions?.scaleMargins
             };
             
-            try {
-              const visibleRange = priceScale.getVisibleRange();
-              if (visibleRange && visibleRange.minValue !== null && visibleRange.maxValue !== null) {
-                state.priceRange = {
-                  from: visibleRange.minValue,
-                  to: visibleRange.maxValue
-                };
-              }
-            } catch {
+            const symbolChanged = oldSymbol !== symbol;
+            
+            if (!symbolChanged) {
+              try {
+                const visibleRange = priceScale.getVisibleRange();
+                if (visibleRange && visibleRange.minValue !== null && visibleRange.maxValue !== null) {
+                  state.priceRange = {
+                    from: visibleRange.minValue,
+                    to: visibleRange.maxValue
+                  };
+                }
+              } catch {
       void 0;
-              void 0;
+                void 0;
+              }
             }
           } catch {
       void 0;

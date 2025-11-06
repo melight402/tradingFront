@@ -69,7 +69,7 @@ export const useUnfavorablePriceCheck = () => {
       }
     }
 
-    if (orderType === "STOP_LIMIT") {
+    if (orderType === "STOP") {
       if (!stopPrice || !price) {
         return { isUnfavorable: false };
       }

@@ -97,7 +97,7 @@ export const useMarketOrderPlacement = () => {
         dateTime,
         symbol,
         side: isLong ? "SELL" : "BUY",
-        type: "STOP_LIMIT",
+        type: "STOP",
         price: stopLimitExecutionPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
