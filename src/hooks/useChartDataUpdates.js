@@ -143,58 +143,84 @@ export const useChartDataUpdates = (
             hasAppliedStateRef.current = true;
             isInitialRender.current = false;
             
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                if (!chart.current || !candlestickSeries.current) return;
+            setTimeout(() => {
+              if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
+                isUpdatingDataRef.current = false;
+                return;
+              }
+              
+              try {
+                const timeScale = chart.current.timeScale();
+                if (!timeScale) {
+                  isUpdatingDataRef.current = false;
+                  return;
+                }
                 
                 const savedState = currentSymbolRef?.current && currentIntervalRef?.current && chartKey
                   ? getChartState(chartKey, currentSymbolRef.current, currentIntervalRef.current)
                   : null;
                 
                 if (savedState) {
-                  const timeScale = chart.current.timeScale();
-                  const priceScale = chart.current.priceScale('right');
-                  
-                  if (timeScale) {
-                    if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
-                      timeScale.setVisibleLogicalRange(savedState.logicalRange);
-                    } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
-                      timeScale.setVisibleRange(savedState.timeRange);
-                    }
-                  }
-                  
-                  if (priceScale && savedState.priceScale) {
-                    const options = {};
-                    if (savedState.priceScale.autoScale !== undefined) {
-                      options.autoScale = savedState.priceScale.autoScale;
-                    }
-                    if (savedState.priceScale.scaleMargins) {
-                      options.scaleMargins = savedState.priceScale.scaleMargins;
+                  requestAnimationFrame(() => {
+                    if (!chart.current || !timeScale) {
+                      isUpdatingDataRef.current = false;
+                      return;
                     }
                     
-                    if (Object.keys(options).length > 0) {
-                      priceScale.applyOptions(options);
+                    try {
+                      if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
+                        timeScale.setVisibleLogicalRange(savedState.logicalRange);
+                      } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
+                        timeScale.setVisibleRange(savedState.timeRange);
+                      }
+                    } catch {
+                      void 0;
                     }
                     
-                    if (!savedState.priceScale.autoScale && savedState.priceRange && 
-                        savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
-                      requestAnimationFrame(() => {
-                        if (chart.current && priceScale) {
-                          try {
-                            priceScale.setVisibleRange({
-                              minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
-                              maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
-                            });
-                          } catch {
-                            void 0;
-                          }
+                    const priceScale = chart.current.priceScale('right');
+                    if (priceScale && savedState.priceScale) {
+                      try {
+                        const options = {};
+                        if (savedState.priceScale.autoScale !== undefined) {
+                          options.autoScale = savedState.priceScale.autoScale;
                         }
-                      });
+                        if (savedState.priceScale.scaleMargins) {
+                          options.scaleMargins = savedState.priceScale.scaleMargins;
+                        }
+                        
+                        if (Object.keys(options).length > 0) {
+                          priceScale.applyOptions(options);
+                        }
+                        
+                        if (!savedState.priceScale.autoScale && savedState.priceRange && 
+                            savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
+                          requestAnimationFrame(() => {
+                            if (chart.current && priceScale) {
+                              try {
+                                priceScale.setVisibleRange({
+                                  minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
+                                  maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
+                                });
+                              } catch {
+                                void 0;
+                              }
+                            }
+                          });
+                        }
+                      } catch {
+                        void 0;
+                      }
                     }
-                  }
+                    
+                    isUpdatingDataRef.current = false;
+                  });
+                } else {
+                  isUpdatingDataRef.current = false;
                 }
-              });
-            });
+              } catch {
+                isUpdatingDataRef.current = false;
+              }
+            }, 300);
           } else {
             isUpdatingDataRef.current = false;
             if (isInitialRender.current) {
