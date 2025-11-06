@@ -558,6 +558,13 @@ useEffect(() => {
    - chart1h: Нижняя секция, левый (первый `.app-chart-wrapper`)
    - chart1d: Нижняя секция, правый (второй `.app-chart-wrapper`)
 
+7. **Отображение меток цен на правой оси:**
+   - **ВАЖНО:** Библиотека `trading-charts-with-tools` (lightweight-charts) автоматически скрывает метки цен на маленьких графиках, если не установлены явные опции
+   - chart5m: Показывает метки (большой график)
+   - chart1h: **МОЖЕТ НЕ показывать** метки (маленький график) - исправлено добавлением `entireTextOnly: false` и `drawTicks: true`
+   - chart1d: Показывает метки (средний график)
+   - **РЕШЕНИЕ:** Добавлены опции `entireTextOnly: false` и `drawTicks: true` для `rightPriceScale` во всех графиках, чтобы гарантировать отображение меток
+
 ### ОДИНАКОВАЯ ЛОГИКА:
 
 1. Загрузка данных (ChartDataContext, useChartDataLoader)

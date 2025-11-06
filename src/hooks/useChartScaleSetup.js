@@ -145,6 +145,8 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
           rightPriceScale.applyOptions({
             visible: true,
             autoScale: true,
+            entireTextOnly: false,
+            drawTicks: true,
           });
         }
       });
@@ -167,6 +169,8 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
           rightPriceScale.applyOptions({
             visible: true,
             autoScale: false,
+            entireTextOnly: false,
+            drawTicks: true,
             scaleMargins: savedState.priceScale.scaleMargins || {
               top: 0.1,
               bottom: volumeAreaHeight
@@ -176,6 +180,8 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
           rightPriceScale.applyOptions({
             visible: true,
             autoScale: true,
+            entireTextOnly: false,
+            drawTicks: true,
           });
         }
       }
@@ -198,6 +204,8 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
       rightPriceScale: {
         visible: true,
         autoScale: savedAutoScale !== undefined ? savedAutoScale : true,
+        entireTextOnly: false,
+        drawTicks: true,
         scaleMargins: savedScaleMargins || {
           top: 0.1,
           bottom: volumeAreaHeight,

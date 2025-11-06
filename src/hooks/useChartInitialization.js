@@ -54,6 +54,8 @@ export const useChartInitialization = (
           borderColor: "#383E55",
           textColor: "#FFFFFF",
           autoScale: true,
+          entireTextOnly: false,
+          drawTicks: true,
           scaleMargins: {
             top: 0.1,
             bottom: volumeAreaHeight,
