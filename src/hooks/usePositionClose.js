@@ -3,7 +3,7 @@ import { takeScreenshot } from "../utils/screenshot";
 import { closePosition } from "../utils/api";
 import { getPositionToolData } from "../utils/positionToolExtractor";
 
-export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => {
+export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol, tradeNote) => {
   const [isClosing, setIsClosing] = useState(false);
 
   const closePositionWithData = async (profitLoss) => {
@@ -60,6 +60,7 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol) => 
         profitLoss: profitLoss,
         stopLossPrice: toolData.stopLossPrice,
         takeProfitPrice: toolData.takeProfitPrice,
+        note: tradeNote || null,
       };
       
       

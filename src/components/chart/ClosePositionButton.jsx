@@ -8,8 +8,9 @@ const ClosePositionButton = ({
   chart1dRef, 
   symbol, 
   profitLoss,
+  tradeNote,
 }) => {
-  const { closePositionWithData, isClosing } = usePositionClose(chart5mRef, chart1hRef, chart1dRef, symbol);
+  const { closePositionWithData, isClosing } = usePositionClose(chart5mRef, chart1hRef, chart1dRef, symbol, tradeNote);
 
   const handleClose = () => {
     closePositionWithData(profitLoss);

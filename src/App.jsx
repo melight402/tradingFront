@@ -33,6 +33,8 @@ const AppContent = ({ tradingState, chart5mRef, chart1hRef, chart1dRef, handleCh
     setRatio,
     profitLoss,
     setProfitLoss,
+    tradeNote,
+    setTradeNote,
   } = tradingState;
 
   useLineToolsUpdate(chart5mRef, chart1hRef, chart1dRef, symbol, risk);
@@ -52,6 +54,8 @@ const AppContent = ({ tradingState, chart5mRef, chart1hRef, chart1dRef, handleCh
       setStopPrice={setStopPrice}
       profitLoss={profitLoss}
       setProfitLoss={setProfitLoss}
+      tradeNote={tradeNote}
+      setTradeNote={setTradeNote}
       chart5mRef={chart5mRef}
       chart1hRef={chart1hRef}
       chart1dRef={chart1dRef}
@@ -59,7 +63,7 @@ const AppContent = ({ tradingState, chart5mRef, chart1hRef, chart1dRef, handleCh
       risk={risk}
       deleteToolsHandlers={deleteToolsHandlers}
     />
-  ), [drawingTool, orderType, stopPrice, tvxValue, profitLoss, risk, symbol, chart5mRef, chart1hRef, chart1dRef, deleteToolsHandlers, setOrderType, setTVXValue, setDrawingTool, setStopPrice, setProfitLoss]);
+  ), [drawingTool, orderType, stopPrice, tvxValue, profitLoss, tradeNote, risk, symbol, chart5mRef, chart1hRef, chart1dRef, deleteToolsHandlers, setOrderType, setTVXValue, setDrawingTool, setStopPrice, setProfitLoss, setTradeNote]);
 
   const topChartSecondRowRight = useMemo(() => (
     <TopChartRightControls

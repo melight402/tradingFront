@@ -24,6 +24,7 @@ export const useTradingState = () => {
   const [atrValue, setAtrValue] = useState(() => loadATRValue(1));
   const [ratio, setRatio] = useState(() => loadRatio("2"));
   const [profitLoss, setProfitLoss] = useState("profit");
+  const [tradeNote, setTradeNote] = useState("");
 
   useEffect(() => {
     saveSelectedSymbol(symbol);
@@ -77,6 +78,8 @@ export const useTradingState = () => {
     setRatio,
     profitLoss,
     setProfitLoss,
+    tradeNote,
+    setTradeNote,
   };
 };
 

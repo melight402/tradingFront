@@ -5,6 +5,7 @@ import DrawingToolsSelector from "../controls/DrawingToolsSelector";
 import DeleteTools from "../controls/DeleteTools";
 import StopPriceInput from "../controls/StopPriceInput";
 import ProfitLossSelector from "../controls/ProfitLossSelector";
+import TradeNoteInput from "../controls/TradeNoteInput";
 import ClosePositionButton from "../chart/ClosePositionButton";
 import ExportPositionData from "../chart/ExportPositionData";
 
@@ -19,6 +20,8 @@ export const TopChartControls = ({
   setStopPrice,
   profitLoss,
   setProfitLoss,
+  tradeNote,
+  setTradeNote,
   chart5mRef,
   chart1hRef,
   chart1dRef,
@@ -40,12 +43,14 @@ export const TopChartControls = ({
         <div className="chart-controls-first-row-right">
           <StopPriceInput value={stopPrice} onChange={setStopPrice} />
           <ProfitLossSelector value={profitLoss} onChange={setProfitLoss} />
+          <TradeNoteInput value={tradeNote} onChange={setTradeNote} />
           <ClosePositionButton
             chart5mRef={chart5mRef}
             chart1hRef={chart1hRef}
             chart1dRef={chart1dRef}
             symbol={symbol}
             profitLoss={profitLoss}
+            tradeNote={tradeNote}
           />
           <ExportPositionData
             chart5mRef={chart5mRef}
