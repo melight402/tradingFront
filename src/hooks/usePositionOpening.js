@@ -19,7 +19,8 @@ export const usePositionOpening = () => {
     tvxValue,
     stopPrice,
     risk,
-    lastTool
+    lastTool,
+    timeframe
   ) => {
     const riskValue = parseFloat(risk);
     if (!risk || isNaN(riskValue) || riskValue <= 0) {
@@ -81,6 +82,7 @@ export const usePositionOpening = () => {
       side: side,
       type: orderType || "MARKET",
       tvx: tvxValue || "level_breakout",
+      timeframe: timeframe || 'unknown',
       price: finalEntryPrice,
       stopPrice: stopPrice || null,
       quantity: roundedQuantity,

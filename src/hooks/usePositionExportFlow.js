@@ -2,6 +2,7 @@ import { useState } from "react";
 import { usePositionExport } from "./usePositionExport";
 import { usePositionOpening } from "./usePositionOpening";
 import { useQuantityValidation } from "./useQuantityValidation";
+import { loadTopChartTimeframe } from "../services/localStorageUtils";
 
 export const usePositionExportFlow = (
   chart5mRef,
@@ -55,7 +56,8 @@ export const usePositionExportFlow = (
           tvxValue,
           stopPrice,
           risk,
-          lastTool
+          lastTool,
+          loadTopChartTimeframe()
         );
 
         if (success) {

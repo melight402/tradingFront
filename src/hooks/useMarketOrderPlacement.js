@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { getCurrentPrice } from "../services/priceDataStorage";
 import { roundQuantityToStepSize, roundPriceToTickSize, getTickSizeFromSymbol } from "../utils/tickSizeCache";
 import { openPosition } from "../utils/api";
+import { loadTopChartTimeframe } from "../services/localStorageUtils";
 
 export const useMarketOrderPlacement = () => {
   const placeMarketOrder = useCallback(async (side, symbol, risk, stopLossPrice, ratio, orderType = "MARKET") => {
@@ -76,6 +77,7 @@ export const useMarketOrderPlacement = () => {
       symbol,
       side,
       type: isLimitOrder ? "LIMIT" : "MARKET",
+      timeframe: loadTopChartTimeframe(),
       price: roundedEntryPrice.toString(),
       quantity: quantity.toString(),
       positionSide,
@@ -107,6 +109,7 @@ export const useMarketOrderPlacement = () => {
         symbol,
         side: isLong ? "SELL" : "BUY",
         type: "STOP",
+        timeframe: loadTopChartTimeframe(),
         price: stopLimitExecutionPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
@@ -123,6 +126,7 @@ export const useMarketOrderPlacement = () => {
         symbol,
         side: isLong ? "SELL" : "BUY",
         type: "STOP_MARKET",
+        timeframe: loadTopChartTimeframe(),
         price: entryPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
@@ -139,6 +143,7 @@ export const useMarketOrderPlacement = () => {
         symbol,
         side: isLong ? "SELL" : "BUY",
         type: "TAKE_PROFIT",
+        timeframe: loadTopChartTimeframe(),
         price: takeProfitLimitExecutionPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
@@ -155,6 +160,7 @@ export const useMarketOrderPlacement = () => {
         symbol,
         side: isLong ? "SELL" : "BUY",
         type: "TAKE_PROFIT_MARKET",
+        timeframe: loadTopChartTimeframe(),
         quantity: quantity.toString(),
         positionSide,
         stopPrice: takeProfit.toString(),
@@ -196,6 +202,7 @@ export const useMarketOrderPlacement = () => {
         symbol,
         side: isLong ? "SELL" : "BUY",
         type: "STOP_MARKET",
+         timeframe: loadTopChartTimeframe(),
         price: entryPrice.toString(),
         quantity: quantity.toString(),
         positionSide,
@@ -212,6 +219,7 @@ export const useMarketOrderPlacement = () => {
         symbol,
         side: isLong ? "SELL" : "BUY",
         type: "TAKE_PROFIT",
+         timeframe: loadTopChartTimeframe(),
         price: takeProfit.toString(),
         quantity: quantity.toString(),
         positionSide,
