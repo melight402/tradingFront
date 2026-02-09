@@ -2,18 +2,18 @@ import React, { useState, useMemo, useEffect } from "react";
 import ChartHeader from "./ChartHeader";
 import { PriceChart } from "./PriceChart";
 import { useChartData } from "../../contexts/ChartDataContext";
-import { saveTopChartTimeframe, loadTopChartTimeframe } from "../../services/localStorageUtils";
+import { storageManager } from "../../services/storageManager";
 import { INTERVALS } from "../../constants";
 import "../../styles/styles.css";
 
 const VALID_INTERVALS = new Set(INTERVALS.map(i => i.value));
 
-const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onChartReady = null, onDrawingToolDeactivate = null, firstRowContent = null, secondRowCenter = null, secondRowRight = null, volumeAreaHeight = 0.07, limit = 500, chartKey = "chart1h", collapseButtonProps = null }) => {
+const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onChartReady = null, onDrawingToolDeactivate = null, firstRowContent = null, secondRowCenter = null, secondRowRight = null, volumeAreaHeight = 0.07, limit = 500, chartKey = "chart5m", collapseButtonProps = null }) => {
   const isTopChart = chartKey === "chart5m";
   
   const [interval, setInterval] = useState(() => {
     if (isTopChart) {
-      const saved = loadTopChartTimeframe(initialInterval);
+      const saved = storageManager.loadTopChartTimeframe(initialInterval);
       return VALID_INTERVALS.has(saved) ? saved : initialInterval;
     }
     return initialInterval;
@@ -32,7 +32,7 @@ const ChartSection = ({ symbol, initialInterval = "1h", drawingTool = null, onCh
 
   useEffect(() => {
     if (isTopChart) {
-      saveTopChartTimeframe(interval);
+      storageManager.saveTopChartTimeframe(interval);
     }
   }, [interval, isTopChart]);
 

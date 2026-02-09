@@ -1,37 +1,24 @@
 import { useState, useEffect } from "react";
-import {
-  loadSelectedSymbol,
-  saveSelectedSymbol,
-  loadRisk,
-  saveRisk,
-  loadOrderType,
-  saveOrderType,
-  loadTVXValue,
-  saveTVXValue,
-  loadRatio,
-  saveRatio,
-  loadATRValue,
-  saveATRValue,
-} from "../services/localStorageUtils";
+import { storageManager } from "../services/storageManager";
 
 export const useTradingState = () => {
-  const [symbol, setSymbol] = useState(() => loadSelectedSymbol("BTCUSDT"));
+  const [symbol, setSymbol] = useState(() => storageManager.loadSymbol("BTCUSDT"));
   const [drawingTool, setDrawingTool] = useState(null);
-  const [risk, setRisk] = useState(() => loadRisk(1));
-  const [orderType, setOrderType] = useState(() => loadOrderType());
-  const [tvxValue, setTVXValue] = useState(() => loadTVXValue());
+  const [risk, setRisk] = useState(() => storageManager.loadRisk(1));
+  const [orderType, setOrderType] = useState(() => storageManager.loadOrderType());
+  const [tvxValue, setTVXValue] = useState(() => storageManager.loadTVXValue());
   const [stopPrice, setStopPrice] = useState(null);
-  const [atrValue, setAtrValue] = useState(() => loadATRValue(1));
-  const [ratio, setRatio] = useState(() => loadRatio("2"));
+  const [atrValue, setAtrValue] = useState(() => storageManager.loadATRValue(1));
+  const [ratio, setRatio] = useState(() => storageManager.loadRatio("2"));
   const [profitLoss, setProfitLoss] = useState("profit");
   const [tradeNote, setTradeNote] = useState("");
 
   useEffect(() => {
-    saveSelectedSymbol(symbol);
+    storageManager.saveSymbol(symbol);
   }, [symbol]);
 
   useEffect(() => {
-    saveRisk(risk);
+    storageManager.saveRisk(risk);
     if (typeof window !== 'undefined') {
       window.__CURRENT_RISK = risk;
     }
@@ -44,19 +31,19 @@ export const useTradingState = () => {
   }, [symbol]);
 
   useEffect(() => {
-    saveOrderType(orderType);
+    storageManager.saveOrderType(orderType);
   }, [orderType]);
 
   useEffect(() => {
-    saveTVXValue(tvxValue);
+    storageManager.saveTVXValue(tvxValue);
   }, [tvxValue]);
 
   useEffect(() => {
-    saveRatio(ratio);
+    storageManager.saveRatio(ratio);
   }, [ratio]);
 
   useEffect(() => {
-    saveATRValue(atrValue);
+    storageManager.saveATRValue(atrValue);
   }, [atrValue]);
 
   return {
