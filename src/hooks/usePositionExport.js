@@ -1,5 +1,4 @@
-import { getLastPositionTool } from "../utils/positionToolsExtractor";
-import { extractPositionData } from "../utils/positionDataExtractor";
+import { getLastPositionTool, extractPositionData } from "../services/chartToolsService";
 import { getFinalPositionValues } from "../utils/finalPositionValues";
 
 export const usePositionExport = (
@@ -13,7 +12,8 @@ export const usePositionExport = (
 ) => {
 
   const exportPosition = async () => {
-    const lastTool = getLastPositionTool(chart5mRef, chart1hRef, chart1dRef);
+    const refs = { chart5mRef, chart1hRef, chart1dRef };
+    const lastTool = getLastPositionTool(refs);
     const finalValues = getFinalPositionValues(lastTool);
 
     if (!finalValues) {
@@ -26,7 +26,7 @@ export const usePositionExport = (
       return;
     }
 
-    const positions = extractPositionData(chart5mRef, chart1hRef, chart1dRef, symbol, risk);
+    const positions = extractPositionData(refs, symbol, risk);
 
     if (positions.length === 0) {
       alert("Нет позиций для экспорта");

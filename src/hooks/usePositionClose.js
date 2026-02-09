@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { takeScreenshot } from "../utils/screenshot";
 import { closePosition } from "../utils/api";
-import { getPositionToolData } from "../utils/positionToolExtractor";
+import { getPositionToolData } from "../services/chartToolsService";
 
 export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol, tradeNote) => {
   const [isClosing, setIsClosing] = useState(false);
@@ -21,8 +21,9 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol, tra
     let positionData;
     try {
       positionData = JSON.parse(lastOpenPositionData);
-    } catch {
-      void 0;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to parse position data:', error);
       alert("Ошибка при чтении данных открытой позиции");
       return false;
     }
@@ -32,7 +33,8 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol, tra
       return false;
     }
 
-    const toolData = getPositionToolData(chart5mRef, chart1hRef, chart1dRef, positionData.lineToolId);
+    const refs = { chart5mRef, chart1hRef, chart1dRef };
+    const toolData = getPositionToolData(refs, positionData.lineToolId);
     if (!toolData) {
       alert("Не найден инструмент рисования на графиках");
       return false;

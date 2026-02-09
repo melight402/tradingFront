@@ -175,16 +175,17 @@ export const COLORS = {
 };
 
 export const TVX_OPTIONS = [
-  { value: "trend_after_pullback", label: "По тренду после отката" },
-  { value: "abc", label: "ABC" },
-  { value: "level_breakout", label: "Пробой уровня" },
-  { value: "false_breakout", label: "Ложный пробой" },
-  { value: "level_bounce", label: "Отбой от уровня" },
-  { value: "breaker_block_retest", label: "Ретест от Брейкер блака" },
-  { value: "order_block_retest", label: "Ретест от Ордер блока" },
+  { value: "waves", label: "5 волн + ABC" },
+  { value: "level_breakout", label: "Пробой сильного уровня (Ретест)" },
+  { value: "false_breakout", label: "Ложный пробой сильного(Вкат за уровень)" },
+  { value: "level_bounce", label: "Отбой от сильного уровня" },
   { value: "imbalance_retest", label: "Ретест от Имбаланса" },
-  { value: "channel_exit", label: "Выход из Канала" },
-  { value: "triangle_exit", label: "Выход Треугольник" },
+  { value: "ma20_retest", label: "Ретест МА20" },
+  { value: "ma20_curve", label: "Рогатка МА20 + маленькая свеча" },
+  { value: "ma200_retest", label: "Ретест МА200" },
+  { value: "ma_rectangle", label: "Треугольник пробой МА200" },
+  { value: "rollback25", label: "Откат 25%" },
+  { value: "rollback50", label: "Разворот после отката 50%" },
 ];
 
 export const TAKE_PROFIT_OPTIONS = Array.from({ length: 11 }, (_, i) => {

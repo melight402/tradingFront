@@ -2,7 +2,10 @@ import { useRef, useCallback } from "react";
 import { useLastCandleUpdate } from "./useLastCandleUpdate";
 import { useChartDataProcessor } from "./useChartDataProcessor";
 import { useChartState } from "../contexts/ChartStateContext";
-import { getLastCandle } from "../services/priceDataStorage";
+import { useChartDataValidator } from "./useChartDataValidator";
+import { useChartSeriesUpdater } from "./useChartSeriesUpdater";
+import { useChartStateRestoration } from "./useChartStateRestoration";
+import { logError } from "../utils/errorHandler";
 
 export const useChartDataUpdates = (
   chart,
@@ -24,6 +27,9 @@ export const useChartDataUpdates = (
   const dataUpdateTimeoutRef = useRef(null);
   const { updateLastCandle } = useLastCandleUpdate(chart, candlestickSeries, volumeSeries, lastCandleTimeRef);
   const { processChartData } = useChartDataProcessor();
+  const { validateCandleData, validateVolumeData } = useChartDataValidator();
+  const { applyVolumeMargins, applyPriceFormat, setSeriesData, updateLastCandleFromStorage } = useChartSeriesUpdater();
+  const { applyTimeScale, applyPriceScale, setVisiblePriceRange } = useChartStateRestoration();
 
   const updateChartData = useCallback(async (data) => {
     if (!chart.current || !candlestickSeries.current || !volumeSeries.current) {
@@ -74,196 +80,84 @@ export const useChartDataUpdates = (
         }
 
         try {
-            volumeSeries.current.applyOptions({
-              scaleMargins: {
-                top: 1 - volumeAreaHeight,
-                bottom: 0,
-              },
-            });
-          
+          applyVolumeMargins(volumeSeries, volumeAreaHeight);
+          applyPriceFormat(candlestickSeries, priceFormat);
 
-          if (priceFormat && typeof priceFormat.precision === 'number' && typeof priceFormat.minMove === 'number') {
-            candlestickSeries.current.applyOptions({
-              priceFormat: {
-                type: "price",
-                precision: Math.max(0, Math.min(8, priceFormat.precision)),
-                minMove: Math.max(0.0000001, Math.min(1, priceFormat.minMove)),
-              },
-            });
-          }
-
-          if (candlestickData.length > 0 && candlestickData.every(d => 
-            d && typeof d.time === 'number' && isFinite(d.time) &&
-            typeof d.open === 'number' && isFinite(d.open) &&
-            typeof d.high === 'number' && isFinite(d.high) &&
-            typeof d.low === 'number' && isFinite(d.low) &&
-            typeof d.close === 'number' && isFinite(d.close)
-          )) {
-            candlestickSeries.current.setData(candlestickData);
-          } else {
+          if (!validateCandleData(candlestickData) || !validateVolumeData(volumeData)) {
             isUpdatingDataRef.current = false;
             return;
           }
 
-          if (volumeData.length > 0 && volumeData.every(d => 
-            d && typeof d.time === 'number' && isFinite(d.time) &&
-            typeof d.value === 'number' && isFinite(d.value)
-          )) {
-            volumeSeries.current.setData(volumeData);
-          } else {
+          if (!setSeriesData(candlestickSeries, volumeSeries, candlestickData, volumeData, lastCandleTimeRef)) {
             isUpdatingDataRef.current = false;
             return;
           }
 
-          if (candlestickData.length > 0) {
-            lastCandleTimeRef.current = candlestickData[candlestickData.length - 1].time;
-          }
-
-          const storedLastCandle = getLastCandle(currentSymbol, currentInterval);
-          if (storedLastCandle && storedLastCandle.date && storedLastCandle.date instanceof Date) {
-            const storedTime = storedLastCandle.date.getTime() / 1000;
-            const lastDataTime = candlestickData.length > 0 ? candlestickData[candlestickData.length - 1].time : 0;
-            
-            if (storedTime >= lastDataTime) {
-              try {
-                candlestickSeries.current.update({
-                  time: storedTime,
-                  open: storedLastCandle.open,
-                  high: storedLastCandle.high,
-                  low: storedLastCandle.low,
-                  close: storedLastCandle.close,
-                });
-
-                volumeSeries.current.update({
-                  time: storedTime,
-                  value: storedLastCandle.volume || 0,
-                  color: storedLastCandle.close >= storedLastCandle.open ? "#26a69a80" : "#ef535080",
-                });
-
-                lastCandleTimeRef.current = storedTime;
-              } catch {
-      void 0;
-                void 0;
-              }
-            }
-          }
+          updateLastCandleFromStorage(candlestickSeries, volumeSeries, currentSymbol, currentInterval, candlestickData);
 
           if (isInitialRender.current && !hasAppliedStateRef.current && candlestickData.length > 0) {
-            const currentSymbol = currentSymbolRef.current;
-            const currentInterval = currentIntervalRef.current;
-            
-            if (currentSymbol && currentInterval) {
-              hasAppliedStateRef.current = true;
-              lastAppliedSymbolRef.current = currentSymbol;
-              lastAppliedIntervalRef.current = currentInterval;
-              isInitialRender.current = false;
-              
+            hasAppliedStateRef.current = true;
+            isInitialRender.current = false;
+
+            requestAnimationFrame(() => {
               requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                  if (!chart.current || !candlestickSeries.current) {
-                    isUpdatingDataRef.current = false;
-                    return;
-                  }
-                  
-                  if (currentSymbolRef.current !== currentSymbol || currentIntervalRef.current !== currentInterval) {
-                    isUpdatingDataRef.current = false;
-                    return;
-                  }
-                  
-                  const savedState = chartKey
-                    ? getChartState(chartKey, currentSymbol, currentInterval)
-                    : null;
-                
-                  if (savedState) {
-                    const timeScale = chart.current.timeScale();
-                    const priceScale = chart.current.priceScale('right');
-                    
-                    if (timeScale) {
-                      if (savedState.logicalRange && savedState.logicalRange.from != null && savedState.logicalRange.to != null) {
-                        timeScale.setVisibleLogicalRange(savedState.logicalRange);
-                      } else if (savedState.timeRange && savedState.timeRange.from != null && savedState.timeRange.to != null) {
-                        timeScale.setVisibleRange(savedState.timeRange);
-                      }
-                    }
-                    
-                    if (priceScale && savedState.priceScale) {
-                      const minPrice = Math.min(...candlestickData.map(d => Math.min(d.low, d.open, d.close, d.high)));
-                      const maxPrice = Math.max(...candlestickData.map(d => Math.max(d.high, d.open, d.close, d.low)));
-                      const dataRange = maxPrice - minPrice;
-                      
-                      let shouldApplyPriceRange = false;
-                      if (!savedState.priceScale.autoScale && savedState.priceRange && 
-                          savedState.priceRange.from !== null && savedState.priceRange.to !== null) {
-                        const savedMin = Math.min(savedState.priceRange.from, savedState.priceRange.to);
-                        const savedMax = Math.max(savedState.priceRange.from, savedState.priceRange.to);
-                        const savedRange = savedMax - savedMin;
-                        
-                        if (dataRange > 0 && savedRange > 0) {
-                          const rangeRatio = Math.max(dataRange / savedRange, savedRange / dataRange);
-                          const minDiff = Math.abs(savedMin - minPrice) / Math.max(Math.abs(minPrice), 1);
-                          const maxDiff = Math.abs(savedMax - maxPrice) / Math.max(Math.abs(maxPrice), 1);
-                          
-                          if (rangeRatio <= 10 && minDiff <= 5 && maxDiff <= 5) {
-                            shouldApplyPriceRange = true;
-                          }
-                        }
-                      }
-                      
-                      const options = {};
-                      if (savedState.priceScale.autoScale !== undefined) {
-                        options.autoScale = shouldApplyPriceRange ? false : savedState.priceScale.autoScale;
-                      }
-                      if (savedState.priceScale.scaleMargins) {
-                        options.scaleMargins = savedState.priceScale.scaleMargins;
-                      }
-                      
-                      if (Object.keys(options).length > 0) {
-                        priceScale.applyOptions(options);
-                      }
-                      
-                      if (shouldApplyPriceRange) {
-                        requestAnimationFrame(() => {
-                          if (chart.current && priceScale && 
-                              currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
-                            try {
-                              priceScale.setVisibleRange({
-                                minValue: Math.min(savedState.priceRange.from, savedState.priceRange.to),
-                                maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
-                              });
-                            } catch {
-      void 0;
-                              void 0;
-                            }
-                          }
-                          isUpdatingDataRef.current = false;
-                        });
-                        return;
-                      }
-                    }
-                  }
-                  
+                if (!chart.current || !candlestickSeries.current) {
                   isUpdatingDataRef.current = false;
-                });
+                  return;
+                }
+
+                if (currentSymbolRef.current !== currentSymbol || currentIntervalRef.current !== currentInterval) {
+                  isUpdatingDataRef.current = false;
+                  return;
+                }
+
+                const savedState = chartKey
+                  ? getChartState(chartKey, currentSymbol, currentInterval)
+                  : null;
+
+                if (savedState) {
+                  const timeScale = chart.current.timeScale();
+                  const priceScale = chart.current.priceScale('right');
+
+                  if (timeScale) {
+                    applyTimeScale(timeScale, savedState);
+                  }
+
+                  if (priceScale && savedState.priceScale) {
+                    const priceRangeData = applyPriceScale(priceScale, savedState, candlestickData);
+
+                    if (priceRangeData) {
+                      requestAnimationFrame(() => {
+                        if (chart.current && priceScale &&
+                            currentSymbolRef.current === currentSymbol && currentIntervalRef.current === currentInterval) {
+                          setVisiblePriceRange(priceScale, priceRangeData);
+                        }
+                        isUpdatingDataRef.current = false;
+                      });
+                      return;
+                    }
+                  }
+                }
+
+                isUpdatingDataRef.current = false;
               });
-            } else {
-              isUpdatingDataRef.current = false;
-            }
+            });
           } else {
             isUpdatingDataRef.current = false;
             if (isInitialRender.current) {
               isInitialRender.current = false;
             }
           }
-        } catch {
-      void 0;
+        } catch (error) {
+          logError("updateChartData requestAnimationFrame", error);
           isUpdatingDataRef.current = false;
         }
       });
-    } catch {
-      void 0;
+    } catch (error) {
+      logError("updateChartData", error);
       isUpdatingDataRef.current = false;
     }
-  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, chartKey, processChartData, getChartState]);
+  }, [chart, candlestickSeries, volumeSeries, volumeDataRef, isInitialRender, lastCandleTimeRef, currentSymbolRef, currentIntervalRef, isUpdatingDataRef, volumeAreaHeight, chartKey, processChartData, getChartState, validateCandleData, validateVolumeData, applyVolumeMargins, applyPriceFormat, setSeriesData, updateLastCandleFromStorage, applyTimeScale, applyPriceScale, setVisiblePriceRange]);
 
   return { updateLastCandle, updateChartData, dataUpdateTimeoutRef };
 };
