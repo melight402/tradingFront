@@ -1,4 +1,5 @@
 import React from "react";
+import { useTradingStateContext } from "../../contexts/TradingStateContext";
 import OrderTypeSelector from "../controls/OrderTypeSelector";
 import TVXSelector from "../controls/TVXSelector";
 import DrawingToolsSelector from "../controls/DrawingToolsSelector";
@@ -9,26 +10,23 @@ import TradeNoteInput from "../controls/TradeNoteInput";
 import ClosePositionButton from "../chart/ClosePositionButton";
 import ExportPositionData from "../chart/ExportPositionData";
 
-export const TopChartControls = ({
-  orderType,
-  setOrderType,
-  tvxValue,
-  setTVXValue,
-  drawingTool,
-  setDrawingTool,
-  stopPrice,
-  setStopPrice,
-  profitLoss,
-  setProfitLoss,
-  tradeNote,
-  setTradeNote,
-  chart5mRef,
-  chart1hRef,
-  chart1dRef,
-  symbol,
-  risk,
-  deleteToolsHandlers,
-}) => {
+export const TopChartControls = ({ chart5mRef, chart1hRef, chart1dRef, deleteToolsHandlers }) => {
+  const {
+    orderType,
+    setOrderType,
+    tvxValue,
+    setTVXValue,
+    drawingTool,
+    setDrawingTool,
+    stopPrice,
+    setStopPrice,
+    profitLoss,
+    setProfitLoss,
+    tradeNote,
+    setTradeNote,
+    symbol,
+    risk,
+  } = useTradingStateContext();
   return (
     <>
       <div className="chart-controls-first-row-subrow">

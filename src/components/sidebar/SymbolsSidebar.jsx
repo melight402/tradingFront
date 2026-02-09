@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { useTradingStateContext } from "../../contexts/TradingStateContext";
 import { useSymbols } from "../../hooks/useSymbols";
 import { useSymbolSidebarKeyboard } from "../../hooks/useSymbolSidebarKeyboard";
 import { useSymbolSidebarScroll } from "../../hooks/useSymbolSidebarScroll";
@@ -6,7 +7,8 @@ import SymbolSidebarList from "./SymbolSidebarList";
 import { symbolsSidebarStyle, symbolsSidebarHeaderStyle, symbolsSidebarTitleStyle } from "../../styles/styles";
 import "../../styles/styles.css";
 
-const SymbolsSidebar = ({ selectedSymbol, onSymbolSelect }) => {
+const SymbolsSidebar = () => {
+  const { symbol: selectedSymbol, setSymbol: onSymbolSelect } = useTradingStateContext();
   const { symbols, loading, error } = useSymbols();
   const sidebarRef = useRef(null);
   const listRef = useRef(null);

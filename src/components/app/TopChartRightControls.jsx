@@ -1,4 +1,5 @@
 import React from "react";
+import { useTradingStateContext } from "../../contexts/TradingStateContext";
 import RiskInput from "../controls/RiskInput";
 import RatioSelector from "../controls/RatioSelector";
 import BuyButton from "../controls/BuyButton";
@@ -6,17 +7,8 @@ import SellButton from "../controls/SellButton";
 import { useMarketOrderPlacement } from "../../hooks/useMarketOrderPlacement";
 import { useHorizontalLinePrice } from "../../hooks/useHorizontalLinePrice";
 
-export const TopChartRightControls = ({
-  risk,
-  setRisk,
-  ratio,
-  setRatio,
-  symbol,
-  orderType,
-  chart5mRef,
-  chart1hRef,
-  chart1dRef,
-}) => {
+export const TopChartRightControls = ({ chart5mRef, chart1hRef, chart1dRef }) => {
+  const { risk, setRisk, ratio, setRatio, symbol, orderType } = useTradingStateContext();
   const { placeMarketOrder } = useMarketOrderPlacement();
   const stopLossPrice = useHorizontalLinePrice(chart5mRef, chart1hRef, chart1dRef);
 
