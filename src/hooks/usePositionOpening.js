@@ -1,5 +1,5 @@
 import { takeScreenshot } from "../utils/screenshot";
-import { openPosition } from "../utils/api";
+import { openPositionWithOrders } from "../utils/api";
 import { calculatePositionQuantity } from "../utils/positionCalculations";
 import { roundQuantityToStepSize } from "../utils/tickSizeCache";
 import { useUnfavorablePriceCheck } from "./useUnfavorablePriceCheck";
@@ -48,7 +48,6 @@ export const usePositionOpening = () => {
     }
 
     const finalTakeProfitPrice = finalTakeProfit;
-
     const positionSide = finalDirection === "Long" ? "LONG" : "SHORT";
     const side = finalDirection === "Long" ? "BUY" : "SELL";
 
@@ -73,29 +72,92 @@ export const usePositionOpening = () => {
     }
 
     const screenshotBlob = await takeScreenshot();
-
+    const dateTime = new Date().toISOString();
     const positionUsdt = Math.round((finalEntryPrice * roundedQuantity) * 100) / 100;
 
-    const positionData = {
-      dateTime: new Date().toISOString(),
-      positionSide: positionSide,
-      side: side,
+    // Данные для ордера открытия позиции
+    const entryOrderData = {
+      dateTime,
+      symbol,
+      side,
       type: orderType || "MARKET",
-      tvx: tvxValue || "level_breakout",
       timeframe: timeframe || 'unknown',
-      price: finalEntryPrice,
+      price: finalEntryPrice.toString(),
+      quantity: roundedQuantity.toString(),
+      positionSide,
+    };
+
+    // Данные для стоп-лосса
+    const stopLossOrderData = {
+      dateTime,
+      symbol,
+      side: positionSide === "LONG" ? "SELL" : "BUY",
+      type: "STOP_MARKET",
+      timeframe: timeframe || 'unknown',
+      quantity: roundedQuantity.toString(),
+      positionSide,
+      stopPrice: finalStopLoss.toString(),
+      workingType: "CONTRACT_PRICE",
+      closePosition: true,
+    };
+
+    // Данные для тейк-профита
+    const takeProfitOrderData = {
+      dateTime,
+      symbol,
+      side: positionSide === "LONG" ? "SELL" : "BUY",
+      type: "TAKE_PROFIT_MARKET",
+      timeframe: timeframe || 'unknown',
+      quantity: roundedQuantity.toString(),
+      positionSide,
+      stopPrice: finalTakeProfitPrice.toString(),
+      workingType: "CONTRACT_PRICE",
+      closePosition: true,
+    };
+
+    // Комбинированный заказ со всеми необходимыми данными
+    const compoundOrderData = {
+      dateTime,
+      symbol,
+      positionSide,
+      price: finalEntryPrice.toString(),
+      risk: riskValue.toString(),
+      tvx: tvxValue || "level_breakout",
       stopPrice: stopPrice || null,
-      quantity: roundedQuantity,
-      positionUsdt: positionUsdt,
-      stopLossPrice: finalStopLoss,
-      takeProfitPrice: finalTakeProfitPrice,
-      symbol: symbol,
+      stopLossPrice: finalStopLoss.toString(),
+      takeProfitPrice: finalTakeProfitPrice.toString(),
+      quantity: roundedQuantity.toString(),
+      positionUsdt: positionUsdt.toString(),
       lineToolId: lastTool ? lastTool.id : null,
-      risk: riskValue,
+      
+      entry: entryOrderData,
+      stopLoss: stopLossOrderData,
+      takeProfit: takeProfitOrderData,
     };
     
     try {
-      await openPosition(positionData, screenshotBlob);
+      // Отправляем ВСЕ ордеры в ОДНОМ запросе
+      await openPositionWithOrders(compoundOrderData, screenshotBlob);
+      
+      // Сохраняем историю открытой позиции
+      const positionData = {
+        dateTime,
+        positionSide,
+        side,
+        type: orderType || "MARKET",
+        tvx: tvxValue || "level_breakout",
+        timeframe: timeframe || 'unknown',
+        price: finalEntryPrice,
+        stopPrice: stopPrice || null,
+        quantity: roundedQuantity,
+        positionUsdt,
+        stopLossPrice: finalStopLoss,
+        takeProfitPrice: finalTakeProfitPrice,
+        symbol,
+        lineToolId: lastTool ? lastTool.id : null,
+        risk: riskValue,
+      };
+      
       localStorage.setItem(`lastOpenPosition_${symbol}`, JSON.stringify(positionData));
       return true;
     } catch (err) {
