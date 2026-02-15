@@ -99,7 +99,6 @@ const fetchAllAggTrades = async (symbol, startTime, endTime) => {
 
       fromId = nextFromId;
     } catch {
-      void 0;
       hasMore = false;
       break;
     }

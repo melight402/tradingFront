@@ -35,7 +35,6 @@ export const usePositionExtractor = () => {
           }
         });
       } catch {
-      void 0;
       }
     });
 
@@ -87,7 +86,6 @@ export const usePositionExtractor = () => {
           }
         });
       } catch {
-      void 0;
       }
     });
 

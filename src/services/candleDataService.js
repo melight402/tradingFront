@@ -18,7 +18,6 @@ export const fetchLastCandleForInterval = async (symbol, interval) => {
     return null;
   } catch (err) {
     if (err.name !== 'AbortError') {
-      void 0;
     }
     return null;
   }
@@ -35,7 +34,6 @@ export const fetchInitialPrice = async (symbol) => {
     return null;
   } catch (err) {
     if (err.name !== 'AbortError') {
-      void 0;
     }
     return null;
   }

@@ -71,15 +71,11 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
                                 maxValue: Math.max(savedState.priceRange.from, savedState.priceRange.to)
                               });
                             } catch {
-      void 0;
-                              void 0;
                             }
                           }
                         });
                       }
                     } catch {
-      void 0;
-                      void 0;
                     }
                   });
                 });
@@ -96,8 +92,6 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
                       });
                     }
                   } catch {
-      void 0;
-                    void 0;
                   }
                 });
               }
@@ -119,7 +113,6 @@ export const useChartScaleSetup = (chart, candlestickSeries, volumeAreaHeight, c
               });
             }, 500);
           } catch {
-      void 0;
             const candleCount = interval === '5m' ? 120 : 50;
             setHorizontalScale(chart.current, candleCount, candlestickData, 100);
             isRestoringStateRef.current = false;

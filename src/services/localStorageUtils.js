@@ -16,7 +16,6 @@ export const saveSelectedSymbol = (symbol) => {
   try {
     localStorage.setItem(STORAGE_KEYS.SELECTED_SYMBOL, symbol);
   } catch {
-      void 0;
   }
 };
 
@@ -26,7 +25,6 @@ export const loadSelectedSymbol = (defaultSymbol = 'BTCUSDT') => {
     const saved = localStorage.getItem(STORAGE_KEYS.SELECTED_SYMBOL);
     return saved || defaultSymbol;
   } catch {
-      void 0;
     return defaultSymbol;
   }
 };
@@ -37,7 +35,6 @@ export const saveRisk = (risk) => {
   try {
     localStorage.setItem(STORAGE_KEYS.RISK_VALUE, JSON.stringify(risk));
   } catch {
-      void 0;
   }
 };
 
@@ -53,7 +50,6 @@ export const loadRisk = (defaultValue = 1) => {
     }
     return defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -66,7 +62,6 @@ export const saveBuySell = (value) => {
       localStorage.removeItem(STORAGE_KEYS.BUY_SELL);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -77,7 +72,6 @@ export const loadBuySell = (defaultValue = "BUY") => {
     if (value === "sell") return "SELL";
     return value || defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -90,7 +84,6 @@ export const saveOrderType = (value) => {
       localStorage.removeItem(STORAGE_KEYS.ORDER_TYPE);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -98,7 +91,6 @@ export const loadOrderType = (defaultValue = "MARKET") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.ORDER_TYPE) || defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -111,7 +103,6 @@ export const saveTVXValue = (value) => {
       localStorage.removeItem(STORAGE_KEYS.TVX_VALUE);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -119,7 +110,6 @@ export const loadTVXValue = (defaultValue = "trend_after_pullback") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TVX_VALUE) || defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -132,7 +122,6 @@ export const saveTakeProfit = (value) => {
       localStorage.removeItem(STORAGE_KEYS.TAKE_PROFIT);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -140,7 +129,6 @@ export const loadTakeProfit = (defaultValue = "3") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TAKE_PROFIT) || defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -149,7 +137,6 @@ export const saveBottomChartsCollapsed = (collapsed) => {
   try {
     localStorage.setItem(STORAGE_KEYS.BOTTOM_CHARTS_COLLAPSED, JSON.stringify(collapsed));
   } catch {
-      void 0;
   }
 };
 
@@ -161,7 +148,6 @@ export const loadBottomChartsCollapsed = (defaultValue = false) => {
     }
     return defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -174,7 +160,6 @@ export const saveTopChartTimeframe = (timeframe) => {
       localStorage.removeItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -182,7 +167,6 @@ export const loadTopChartTimeframe = (defaultValue = '5m') => {
   try {
     return localStorage.getItem(STORAGE_KEYS.TOP_CHART_TIMEFRAME) || defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -195,7 +179,6 @@ export const saveRatio = (value) => {
       localStorage.removeItem(STORAGE_KEYS.RATIO);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -203,7 +186,6 @@ export const loadRatio = (defaultValue = "2") => {
   try {
     return localStorage.getItem(STORAGE_KEYS.RATIO) || defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };
@@ -216,7 +198,6 @@ export const saveATRValue = (value) => {
       localStorage.removeItem(STORAGE_KEYS.ATR_VALUE);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -231,7 +212,6 @@ export const loadATRValue = (defaultValue = 1) => {
     }
     return defaultValue;
   } catch {
-      void 0;
     return defaultValue;
   }
 };

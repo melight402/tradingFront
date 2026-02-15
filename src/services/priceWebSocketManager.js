@@ -26,7 +26,6 @@ export const switchWebSocketToSymbol = (symbol) => {
   globalWebSocket = new WebSocket(wsUrl);
   
   globalWebSocket.onopen = () => {
-    void 0;
     
     const intervalsSet = new Set();
     const symbolSubscribers = getSubscribers(symbol);
@@ -63,13 +62,10 @@ export const switchWebSocketToSymbol = (symbol) => {
         }
       }
     } catch {
-      void 0;
-      void 0;
     }
   };
   
   globalWebSocket.onerror = () => {
-    void 0;
   };
   
   globalWebSocket.onclose = () => {

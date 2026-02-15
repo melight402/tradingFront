@@ -78,7 +78,6 @@ const switchWebSocketToSymbol = (symbol) => {
   globalWebSocket = new WebSocket(wsUrl);
 
   globalWebSocket.onopen = () => {
-    void 0;
   };
 
   globalWebSocket.onmessage = (event) => {
@@ -93,12 +92,10 @@ const switchWebSocketToSymbol = (symbol) => {
         updateSumsForAllIntervals(symbol, data);
       }
     } catch {
-      void 0;
     }
   };
 
   globalWebSocket.onerror = () => {
-    void 0;
   };
 
   globalWebSocket.onclose = () => {

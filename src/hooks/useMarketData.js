@@ -71,7 +71,6 @@ export function useMarketData(symbol = "BTCUSDT", interval = "1h", limit = 500) 
       return null;
     } catch (err) {
       if (err.name !== 'AbortError') {
-        void 0;
       }
       return null;
     }
@@ -158,7 +157,6 @@ export function useMarketData(symbol = "BTCUSDT", interval = "1h", limit = 500) 
       })
       .catch((err) => {
         if (err.name !== 'AbortError') {
-          void 0;
         }
         setError(err.message || 'Failed to load market data');
         setLoaded(true);

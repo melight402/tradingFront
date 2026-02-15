@@ -100,7 +100,6 @@ export const useLastCandleFollow = (chart, candlestickSeries, chartContainerRef,
               }
             }
           } catch {
-            void 0;
           }
         });
       }
@@ -129,12 +128,10 @@ export const useLastCandleFollow = (chart, candlestickSeries, chartContainerRef,
               priceScale.applyOptions({ autoScale: true });
             }
           } catch {
-            void 0;
           }
         });
       }
     } catch {
-      void 0;
     }
   }, [chart, candlestickSeries, chartKey, isTopChart]);
 

@@ -32,7 +32,6 @@ export const getLastPositionTool = (chart5mRef, chart1hRef, chart1dRef) => {
         }
       });
     } catch {
-      void 0;
     }
   });
 

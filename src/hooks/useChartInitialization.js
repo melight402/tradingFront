@@ -163,8 +163,6 @@ export const useChartInitialization = (
         try {
           chart.current.removeAllLineTools();
         } catch {
-      void 0;
-          void 0;
         }
         chart.current.remove();
         chart.current = null;

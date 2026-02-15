@@ -21,11 +21,6 @@ export const createErrorLogger = (context = 'App') => {
       }
     }
     
-    // В production отправить на сервер (раскомментировать при готовности)
-    // if (!isDevelopment) {
-    //   sendErrorToServer({ context, error: errorMessage, stack: errorStack });
-    // }
-    
     return fallbackValue;
   };
 };

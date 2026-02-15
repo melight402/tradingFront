@@ -84,7 +84,6 @@ export const useLineToolRestore = (
                       lineToolsRestoredRef.current = true;
                     }
                   } catch {
-      void 0;
                     lineToolsRestoredRef.current = true;
                   }
                 } else {

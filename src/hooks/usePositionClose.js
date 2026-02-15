@@ -47,7 +47,6 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol, tra
       try {
         screenshotBlob = await takeScreenshot();
       } catch {
-      void 0;
         const shouldContinue = confirm('Не удалось создать скриншот при закрытии. Продолжить закрытие позиции без скриншота?');
         if (!shouldContinue) {
           setIsClosing(false);
@@ -69,9 +68,7 @@ export const usePositionClose = (chart5mRef, chart1hRef, chart1dRef, symbol, tra
       const result = await closePosition(closeData, screenshotBlob);
       
       if (result.data?.closeScreenshotPath) {
-        void 0;
       } else {
-        void 0;
       }
 
       localStorage.removeItem(`lastOpenPosition_${symbol}`);

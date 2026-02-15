@@ -43,14 +43,11 @@ export const useDrawingToolActivation = (chart, candlestickSeries, drawingTool, 
         const options = getToolOptions(drawingTool, symbol);
         chart.current.setActiveLineTool(drawingTool, options);
       } catch {
-      void 0;
       }
     } else {
       try {
         chart.current.setActiveLineTool(null);
       } catch {
-      void 0;
-        void 0;
       }
     }
 

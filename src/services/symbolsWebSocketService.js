@@ -44,13 +44,10 @@ const handleMessage = (event) => {
       });
     });
   } catch {
-      void 0;
-    void 0;
   }
 };
 
 const handleError = () => {
-  void 0;
 };
 
 const handleClose = () => {
@@ -84,7 +81,6 @@ const connect = () => {
   
   symbolsWebSocket.onopen = () => {
     reconnectAttempts = 0;
-    void 0;
   };
   
   symbolsWebSocket.onmessage = handleMessage;

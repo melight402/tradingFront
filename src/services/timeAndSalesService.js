@@ -41,7 +41,6 @@ const fetchTimeAndSalesFromKline = async (symbol, interval) => {
 
     return { buySum, sellSum };
   } catch {
-      void 0;
     return { buySum: 0, sellSum: 0 };
   }
 };

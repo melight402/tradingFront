@@ -6,7 +6,6 @@ export const usePositionLogging = () => {
   };
 
   const logQuantityCalculation = () => {
-    void 0;
   };
 
   return { logPositions, logQuantityCalculation };

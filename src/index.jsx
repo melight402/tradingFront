@@ -5,7 +5,6 @@ import App from "./App";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
-  void 0;
 } else {
   try {
     const root = createRoot(rootElement);

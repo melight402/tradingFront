@@ -37,8 +37,6 @@ export const useLineToolEditHandler = (
         try {
           chartInstance.unsubscribeLineToolsAfterEdit(handleAfterEdit);
         } catch {
-      void 0;
-          void 0;
         }
       }
     };

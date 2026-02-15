@@ -36,7 +36,6 @@ export const useLastCandleUpdate = (chart, candlestickSeries, volumeSeries, last
         color: lastCandle.close >= lastCandle.open ? "#26a69a80" : "#ef535080",
       });
     } catch {
-      void 0;
     }
   }, [chart, candlestickSeries, volumeSeries, lastCandleTimeRef]);
 

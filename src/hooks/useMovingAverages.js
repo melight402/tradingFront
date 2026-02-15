@@ -15,7 +15,6 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
         try {
           chart.current.removeSeries(ma50Series.current);
         } catch {
-          void 0;
         }
         ma50Series.current = null;
       }
@@ -23,7 +22,6 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
         try {
           chart.current.removeSeries(ma200Series.current);
         } catch {
-          void 0;
         }
         ma200Series.current = null;
       }
@@ -91,7 +89,6 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
         try {
           chartInstance.removeSeries(ma50Series.current);
         } catch {
-          void 0;
         }
         ma50Series.current = null;
       }
@@ -99,7 +96,6 @@ export const useMovingAverages = (chart, candlestickSeries, data, chartKey) => {
         try {
           chartInstance.removeSeries(ma200Series.current);
         } catch {
-          void 0;
         }
         ma200Series.current = null;
       }

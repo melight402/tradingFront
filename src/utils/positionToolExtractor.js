@@ -21,7 +21,6 @@ export const getPositionToolData = (chart5mRef, chart1hRef, chart1dRef, lineTool
         };
       }
     } catch {
-      void 0;
     }
   }
 

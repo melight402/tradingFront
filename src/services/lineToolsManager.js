@@ -15,7 +15,6 @@ export const saveLineToolsToStorage = (symbol, interval, lineToolsJson) => {
       localStorage.removeItem(key);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -30,7 +29,6 @@ export const loadLineToolsFromStorage = (symbol, interval) => {
     }
     return null;
   } catch {
-      void 0;
     return null;
   }
 };
@@ -41,7 +39,6 @@ export const removeLineToolsFromStorage = (symbol, interval) => {
     const key = getLineToolsStorageKey(symbol, interval);
     localStorage.removeItem(key);
   } catch {
-      void 0;
   }
 };
 
@@ -63,7 +60,6 @@ export const removeAllLineToolsFromStorage = () => {
     });
     
   } catch {
-      void 0;
   }
 };
 
@@ -79,7 +75,6 @@ export const exportLineToolsFromChart = (chart) => {
     }
     return null;
   } catch {
-      void 0;
     return null;
   }
 };
@@ -94,7 +89,6 @@ export const importLineToolsToChart = (chart, lineToolsJson) => {
     chart.importLineTools(lineToolsJson);
     return true;
   } catch {
-      void 0;
     return false;
   }
 };

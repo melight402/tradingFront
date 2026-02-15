@@ -45,7 +45,6 @@ export const extractPositionData = (chart5mRef, chart1hRef, chart1dRef, symbol, 
         }
       });
     } catch {
-      void 0;
     }
   });
 

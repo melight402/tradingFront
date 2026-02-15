@@ -58,15 +58,11 @@ export const setHorizontalScale = (chart, candleCount, candlestickData, paddingP
               to: logicalRange.to + logicalShift
             });
           } catch {
-      void 0;
-            void 0;
           }
         });
       });
     }
   } catch {
-      void 0;
-    void 0;
   }
 };
 
@@ -119,8 +115,6 @@ export const addRightPadding = (chart, candlestickSeries, paddingPx = 100) => {
       to: logicalRange.to + logicalShift
     });
   } catch {
-      void 0;
-    void 0;
   }
 };
 

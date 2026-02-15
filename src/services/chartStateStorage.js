@@ -13,7 +13,6 @@ export const saveChartState = (chartKey, symbol, interval, state) => {
       localStorage.removeItem(key);
     }
   } catch {
-      void 0;
   }
 };
 
@@ -26,7 +25,6 @@ export const loadChartState = (chartKey, symbol, interval) => {
     }
     return null;
   } catch {
-      void 0;
     return null;
   }
 };
@@ -48,7 +46,6 @@ export const clearAllChartStates = () => {
     });
     
   } catch {
-      void 0;
   }
 };
 

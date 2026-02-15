@@ -47,8 +47,6 @@ export const useSymbolChangeHandler = (
             }
           }
         } catch {
-      void 0;
-          void 0;
         }
 
         requestAnimationFrame(() => {
@@ -58,8 +56,6 @@ export const useSymbolChangeHandler = (
                 chart.current.removeAllLineTools();
               }
             } catch {
-      void 0;
-              void 0;
             }
           });
         });

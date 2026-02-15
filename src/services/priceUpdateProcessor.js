@@ -84,7 +84,6 @@ const handleNewCandle = (symbol, subscriber, price, intervalMs, candleStartTime,
         }
       }
     }).catch(() => {
-      void 0;
     });
   }
 };

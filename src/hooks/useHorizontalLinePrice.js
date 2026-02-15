@@ -23,8 +23,6 @@ const getHorizontalLinePrice = (chart5mRef, chart1hRef, chart1dRef) => {
         }
       }
     } catch {
-      void 0;
-      void 0;
     }
   }
 
@@ -56,12 +54,9 @@ export const useHorizontalLinePrice = (chart5mRef, chart1hRef, chart1dRef) => {
           try {
             chart.unsubscribeLineToolsAfterEdit(handler);
           } catch {
-      void 0;
-            void 0;
           }
         };
       } catch {
-      void 0;
         return null;
       }
     });
