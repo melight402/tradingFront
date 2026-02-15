@@ -94,10 +94,9 @@ export const useMarketOrderPlacement = () => {
       side: isLong ? "SELL" : "BUY",
       type: "STOP_MARKET",
       timeframe,
-      quantity: quantity.toString(),
-      positionSide,
       stopPrice: stopLossPrice.toString(),
       workingType: "CONTRACT_PRICE",
+      closePosition: true,
     };
 
     // Данные для тейк-профита
@@ -107,10 +106,9 @@ export const useMarketOrderPlacement = () => {
       side: isLong ? "SELL" : "BUY",
       type: "TAKE_PROFIT_MARKET",
       timeframe,
-      quantity: quantity.toString(),
-      positionSide,
       stopPrice: takeProfit.toString(),
       workingType: "CONTRACT_PRICE",
+      closePosition: true,
     };
 
     // Комбинированный заказ с метаданными

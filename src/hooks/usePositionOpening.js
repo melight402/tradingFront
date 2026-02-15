@@ -94,10 +94,9 @@ export const usePositionOpening = () => {
       side: positionSide === "LONG" ? "SELL" : "BUY",
       type: "STOP_MARKET",
       timeframe: timeframe || 'unknown',
-      quantity: roundedQuantity.toString(),
-      positionSide,
       stopPrice: finalStopLoss.toString(),
       workingType: "CONTRACT_PRICE",
+      closePosition: true,
     };
 
     // Данные для тейк-профита
@@ -107,10 +106,9 @@ export const usePositionOpening = () => {
       side: positionSide === "LONG" ? "SELL" : "BUY",
       type: "TAKE_PROFIT_MARKET",
       timeframe: timeframe || 'unknown',
-      quantity: roundedQuantity.toString(),
-      positionSide,
       stopPrice: finalTakeProfitPrice.toString(),
       workingType: "CONTRACT_PRICE",
+      closePosition: true,
     };
 
     // Комбинированный заказ со всеми необходимыми данными
