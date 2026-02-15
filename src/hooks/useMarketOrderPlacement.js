@@ -98,7 +98,6 @@ export const useMarketOrderPlacement = () => {
       positionSide,
       stopPrice: stopLossPrice.toString(),
       workingType: "CONTRACT_PRICE",
-      closePosition: true,
     };
 
     // Данные для тейк-профита
@@ -112,7 +111,6 @@ export const useMarketOrderPlacement = () => {
       positionSide,
       stopPrice: takeProfit.toString(),
       workingType: "CONTRACT_PRICE",
-      closePosition: true,
     };
 
     // Комбинированный заказ с метаданными

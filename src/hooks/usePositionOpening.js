@@ -98,7 +98,6 @@ export const usePositionOpening = () => {
       positionSide,
       stopPrice: finalStopLoss.toString(),
       workingType: "CONTRACT_PRICE",
-      closePosition: true,
     };
 
     // Данные для тейк-профита
@@ -112,7 +111,6 @@ export const usePositionOpening = () => {
       positionSide,
       stopPrice: finalTakeProfitPrice.toString(),
       workingType: "CONTRACT_PRICE",
-      closePosition: true,
     };
 
     // Комбинированный заказ со всеми необходимыми данными
