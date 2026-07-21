@@ -175,17 +175,17 @@ export const COLORS = {
 };
 
 export const TVX_OPTIONS = [
-  { value: "waves", label: "5 волн + ABC" },
-  { value: "level_breakout", label: "Пробой сильного уровня (Ретест)" },
-  { value: "false_breakout", label: "Ложный пробой сильного(Вкат за уровень)" },
+  { value: "rollup", label: "нарастание вверх с закруглением снизу" },
+  { value: "rolldown", label: "медленное падение с закруглением сверху" },
+  { value: "false_breakout", label: "Ложный пробой (без импульса за уровнем)" },
+  { value: "false_breakout_cup", label: "После ложного пробоя нет отбоя, чашка на пробой" },
   { value: "level_bounce", label: "Отбой от сильного уровня" },
-  { value: "imbalance_retest", label: "Ретест от Имбаланса" },
-  { value: "ma20_retest", label: "Ретест МА20" },
-  { value: "ma20_curve", label: "Рогатка МА20 + маленькая свеча" },
-  { value: "ma200_retest", label: "Ретест МА200" },
-  { value: "ma_rectangle", label: "Треугольник пробой МА200" },
-  { value: "rollback25", label: "Откат 25%" },
-  { value: "rollback50", label: "Разворот после отката 50%" },
+  { value: "retest", label: "Ретест от уровня в сторону пробоя" },
+  { value: "breakout", label: "поджатие к уровню на пробой с наторговкой" },
+  { value: "ipo_down", label: "Цена заходит за IPO" },
+  { value: "inclined_level", label: "Выход из наклонного уровня" },
+  { value: "ma_up", label: "Средняя скользящая показывает вверз" },
+  { value: "ma_down", label: "Средняя скользящая показывает вниз" }
 ];
 
 export const TAKE_PROFIT_OPTIONS = Array.from({ length: 11 }, (_, i) => {
