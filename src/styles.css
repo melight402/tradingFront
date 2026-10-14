@@ -1,0 +1,113 @@
+:root {
+  --strategy-menu-bg: #10161f;
+}
+
+.strategy-select { position: relative; width: 168px; }
+.strategy-select-button { width: 100%; height: 32px; display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 6px 8px; appearance: none; background: var(--bg-input); border: 1px solid var(--border-hair); border-radius: 6px; color: var(--text-primary); text-align: left; }
+.strategy-select-button:hover { background: var(--bg-elevated-hover); border-color: var(--border-strong); }
+.strategy-select-button span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.strategy-select-arrow { font-size: 9px; }
+.strategy-select-menu { z-index: 99999; overflow-y: auto; padding: 4px; background: #10161f; opacity: 1; border: 1px solid #4c8cff; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.7); }
+.strategy-select-option { width: 100%; display: block; padding: 7px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--text-primary); text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.strategy-select-option:hover, .strategy-select-option.selected { background: var(--bg-elevated-hover); }
+:root {
+  /* --- color tokens --- */
+  --bg-void: #0a0e14;
+  --bg-app: #0d1219;
+  --bg-panel: #10161f;
+  --bg-elevated: #171f2a;
+  --bg-elevated-hover: #1e2833;
+  --bg-input: #131a24;
+  --border-hair: #202a37;
+  --border-strong: #2c3a4a;
+
+  --text-primary: #e7edf5;
+  --text-secondary: #8a99ab;
+  --text-tertiary: #5a6b7d;
+
+  --long: #2fd6a7;
+  --long-dim: #17372f;
+  --long-glow: rgba(47, 214, 167, 0.18);
+  --short: #ff5d72;
+  --short-dim: #3a1c24;
+  --short-glow: rgba(255, 93, 114, 0.18);
+
+  --accent: #4c8cff;
+  --accent-dim: #1c2c4a;
+  --warn: #f5b45a;
+
+  --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 11px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+input,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--accent-dim);
+}
+
+/* thin scrollbars for the pair list */
+.thin-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+}
+
+.num {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.up {
+  color: var(--long);
+}
+.down {
+  color: var(--short);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}

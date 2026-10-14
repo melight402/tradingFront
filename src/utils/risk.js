@@ -1,45 +1,57 @@
-export const validateRiskInput = (value) => {
-  let cleaned = value.replace(/[^\d.]/g, "");
+import { ceilToStep, floorToStep } from "./precision.js";
 
-  const parts = cleaned.split(".");
-  if (parts.length > 2) {
-    cleaned = parts[0] + "." + parts.slice(1).join("");
-  }
+// Вся арифметика инструмента "риск-бокс": размер позиции считается не от
+// капитала и плеча, а от суммы, которой готовы рискнуть (в USDT), растянутой
+// между ценой входа и ценой стоп-лосса.
+//
+//   distancePct = |entry - stop| / entry
+//   positionUSDT = riskUSDT / distancePct = riskUSDT * entry / |entry - stop|
+//
+// Чем ближе стоп к цене входа, тем больше номинал позиции при том же риске.
 
-  if (cleaned.startsWith(".")) {
-    cleaned = "0" + cleaned;
-  }
+export function positionSizeUSDT(riskUsdt, entry, stop, quantityStep) {
+  const dist = Math.abs(entry - stop);
+  if (!dist || !entry) return 0;
+  if (quantityStep) return positionQty(riskUsdt, entry, stop, quantityStep) * entry;
+  return (riskUsdt * entry) / dist;
+}
 
-  if (cleaned === ".") {
-    cleaned = "0.";
-  }
+export function positionQty(riskUsdt, entry, stop, quantityStep) {
+  const dist = Math.abs(entry - stop);
+  if (!dist) return 0;
+  const quantity = riskUsdt / dist;
+  return quantityStep ? floorToStep(quantity, quantityStep) : quantity;
+}
 
-  const [integerPart, decimalPart = ""] = cleaned.split(".");
+export function rrRatio(entry, stop, target) {
+  const riskDist = Math.abs(entry - stop);
+  const rewardDist = Math.abs(target - entry);
+  if (!riskDist) return 0;
+  return rewardDist / riskDist;
+}
 
-  let validInteger = integerPart;
-  if (integerPart.length > 4 || parseInt(integerPart) > 9999) {
-    validInteger = "9999";
-  }
+export function requiredMarginUSDT(positionUsdt, leverage) {
+  if (!leverage) return positionUsdt;
+  return positionUsdt / leverage;
+}
 
-  const validDecimal = decimalPart.slice(0, 2);
+// ---------------------------------------------------------------------------
+// Стоп-ордер (Binance STOP_MARKET) — вход исполняется, когда цена ДОСТИГАЕТ
+// уровня входа и продолжает движение в ту же сторону: long триггерится выше
+// текущей рыночной цены (пробой вверх), short — ниже (пробой вниз). Если
+// отправить в Binance стоп-ордер с "неправильной" стороны, биржа отклонит его
+// ошибкой -2021 "Order would immediately trigger.". Эти функции проверяют и
+// при необходимости поправляют цену входа под то же самое ограничение.
 
-  let result = validInteger;
-  if (validDecimal || cleaned.includes(".")) {
-    result += "." + validDecimal;
-  }
+export function isValidStopEntry(isLong, entry, marketPrice) {
+  if (marketPrice == null || !Number.isFinite(marketPrice)) return true; // нет рыночной цены — не блокируем
+  return isLong ? entry > marketPrice : entry < marketPrice;
+}
 
-  const numValue = parseFloat(result);
-  if (numValue > 9999.99) {
-    result = "9999.99";
-  }
-
-  return result;
-};
-
-export const formatRiskValue = (value) => {
-  if (value === undefined || value === null || isNaN(value)) {
-    return "1.00";
-  }
-  const numValue = parseFloat(value);
-  return numValue.toFixed(2);
-};
+export function clampStopEntry(isLong, entry, marketPrice, tickSize) {
+  if (isValidStopEntry(isLong, entry, marketPrice)) return entry;
+  const eps = marketPrice * 0.0008; // небольшой отступ, чтобы уровень точно был "по ту сторону" рынка
+  const adjusted = isLong ? marketPrice + eps : marketPrice - eps;
+  if (!tickSize) return adjusted;
+  return isLong ? ceilToStep(adjusted, tickSize) : floorToStep(adjusted, tickSize);
+}
